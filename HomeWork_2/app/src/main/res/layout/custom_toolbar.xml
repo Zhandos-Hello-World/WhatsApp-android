@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="kz.tinkoff.homework_2.custom.viewgroup.CustomToolbar"
+    android:theme="@style/ToolbarBackground">
+
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="@dimen/indent_bigger"
+        android:layout_height="@dimen/indent_bigger"
+        android:src="@drawable/baseline_arrow_back_24" />
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/ToolbarTitleTextStyle"
+        android:text="@string/toolbar_chat_title" />
+</merge>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ReactionView">
+        <attr name="emoji" format="string" />
+        <attr name="count" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="CircularAvatar">
+        <attr name="avatarSrc" format="reference|color" />
+    </declare-styleable>
+
+    <declare-styleable name="ReactionViewGroup">
+        <attr name="numColumns" format="integer" />
+        <attr name="horizontalSpacing" format="dimension" />
+        <attr name="verticalSpacing" format="dimension" />
+    </declare-styleable>
+</resources>
