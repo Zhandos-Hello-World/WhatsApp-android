@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="indent_bigger">24dp</dimen>
+    <dimen name="indent_base">16dp</dimen>
+    <dimen name="indent_smaller">12dp</dimen>
+    <dimen name="indent_small">8dp</dimen>
+    <dimen name="indent_tiny">4dp</dimen>
+
+    <dimen name="card_corner_radius">18dp</dimen>
+</resources>
