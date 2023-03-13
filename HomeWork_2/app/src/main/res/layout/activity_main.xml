@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <kz.tinkoff.homework_2.custom.viewgroup.CustomToolbar
+    <kz.tinkoff.coreui.custom.viewgroup.CustomToolbar
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <kz.tinkoff.homework_2.custom.view.CustomSubToolbar
+    <kz.tinkoff.coreui.custom.view.CustomSubToolbar
         android:id="@+id/sub_toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -26,27 +26,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <kz.tinkoff.homework_2.custom.view.DateText
-        android:id="@+id/date_text"
-        style="@style/dateTextBackground"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/indent_bigger"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/message_recycler"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/message_send_edit_text_bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sub_toolbar" />
 
-
-    <kz.tinkoff.homework_2.custom.viewgroup.MessageViewGroup
-        android:id="@+id/message"
-        android:layout_width="wrap_content"
+    <kz.tinkoff.coreui.custom.viewgroup.CustomMessageTextFieldBar
+        android:id="@+id/message_send_edit_text_bar"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/indent_smaller"
-        android:paddingStart="@dimen/indent_smaller"
-        android:paddingEnd="132dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/date_text" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+    
 
 </androidx.constraintlayout.widget.ConstraintLayout>

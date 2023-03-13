@@ -38,5 +38,8 @@ dependencies {
     implementation deps.androidx.appCompat
     implementation deps.androidx.constraintLayout
 
+    implementation local.core.core
+    implementation local.core.ui
+
     implementation deps.material
 }
