@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.MainAdapter
 import kz.tinkoff.coreui.custom.viewgroup.CustomMessageTextFieldBar
 import kz.tinkoff.coreui.item.ReactionViewItem
@@ -31,8 +33,8 @@ class MainActivity : AppCompatActivity(), MessageAdapterListener {
         viewModel = ViewModelProvider(this, factory)[MainViewModel::class.java]
 
         adapter.apply {
-            addDelegate(DateDelegate())
-            addDelegate(MessageDelegate(listener = this@MainActivity))
+            addDelegate(DateDelegate() as AdapterDelegate<ViewHolder, Any>)
+            addDelegate(MessageDelegate(listener = this@MainActivity) as AdapterDelegate<ViewHolder, Any>)
         }
 
         binding.messageRecycler.adapter = adapter

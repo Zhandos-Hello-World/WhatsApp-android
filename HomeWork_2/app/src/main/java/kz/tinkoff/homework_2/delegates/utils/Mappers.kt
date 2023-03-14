@@ -7,12 +7,12 @@ import kz.tinkoff.homework_2.delegates.message.MessageDelegateItem
 import kz.tinkoff.homework_2.delegates.message.MessageModel
 
 
-fun List<MessageModel>.concatenateWithDate(dates: List<DateModel>): List<DelegateItem> {
-    val delegateItemList: MutableList<DelegateItem> = mutableListOf()
+fun List<MessageModel>.concatenateWithDate(dates: List<DateModel>): List<DelegateItem<Any>> {
+    val delegateItemList: MutableList<DelegateItem<Any>> = mutableListOf()
 
     dates.forEach { dateModel ->
         delegateItemList.add(
-            DateDelegateItem(id = dateModel.id, value = dateModel)
+            DateDelegateItem(value = dateModel) as DelegateItem<Any>
         )
 
         val date = dateModel.date
@@ -24,7 +24,7 @@ fun List<MessageModel>.concatenateWithDate(dates: List<DateModel>): List<Delegat
                 MessageDelegateItem(
                     id = model.id,
                     value = model,
-                )
+                ) as DelegateItem<Any>
             )
         }
     }

@@ -7,9 +7,9 @@ import kz.tinkoff.homework_2.databinding.ItemDateBinding
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 
-class DateDelegate: AdapterDelegate {
+class DateDelegate: AdapterDelegate<DateDelegate.ViewHolder, DateModel> {
 
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+    override fun onCreateViewHolder(parent: ViewGroup): ViewHolder =
         ViewHolder(
             ItemDateBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -19,14 +19,14 @@ class DateDelegate: AdapterDelegate {
         )
 
     override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder,
-        item: DelegateItem,
+        holder: ViewHolder,
+        item: DelegateItem<DateModel>,
         position: Int
     ) {
-        (holder as ViewHolder).bind(item.content() as DateModel)
+        holder.bind(item.content())
     }
 
-    override fun isOfViewType(item: DelegateItem): Boolean = item is DateDelegateItem
+    override fun isOfViewType(item: DelegateItem<DateModel>): Boolean = item is DateDelegateItem
 
     class ViewHolder(private val binding: ItemDateBinding) : RecyclerView.ViewHolder(binding.root) {
 

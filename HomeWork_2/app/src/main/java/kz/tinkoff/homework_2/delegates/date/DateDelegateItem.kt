@@ -2,16 +2,13 @@ package kz.tinkoff.homework_2.delegates.date
 
 import kz.tinkoff.core.adapter.DelegateItem
 
-class DateDelegateItem(
-    val id: Int,
-    private val value: DateModel,
-): DelegateItem {
+class DateDelegateItem(private val value: DateModel): DelegateItem<DateModel> {
 
-    override fun content(): Any = value
+    override fun content(): DateModel = value
 
-    override fun id(): Int = id
+    override fun id(): Int = value.hashCode()
 
-    override fun compareToOther(other: DelegateItem): Boolean {
-        return (other as DateDelegateItem).value == content()
+    override fun compareToOther(other: DelegateItem<DateModel>): Boolean {
+        return other.content() == content()
     }
 }

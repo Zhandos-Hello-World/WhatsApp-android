@@ -8,9 +8,10 @@ import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.homework_2.databinding.ItemMessageBinding
 import kz.tinkoff.homework_2.delegates.mapper.MessageDvoMapper
 
-class MessageDelegate(private val listener: MessageAdapterListener) : AdapterDelegate {
+class MessageDelegate(private val listener: MessageAdapterListener) :
+    AdapterDelegate<MessageDelegate.ViewHolder, MessageModel> {
 
-    override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder =
+    override fun onCreateViewHolder(parent: ViewGroup): ViewHolder =
         ViewHolder(
             ItemMessageBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -20,14 +21,15 @@ class MessageDelegate(private val listener: MessageAdapterListener) : AdapterDel
         )
 
     override fun onBindViewHolder(
-        holder: RecyclerView.ViewHolder,
-        item: DelegateItem,
+        holder: ViewHolder,
+        item: DelegateItem<MessageModel>,
         position: Int,
     ) {
-        (holder as ViewHolder).bind(item.content() as MessageModel)
+        holder.bind(item.content())
     }
 
-    override fun isOfViewType(item: DelegateItem): Boolean = item is MessageDelegateItem
+    override fun isOfViewType(item: DelegateItem<MessageModel>): Boolean =
+        item is MessageDelegateItem
 
     inner class ViewHolder(private val binding: ItemMessageBinding) :
         RecyclerView.ViewHolder(binding.root) {

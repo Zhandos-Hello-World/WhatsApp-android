@@ -5,15 +5,13 @@ import kz.tinkoff.core.adapter.DelegateItem
 class MessageDelegateItem(
     val id: Int,
     private val value: MessageModel,
-) : DelegateItem {
+) : DelegateItem<MessageModel> {
 
-    override fun content(): Any = value
+    override fun content(): MessageModel = value
 
     override fun id(): Int = id
 
-    override fun compareToOther(other: DelegateItem): Boolean {
-        val other = (other as MessageDelegateItem)
-        val equals = other.value == value && other.value.reactions == value.reactions
-        return equals
+    override fun compareToOther(other: DelegateItem<MessageModel>): Boolean {
+        return other.content() == value && other.content().reactions == value.reactions
     }
 }

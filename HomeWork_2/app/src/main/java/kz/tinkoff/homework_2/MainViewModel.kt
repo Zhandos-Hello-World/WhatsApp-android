@@ -10,7 +10,7 @@ import kz.tinkoff.homework_2.delegates.message.MessageModel
 import kz.tinkoff.homework_2.delegates.utils.concatenateWithDate
 
 class MainViewModel: ViewModel() {
-    var messageList = MutableLiveData<List<DelegateItem>>()
+    var messageList = MutableLiveData<List<DelegateItem<Any>>>()
 
 
     init {
@@ -20,7 +20,7 @@ class MainViewModel: ViewModel() {
     fun updateDelegate(model: MessageModel, emoji: String) {
         val list = messageList.value
         val delegateItem = list?.find { delegateItem ->
-            if (delegateItem is MessageDelegateItem) {
+            if (delegateItem.content() is MessageModel) {
                 return@find (delegateItem.content() as MessageModel).id == model.id
             }
             false
@@ -53,7 +53,7 @@ class MainViewModel: ViewModel() {
             model
         )
         val mutableList = list?.toMutableList()
-        mutableList?.set(list.indexOf(delegateItem), newDelegateItem)
+        mutableList?.set(list.indexOf(delegateItem), newDelegateItem as DelegateItem<Any>)
         messageList.value = mutableList
     }
 
@@ -70,7 +70,7 @@ class MainViewModel: ViewModel() {
         )
 
         messageList.value = messageList.value?.toMutableList()?.apply {
-            add(delegateItem)
+            add(delegateItem  as DelegateItem<Any>)
         }
     }
 
@@ -83,19 +83,15 @@ class MainViewModel: ViewModel() {
 
         private val stubDatesList = listOf(
             DateModel(
-                id = 1,
                 date = SEP_1,
             ),
             DateModel(
-                id = 2,
                 date = SEP_12,
             ),
             DateModel(
-                id = 3,
                 date = JUL_5,
             ),
             DateModel(
-                id = 4,
                 date = DEC_7,
             ),
         )
