@@ -1,60 +1,38 @@
 package kz.tinkoff.homework_2
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.coreui.item.ReactionViewItem
-import kz.tinkoff.homework_2.delegates.date.DateModel
+import kz.tinkoff.homework_2.delegates.mapper.MessageDvoMapper
 import kz.tinkoff.homework_2.delegates.message.MessageDelegateItem
 import kz.tinkoff.homework_2.delegates.message.MessageModel
-import kz.tinkoff.homework_2.delegates.utils.concatenateWithDate
 
-class MainViewModel: ViewModel() {
-    var messageList = MutableLiveData<List<DelegateItem<Any>>>()
-
+class MainViewModel : ViewModel() {
+    private val _messageList = MutableLiveData<List<DelegateItem>>()
+    val messageList: LiveData<List<DelegateItem>> = _messageList
 
     init {
-        messageList.value = messageModelList.concatenateWithDate(stubDatesList)
+        _messageList.value = MessageDvoMapper().toMessageWithData(messageModelList)
     }
 
     fun updateDelegate(model: MessageModel, emoji: String) {
-        val list = messageList.value
-        val delegateItem = list?.find { delegateItem ->
-            if (delegateItem.content() is MessageModel) {
-                return@find (delegateItem.content() as MessageModel).id == model.id
-            }
-            false
-        }
+        val delegateItem = findMessageDelegateItem(model)
         val reactions = model.reactions.toMutableList()
-        val contains = reactions.map { it.emoji }.contains(emoji)
 
-        if (contains) {
+        if (containsEmoji(model, emoji)) {
             val reactionViewItem = reactions.find { it.emoji == emoji }!!
-            val index = reactions.indexOf(reactionViewItem)
-
             if (reactionViewItem.fromMe) {
-                val newReactionViewItem = reactionViewItem.copy(count = reactionViewItem.count - 1)
-                if (newReactionViewItem.count == 0) {
-                    reactions.removeAt(index)
-                }
-                else {
-                    reactions[index] = reactionViewItem.copy(count = reactionViewItem.count - 1, fromMe = false)
-                }
-            }
-            else {
-                reactions[index] = reactionViewItem.copy(count = reactionViewItem.count + 1, fromMe = true)
+                changeReactions(reactions, reactionViewItem)
+            } else {
+                addReactionToExist(reactions, reactionViewItem)
             }
         } else {
-            reactions.add(ReactionViewItem(hashCode(), 1, emoji, fromMe = true))
+            addReaction(reactions, emoji)
         }
-        model.reactions = reactions
-        val newDelegateItem = MessageDelegateItem(
-            delegateItem?.hashCode() ?: 0,
-            model
-        )
-        val mutableList = list?.toMutableList()
-        mutableList?.set(list.indexOf(delegateItem), newDelegateItem as DelegateItem<Any>)
-        messageList.value = mutableList
+        delegateItem ?: return
+        updateMessageModel(model, delegateItem, reactions)
     }
 
     fun addMessage(message: String) {
@@ -69,9 +47,70 @@ class MainViewModel: ViewModel() {
             )
         )
 
-        messageList.value = messageList.value?.toMutableList()?.apply {
-            add(delegateItem  as DelegateItem<Any>)
+        _messageList.value = _messageList.value?.toMutableList()?.apply {
+            add(delegateItem)
         }
+    }
+
+    private fun updateMessageModel(
+        model: MessageModel,
+        delegateItem: DelegateItem,
+        reactions: MutableList<ReactionViewItem>,
+    ) {
+        model.reactions = reactions
+        val newDelegateItem = MessageDelegateItem(
+            delegateItem.hashCode(),
+            model
+        )
+        val list = _messageList.value
+        val mutableList = list?.toMutableList()
+        mutableList?.set(list.indexOf(delegateItem), newDelegateItem)
+        _messageList.value = mutableList
+    }
+
+    private fun findMessageDelegateItem(model: MessageModel): DelegateItem? {
+        return _messageList.value?.find { delegateItem ->
+            if (delegateItem.content() is MessageModel) {
+                return@find (delegateItem.content() as MessageModel).id == model.id
+            }
+            false
+        }
+    }
+
+    private fun containsEmoji(model: MessageModel, emoji: String): Boolean {
+        val reactions = model.reactions.toMutableList()
+        return reactions.map { it.emoji }.contains(emoji)
+    }
+
+    private fun changeReactions(
+        reactions: MutableList<ReactionViewItem>,
+        reactionViewItem: ReactionViewItem,
+    ): MutableList<ReactionViewItem> {
+        val index = reactions.indexOf(reactionViewItem)
+        val newReactionViewItem = reactionViewItem.copy(count = reactionViewItem.count - 1)
+        if (newReactionViewItem.count == 0) {
+            reactions.removeAt(index)
+        } else {
+            reactions[index] =
+                reactionViewItem.copy(count = reactionViewItem.count - 1, fromMe = false)
+        }
+        return reactions
+    }
+
+    private fun addReactionToExist(
+        reactions: MutableList<ReactionViewItem>,
+        reactionViewItem: ReactionViewItem,
+    ) {
+        val index = reactions.indexOf(reactionViewItem)
+        reactions[index] =
+            reactionViewItem.copy(count = reactionViewItem.count + 1, fromMe = true)
+    }
+
+    private fun addReaction(
+        reactions: MutableList<ReactionViewItem>,
+        emoji: String,
+    ) {
+        reactions.add(ReactionViewItem(hashCode(), 1, emoji, fromMe = true))
     }
 
     companion object {
@@ -80,27 +119,11 @@ class MainViewModel: ViewModel() {
         private const val SEP_12 = "12 сенятбря"
         private const val DEC_7 = "7 декабря"
 
-
-        private val stubDatesList = listOf(
-            DateModel(
-                date = SEP_1,
-            ),
-            DateModel(
-                date = SEP_12,
-            ),
-            DateModel(
-                date = JUL_5,
-            ),
-            DateModel(
-                date = DEC_7,
-            ),
-        )
-
         private val messageModelList = listOf(
             MessageModel(
                 id = 123,
                 fullName = "Baimurat Zhandos",
-                message = " jiroewj giorejg ierjg er1",
+                message = " jiroewj giorejg ierjg er1 ioew fjioew jfor jgiowerj groe jgoriwe",
                 date = SEP_1,
                 reactions = listOf(
                     ReactionViewItem(0, 1, "🔥")
@@ -109,7 +132,7 @@ class MainViewModel: ViewModel() {
             MessageModel(
                 id = 124,
                 fullName = "Baimurat Zhandos",
-                message = "2 jgerio gjeroj girwej goer",
+                message = "2 jgerio gjeroj girwej goer fjoeiwjf e fewjio ef iewojf ioew",
                 date = SEP_1,
                 reactions = emptyList(),
             ),
@@ -146,7 +169,7 @@ class MainViewModel: ViewModel() {
             MessageModel(
                 id = 129,
                 fullName = "Baimurat Zhandos",
-                message = " jqio fjiroej girej r7",
+                message = " jqio fjiroej girej  ejof jweop fwep fewp wer7",
                 date = DEC_7,
                 reactions = listOf(
                     ReactionViewItem(0, 1, "🔥")

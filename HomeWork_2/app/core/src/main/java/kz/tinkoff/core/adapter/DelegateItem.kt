@@ -1,7 +1,16 @@
 package kz.tinkoff.core.adapter
 
-interface DelegateItem<M> {
-    fun content(): M
-    fun id(): Int
-    fun compareToOther(other: DelegateItem<M>): Boolean
+abstract class DelegateItem {
+
+    abstract fun content(): Any
+
+    abstract fun id(): Int
+
+    fun areSame(newItem: DelegateItem): Boolean {
+        return this.javaClass == newItem.javaClass && id() == newItem.id()
+    }
+
+    fun areContentsTheSame(newItem: DelegateItem): Boolean {
+        return id() == newItem.id()
+    }
 }

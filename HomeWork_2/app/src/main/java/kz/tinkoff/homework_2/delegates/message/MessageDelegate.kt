@@ -9,7 +9,7 @@ import kz.tinkoff.homework_2.databinding.ItemMessageBinding
 import kz.tinkoff.homework_2.delegates.mapper.MessageDvoMapper
 
 class MessageDelegate(private val listener: MessageAdapterListener) :
-    AdapterDelegate<MessageDelegate.ViewHolder, MessageModel> {
+    AdapterDelegate<MessageDelegate.ViewHolder, MessageDelegateItem> {
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder =
         ViewHolder(
@@ -22,13 +22,13 @@ class MessageDelegate(private val listener: MessageAdapterListener) :
 
     override fun onBindViewHolder(
         holder: ViewHolder,
-        item: DelegateItem<MessageModel>,
+        item: MessageDelegateItem,
         position: Int,
     ) {
         holder.bind(item.content())
     }
 
-    override fun isOfViewType(item: DelegateItem<MessageModel>): Boolean =
+    override fun isOfViewType(item: DelegateItem): Boolean =
         item is MessageDelegateItem
 
     inner class ViewHolder(private val binding: ItemMessageBinding) :
