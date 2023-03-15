@@ -1,10 +1,10 @@
 package kz.tinkoff.core.adapter
 
-abstract class DelegateItem {
+interface DelegateItem {
 
-    abstract fun content(): Any
+    fun content(): Any
 
-    abstract fun id(): Int
+    fun id(): Int
 
     fun areSame(newItem: DelegateItem): Boolean {
         return this.javaClass == newItem.javaClass && id() == newItem.id()

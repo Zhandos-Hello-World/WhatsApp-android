@@ -35,17 +35,17 @@ class MessageDvoMapper : Mapper<MessageModel, MessageDvo> {
             return emptyList()
         }
 
-        val delegateItemList: MutableList<DelegateItem> = mutableListOf()
-        var date = from[0].date
-        delegateItemList.add(DateDelegateItem(DateModel(date)))
+        val delegateItemList = buildList {
+            var date = from[0].date
+            add(DateDelegateItem(DateModel(date)))
 
-
-        from.forEach { messageModel ->
-            if (messageModel.date != date) {
-                date = messageModel.date
-                delegateItemList.add(DateDelegateItem(DateModel(date)))
+            from.forEach { messageModel ->
+                if (messageModel.date != date) {
+                    date = messageModel.date
+                    add(DateDelegateItem(DateModel(date)))
+                }
+                add(MessageDelegateItem(id = messageModel.id, value = messageModel))
             }
-            delegateItemList.add(MessageDelegateItem(id = messageModel.id, value = messageModel))
         }
         return delegateItemList
     }
