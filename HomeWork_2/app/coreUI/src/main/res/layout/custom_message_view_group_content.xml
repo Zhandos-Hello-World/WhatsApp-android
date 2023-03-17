@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:parentTag="kz.tinkoff.coreui.custom.viewgroup.MessageViewGroup">
+
+
+    <ImageView
+        android:id="@+id/avatar"
+        android:layout_width="37dp"
+        android:layout_height="37dp"
+        android:src="@drawable/avatar_2"
+        />
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/message_card"
+        style="@style/message_card_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/image">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/indent_smaller"
+            android:layout_marginTop="@dimen/indent_small"
+            android:layout_marginEnd="@dimen/indent_tiny"
+            android:paddingEnd="@dimen/indent_tiny"
+            android:layout_marginBottom="@dimen/indent_bigger"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textAppearance="@style/message_username_text_style"
+                android:text="Darrell Steward"
+                tools:text="Darrell Steward" />
+
+            <TextView
+                android:id="@+id/message_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Привет! lorem ipsum test message dalshe zabil"
+                android:textAppearance="@style/message_text_style"
+                tools:text="Привет! lorem ipsum test message dalshe zabil" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <kz.tinkoff.coreui.custom.viewgroup.ReactionViewGroup
+        android:id="@+id/reactions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</merge>

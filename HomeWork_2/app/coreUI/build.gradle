@@ -1,0 +1,22 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    compileSdk androidCompileSdkVersion
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation deps.androidx.core
+    implementation deps.androidx.appCompat
+    implementation deps.androidx.constraintLayout
+
+    implementation local.core.core
+
+    implementation deps.material
+}

@@ -12,6 +12,14 @@ buildscript {
                         'constraintLayout': 'androidx.constraintlayout:constraintlayout:2.1.4'
                 ],
                 'material': 'com.google.android.material:material:1.8.0',
+
+        ]
+
+        local = [
+                core: [
+                        core: project(":app:core"),
+                        ui  : project(":app:coreUI")
+                ]
         ]
     }
 }
