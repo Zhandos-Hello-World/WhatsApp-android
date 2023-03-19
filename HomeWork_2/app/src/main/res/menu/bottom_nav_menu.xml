@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/channels_item"
+        android:enabled="true"
+        android:icon="@drawable/ic_channels"
+        android:title="@string/channels" />
+    <item
+        android:id="@+id/people_item"
+        android:enabled="true"
+        android:icon="@drawable/ic_people"
+        android:title="@string/people" />
+    <item
+        android:id="@+id/profile_item"
+        android:enabled="true"
+        android:icon="@drawable/ic_profile"
+        android:title="@string/profile" />
+</menu>

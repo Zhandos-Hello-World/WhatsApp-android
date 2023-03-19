@@ -5,14 +5,30 @@ buildscript {
         androidCompileSdkVersion = 33
         androidMinSdkVersion = 24
 
+        core_ktx_version = '1.9.0'
+        appcompat_version = '1.6.1'
+        constraint_version = '2.1.4'
+        material_version = '1.8.0'
+
+        cicerone_version = '7.1'
+        koin_version = '3.3.2'
+        koin_android_version = '3.3.2'
+
         deps = [
                 'androidx': [
-                        'core'            : 'androidx.core:core-ktx:1.9.0',
-                        'appCompat'       : 'androidx.appcompat:appcompat:1.6.1',
-                        'constraintLayout': 'androidx.constraintlayout:constraintlayout:2.1.4'
+                        'core'            : "androidx.core:core-ktx:$core_ktx_version",
+                        'appCompat'       : "androidx.appcompat:appcompat:$appcompat_version",
+                        'constraintLayout': "androidx.constraintlayout:constraintlayout:$constraint_version"
                 ],
-                'material': 'com.google.android.material:material:1.8.0',
+                'material': "com.google.android.material:material:$material_version",
 
+                'libs'    : [
+                        'cicerone': "com.github.terrakok:cicerone:$cicerone_version"
+                ]
+        ]
+        di = [
+                koinCore     :  "io.insert-koin:koin-core:$koin_version",
+                kointAndroid :  "io.insert-koin:koin-android:$koin_android_version"
         ]
 
         local = [
@@ -20,6 +36,7 @@ buildscript {
                         core: project(":app:core"),
                         ui  : project(":app:coreUI")
                 ]
+
         ]
     }
 }
