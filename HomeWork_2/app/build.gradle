@@ -42,4 +42,9 @@ dependencies {
     implementation local.core.ui
 
     implementation deps.material
+
+    implementation deps.libs.cicerone
+
+
+    implementation di.values()
 }

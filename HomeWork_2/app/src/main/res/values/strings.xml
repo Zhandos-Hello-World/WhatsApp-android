@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="log_out">Log out</string>
+    <string name="all_streams">All streams</string>
+    <string name="subscribed">Subscribed</string>
+    <string name="testing">Testing</string>
+    <string name="bruh">Bruh</string>
+</resources>

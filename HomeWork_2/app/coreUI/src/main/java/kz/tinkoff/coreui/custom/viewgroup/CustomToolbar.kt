@@ -60,4 +60,8 @@ class CustomToolbar @JvmOverloads constructor(
             offsetY + text.measuredHeight + indentBigger
         )
     }
+
+    fun setOnBackClickListener(listener: () -> Unit) {
+        image.setOnClickListener {listener.invoke() }
+    }
 }
