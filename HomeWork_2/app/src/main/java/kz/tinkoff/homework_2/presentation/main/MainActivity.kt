@@ -1,8 +1,9 @@
 package kz.tinkoff.homework_2.presentation.main
 
+import android.graphics.Rect
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.github.terrakok.cicerone.Router
 import kz.tinkoff.coreui.BottomBarController
 import kz.tinkoff.homework_2.R
@@ -11,6 +12,7 @@ import kz.tinkoff.homework_2.navigation.DefaultNavigatorDelegate
 import kz.tinkoff.homework_2.navigation.NavigateDelegate
 import kz.tinkoff.homework_2.navigation.Screens
 import org.koin.android.ext.android.inject
+
 
 class MainActivity : AppCompatActivity(R.layout.activity_main),
     BottomBarController,
@@ -37,6 +39,21 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
             true
         }
         binding.bottomNav.selectedItemId = R.id.channels_item
+        keyboardBottomNavHandle()
+    }
+
+    private fun keyboardBottomNavHandle() {
+        val activityRootView = binding.root
+        activityRootView.viewTreeObserver
+            .addOnGlobalLayoutListener { // Check if the keyboard is shown
+                val r = Rect()
+                activityRootView.getWindowVisibleDisplayFrame(r)
+                val screenHeight: Int = activityRootView.rootView.height
+                val keyboardHeight: Int = screenHeight - r.bottom
+                val isKeyboardShown = keyboardHeight > screenHeight * 0.15
+
+                showBottomNavigationView(!isKeyboardShown)
+            }
     }
 
 
@@ -51,7 +68,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     }
 
     override fun showBottomNavigationView(show: Boolean) {
-        binding.bottomNav.visibility = if (show) View.VISIBLE else View.GONE
+        binding.bottomNav.isVisible = show
     }
 
 }

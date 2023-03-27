@@ -1,6 +1,6 @@
 package kz.tinkoff.homework_2.presentation.delegates.person
 
-class PersonModel(
+class PersonDvo(
     val id: Int,
     val fullName: String,
     val email: String,

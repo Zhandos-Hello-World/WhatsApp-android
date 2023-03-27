@@ -1,6 +1,6 @@
 package kz.tinkoff.homework_2.presentation.delegates.channels
 
-data class ChannelModel(
+data class ChannelDvo(
     val id: Int,
     val name: String,
     val testingMessageCount: Int,

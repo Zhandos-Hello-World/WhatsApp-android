@@ -13,22 +13,30 @@ buildscript {
         cicerone_version = '7.1'
         koin_version = '3.3.2'
         koin_android_version = '3.3.2'
+        coroutines_android_version = '1.3.9'
+        rxKotlin_version = '3.0.1'
+        shimmer_version = '0.5.0'
+        lifecycle_viewModel_version = '2.2.0'
 
         deps = [
                 'androidx': [
-                        'core'            : "androidx.core:core-ktx:$core_ktx_version",
-                        'appCompat'       : "androidx.appcompat:appcompat:$appcompat_version",
-                        'constraintLayout': "androidx.constraintlayout:constraintlayout:$constraint_version"
+                        'core'               : "androidx.core:core-ktx:$core_ktx_version",
+                        'appCompat'          : "androidx.appcompat:appcompat:$appcompat_version",
+                        'constraintLayout'   : "androidx.constraintlayout:constraintlayout:$constraint_version",
+                        'lifecycle_viewModel': "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_viewModel_version"
                 ],
                 'material': "com.google.android.material:material:$material_version",
 
                 'libs'    : [
-                        'cicerone': "com.github.terrakok:cicerone:$cicerone_version"
+                        'cicerone'        : "com.github.terrakok:cicerone:$cicerone_version",
+                        'rxKotlin'        : "io.reactivex.rxjava3:rxkotlin:$rxKotlin_version",
+                        'coroutineAndroid': "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_android_version",
+                        'shimmer'         : "com.facebook.shimmer:shimmer:$shimmer_version"
                 ]
         ]
         di = [
-                koinCore     :  "io.insert-koin:koin-core:$koin_version",
-                kointAndroid :  "io.insert-koin:koin-android:$koin_android_version"
+                koinCore    : "io.insert-koin:koin-core:$koin_version",
+                kointAndroid: "io.insert-koin:koin-android:$koin_android_version"
         ]
 
         local = [

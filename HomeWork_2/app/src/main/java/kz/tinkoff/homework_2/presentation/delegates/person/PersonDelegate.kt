@@ -33,7 +33,7 @@ class PersonDelegate(private val personClickListener: (id: Int) -> Unit) :
     inner class ViewHolder(private val binding: ItemPersonBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(model: PersonModel) {
+        fun bind(model: PersonDvo) {
             binding.apply {
                 avatar.isOnline = model.isOnline
                 fullNameText.text = model.fullName

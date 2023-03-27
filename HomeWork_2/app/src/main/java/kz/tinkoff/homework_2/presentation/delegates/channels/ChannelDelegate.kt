@@ -37,7 +37,7 @@ class ChannelDelegate(private val listener: () -> Unit) : AdapterDelegate<Channe
                 binding.expandableItems.visibility = if (field) View.VISIBLE else View.GONE
             }
 
-        fun bind(model: ChannelModel) {
+        fun bind(model: ChannelDvo) {
             binding.channelBanner.setOnClickListener {
                 isExpanded = !isExpanded
             }
