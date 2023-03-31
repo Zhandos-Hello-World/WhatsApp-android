@@ -1,4 +1,4 @@
-package kz.tinkoff.homework_2.presentation.delegates.person
+package kz.tinkoff.homework_2.presentation.dvo
 
 class PersonDvo(
     val id: Int,

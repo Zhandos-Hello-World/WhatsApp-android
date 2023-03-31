@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.homework_2.databinding.ItemMessageBinding
-import kz.tinkoff.homework_2.mapper.MessageDvoMapper
+import kz.tinkoff.homework_2.presentation.mapper.MessageDvoMapper
 
 class MessageDelegate(private val listener: MessageAdapterListener) :
     AdapterDelegate<MessageDelegate.ViewHolder, MessageDelegateItem> {

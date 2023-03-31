@@ -18,6 +18,7 @@ import kz.tinkoff.core.adapter.MainAdapter
 import kz.tinkoff.coreui.ScreenState
 import kz.tinkoff.coreui.ext.show
 import kz.tinkoff.homework_2.databinding.FragmentChannelListBinding
+import kz.tinkoff.homework_2.presentation.channels.SearchEditTextController
 import kz.tinkoff.homework_2.presentation.delegates.channels.ChannelDelegate
 import kz.tinkoff.homework_2.presentation.delegates.channels.ChannelDelegateItem
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -53,6 +54,10 @@ class ChannelsListFragment : Fragment() {
             .flowWithLifecycle(lifecycle)
             .onEach(::render)
             .launchIn(lifecycleScope)
+
+        (parentFragment as SearchEditTextController).searchEditText { searchText ->
+            search(searchText)
+        }
 
         return binding.root
     }

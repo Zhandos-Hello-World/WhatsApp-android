@@ -1,8 +1,8 @@
 package kz.tinkoff.homework_2.di
 
-import kz.tinkoff.homework_2.mapper.ChannelDvoMapper
-import kz.tinkoff.homework_2.mapper.MessageDvoMapper
-import kz.tinkoff.homework_2.mapper.PersonDvoMapper
+import kz.tinkoff.homework_2.presentation.mapper.ChannelDvoMapper
+import kz.tinkoff.homework_2.presentation.mapper.MessageDvoMapper
+import kz.tinkoff.homework_2.presentation.mapper.PersonDvoMapper
 import kz.tinkoff.homework_2.presentation.channels.list.ChannelsListViewModel
 import kz.tinkoff.homework_2.presentation.message.MessageViewModel
 import kz.tinkoff.homework_2.presentation.profile.ProfileViewModel

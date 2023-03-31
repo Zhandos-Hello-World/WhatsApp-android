@@ -1,6 +1,8 @@
 package kz.tinkoff.homework_2.presentation.people
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,17 +17,16 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kz.tinkoff.coreui.BaseViewModel
 import kz.tinkoff.coreui.ScreenState
 import kz.tinkoff.homework_2.domain.repository.PeopleRepository
-import kz.tinkoff.homework_2.mapper.PersonDvoMapper
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegateItem
+import kz.tinkoff.homework_2.presentation.mapper.PersonDvoMapper
 
 class PeopleViewModel(
     private val repository: PeopleRepository,
     private val personDvoMapper: PersonDvoMapper,
-) : BaseViewModel() {
-    private var cachedPeopleList: List<PersonDelegateItem> = mutableListOf()
+) : ViewModel() {
+    private var cachedPeopleList: List<PersonDelegateItem> = listOf()
     private val _peopleList =
         MutableStateFlow<ScreenState<List<PersonDelegateItem>>>(ScreenState.Loading)
     val peopleList: StateFlow<ScreenState<List<PersonDelegateItem>>> get() = _peopleList.asStateFlow()
@@ -38,46 +39,50 @@ class PeopleViewModel(
     }
 
     fun getAll() {
-        networkRequest(
-            request = { repository.getAllPeople() },
-            onSuccess = { response ->
-                _peopleList.emit(
-                    ScreenState.Data(personDvoMapper.toPersonDelegatesFromModel(response)).also {
-                        cachedPeopleList = it.data
-                    }
-                )
-            },
-            onFail = { _peopleList.emit(ScreenState.Error(it)) },
-            onBeforeRequest = { _peopleList.emit(ScreenState.Loading) }
-        )
+        viewModelScope.launch {
+            _peopleList.emit(ScreenState.Loading)
+            try {
+                val response = repository.getAllPeople()
+                _peopleList.emit(ScreenState.Data(personDvoMapper.toPersonDelegatesFromModel(
+                    response)).also {
+                    cachedPeopleList = it.data
+                })
+            } catch (ex: CancellationException) {
+                throw ex
+            } catch (ex: Exception) {
+                _peopleList.emit(ScreenState.Error)
+            }
+        }
     }
 
     fun getAllFromCache() {
         viewModelScope.launch {
-            _peopleList.emit(
-                ScreenState.Data(
-                    cachedPeopleList
-                )
-            )
+            _peopleList.emit(ScreenState.Data(cachedPeopleList))
         }
     }
 
-    suspend fun searchName(name: String): List<PersonDelegateItem> {
+    private suspend fun searchName(name: String): ScreenState<List<PersonDelegateItem>> {
         _peopleList.emit(ScreenState.Loading)
-        return personDvoMapper.toPersonDelegatesFromModel(repository.findPerson(name))
+        var state: ScreenState<List<PersonDelegateItem>> = ScreenState.Error
+
+        state = try {
+            val response = repository.findPerson(name)
+            ScreenState.Data(personDvoMapper.toPersonDelegatesFromModel(response)).also {
+                cachedPeopleList = it.data
+            }
+        } catch (ex: CancellationException) {
+            throw ex
+        } catch (ex: Exception) {
+            ScreenState.Error
+        }
+        return state
     }
 
     private fun subscribeToSearchQueryChanges() {
-        searchQueryState
-            .filter { it.isNotEmpty() }
-            .distinctUntilChanged()
-            .debounce(700L)
-            .flatMapLatest { flow { emit(searchName(it)) } }
-            .onEach {
-                _peopleList.emit(ScreenState.Data(it))
-            }
-            .flowOn(Dispatchers.Default)
-            .launchIn(viewModelScope)
+        searchQueryState.filter { it.isNotEmpty() }.distinctUntilChanged().debounce(700L)
+            .flatMapLatest { flow { emit(searchName(it)) } }.onEach {
+                _peopleList.emit(it)
+            }.flowOn(Dispatchers.Default).launchIn(viewModelScope)
     }
 
 }

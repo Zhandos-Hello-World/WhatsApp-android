@@ -14,7 +14,7 @@ import kz.tinkoff.homework_2.presentation.channels.ChannelsCollectionAdapter.Com
 import kz.tinkoff.homework_2.presentation.channels.ChannelsCollectionAdapter.Companion.SUBSCRIBED
 import kz.tinkoff.homework_2.presentation.channels.list.ChannelsListFragment
 
-class ChannelsFragment : Fragment() {
+class ChannelsFragment : Fragment(), SearchEditTextController {
     private var _binding: FragmentChannelsBinding? = null
     private val binding get() = _binding!!
 
@@ -22,6 +22,8 @@ class ChannelsFragment : Fragment() {
     private var listOfFragments: List<Fragment>? = null
 
     private val searchEditText: CustomSearchEditText get() = binding.searchBar
+
+    private var listener: (String) -> Unit = { }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,16 +33,12 @@ class ChannelsFragment : Fragment() {
         _binding = FragmentChannelsBinding.inflate(inflater, container, false)
         binding.searchBar.setHint(getString(kz.tinkoff.core.R.string.search_with_three_dots))
 
-        val listOfFragments = mutableListOf<Fragment>(
-            ChannelsListFragment.getINSTANCE(),
-            Fragment()
-        ).also { fragments ->
-            searchEditText.doOnTextChanged { searchText ->
-                fragments.forEach { fragment ->
-                    (fragment as? ChannelsListFragment)?.search(searchText)
-                }
-            }
+        searchEditText.doOnTextChanged { searchText ->
+            listener.invoke(searchText)
         }
+
+        val listOfFragments =
+            mutableListOf<Fragment>(ChannelsListFragment.getINSTANCE(), Fragment())
 
         adapter = ChannelsCollectionAdapter(this)
         binding.viewPager.adapter = adapter
@@ -82,6 +80,10 @@ class ChannelsFragment : Fragment() {
     override fun onDestroyView() {
         listOfFragments = null
         super.onDestroyView()
+    }
+
+    override fun searchEditText(searchListener: (String) -> Unit) {
+        listener = searchListener
     }
 
 }

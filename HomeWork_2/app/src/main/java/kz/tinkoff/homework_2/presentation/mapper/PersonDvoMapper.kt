@@ -1,9 +1,9 @@
-package kz.tinkoff.homework_2.mapper
+package kz.tinkoff.homework_2.presentation.mapper
 
 import kz.tinkoff.core.Mapper
 import kz.tinkoff.homework_2.domain.model.PersonModel
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegateItem
-import kz.tinkoff.homework_2.presentation.delegates.person.PersonDvo
+import kz.tinkoff.homework_2.presentation.dvo.PersonDvo
 
 class PersonDvoMapper : Mapper<PersonModel, PersonDvo> {
 

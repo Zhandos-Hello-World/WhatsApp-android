@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.github.terrakok.cicerone.Router
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.coreui.item.ReactionViewItem
-import kz.tinkoff.homework_2.mapper.MessageDvoMapper
+import kz.tinkoff.homework_2.presentation.mapper.MessageDvoMapper
 import kz.tinkoff.homework_2.navigation.Screens
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageDelegateItem
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageModel

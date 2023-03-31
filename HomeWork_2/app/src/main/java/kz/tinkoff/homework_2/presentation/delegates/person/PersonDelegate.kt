@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.homework_2.databinding.ItemPersonBinding
+import kz.tinkoff.homework_2.presentation.dvo.PersonDvo
 
 class PersonDelegate(private val personClickListener: (id: Int) -> Unit) :
     AdapterDelegate<PersonDelegate.ViewHolder, PersonDelegateItem> {

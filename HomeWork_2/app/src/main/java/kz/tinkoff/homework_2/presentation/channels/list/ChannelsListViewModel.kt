@@ -3,6 +3,7 @@ package kz.tinkoff.homework_2.presentation.channels.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.terrakok.cicerone.Router
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kz.tinkoff.coreui.ScreenState
 import kz.tinkoff.homework_2.domain.repository.ChannelRepository
-import kz.tinkoff.homework_2.mapper.ChannelDvoMapper
+import kz.tinkoff.homework_2.presentation.mapper.ChannelDvoMapper
 import kz.tinkoff.homework_2.navigation.Screens
 import kz.tinkoff.homework_2.presentation.delegates.channels.ChannelDelegateItem
 
@@ -28,7 +29,7 @@ class ChannelsListViewModel(
     private val mapper: ChannelDvoMapper,
     private val router: Router,
 ) : ViewModel() {
-    private var cachedPeopleList: List<ChannelDelegateItem> = mutableListOf()
+    private var cachedChannelsList: List<ChannelDelegateItem> = listOf()
     private val _channels =
         MutableStateFlow<ScreenState<List<ChannelDelegateItem>>>(ScreenState.Loading)
     val channels: StateFlow<ScreenState<List<ChannelDelegateItem>>> get() = _channels.asStateFlow()
@@ -42,15 +43,24 @@ class ChannelsListViewModel(
 
     private fun getAllChannels() {
         viewModelScope.launch {
-            _channels.emit(
-                ScreenState.Data(
-                    mapper.toChannelsDelegateItems(
-                        repository.getAllChannels()
-                    ).also {
-                        cachedPeopleList = it
-                    }
+            try {
+                _channels.emit(ScreenState.Loading)
+
+                val response = repository.getAllChannels()
+                _channels.emit(
+                    ScreenState.Data(
+                        mapper.toChannelsDelegateItems(response).also {
+                            cachedChannelsList = it
+                        }
+                    )
                 )
-            )
+            } catch (ex: CancellationException) {
+                throw ex
+            } catch (ex: Exception) {
+                _channels.emit(
+                    ScreenState.Error
+                )
+            }
         }
     }
 
@@ -58,15 +68,25 @@ class ChannelsListViewModel(
         viewModelScope.launch {
             _channels.emit(
                 ScreenState.Data(
-                    cachedPeopleList
+                    cachedChannelsList
                 )
             )
         }
     }
 
-    suspend fun searchName(name: String): List<ChannelDelegateItem> {
+    private suspend fun searchName(name: String): ScreenState<List<ChannelDelegateItem>> {
         _channels.emit(ScreenState.Loading)
-        return mapper.toChannelsDelegateItems(repository.findChannels(name))
+
+        var state: ScreenState<List<ChannelDelegateItem>>  = ScreenState.Error
+        state = try {
+            val response = repository.findChannels(name)
+            ScreenState.Data(mapper.toChannelsDelegateItems(response))
+        } catch(ex: CancellationException) {
+            throw ex
+        } catch(ex: Exception) {
+            ScreenState.Error
+        }
+        return state
     }
 
     private fun subscribeToSearchQueryChanges() {
@@ -76,7 +96,7 @@ class ChannelsListViewModel(
             .debounce(700L)
             .flatMapLatest { flow { emit(searchName(it)) } }
             .onEach {
-                _channels.emit(ScreenState.Data(it))
+                _channels.emit(it)
             }
             .flowOn(Dispatchers.Default)
             .launchIn(viewModelScope)

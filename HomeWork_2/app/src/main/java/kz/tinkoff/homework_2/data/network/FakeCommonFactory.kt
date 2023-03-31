@@ -7,14 +7,20 @@ import kz.tinkoff.homework_2.data.model.PeopleListResponse
 class FakeCommonFactory {
 
     fun getChannels(): ChannelListResponse {
-        val list = buildList<ChannelListResponse.ChannelResponse?> {
+        val list = buildList<ChannelListResponse.ChannelResponse> {
             for (i in channels.indices) {
-                add(
-                    ChannelListResponse.ChannelResponse(
-                        id = i,
-                        name = channels[i],
-                        testingMessageCount = i + 100,
-                        brushMessageCount = i + 100
+                add(ChannelListResponse.ChannelResponse(id = i,
+                    name = channels[i],
+                    topics = listOf(
+                        ChannelListResponse.TopicResponse(id = i,
+                            name = "testingMessage",
+                            i + 100
+                            ),
+                        ChannelListResponse.TopicResponse(id = i,
+                            name = "brushMessageCount",
+                            i + 100
+                            )
+                        )
                     )
                 )
             }
@@ -22,34 +28,28 @@ class FakeCommonFactory {
         return ChannelListResponse(list)
     }
 
-    fun findChannel(name: String): ChannelListResponse? {
-        val list = getChannels().list?.filter { it?.name?.replace("#", "")?.contains(name) == true }
+    fun findChannel(name: String): ChannelListResponse {
+        val list = getChannels().list.filter { it.name.replace("#", "").contains(name) }
         return ChannelListResponse(list)
     }
 
 
-    fun getPeople(): PeopleListResponse? {
+    fun getPeople(): PeopleListResponse {
         return PeopleListResponse(listOfPeople)
     }
 
-    fun findPerson(name: String): PeopleListResponse? {
-        val filter = getPeople()?.listResponse?.filter { it?.fullName?.contains(name) == true }
+    fun findPerson(name: String): PeopleListResponse {
+        val filter = getPeople().listResponse.filter { it.fullName.contains(name) }
         return PeopleListResponse(filter)
     }
 
     companion object {
-        private val channels = listOf(
-            "#general",
-            "#Development",
-            "#Design",
-            "#PR"
-        )
+        private val channels = listOf("#general", "#Development", "#Design", "#PR")
 
         val listOfPeople = generatePeople()
 
         private fun generatePeople(): List<PeopleListResponse.PersonResponse> {
-            val firstNames = listOf(
-                "Emma",
+            val firstNames = listOf("Emma",
                 "Liam",
                 "Olivia",
                 "Noah",
@@ -68,11 +68,9 @@ class FakeCommonFactory {
                 "Harper",
                 "Evelyn",
                 "Ethan",
-                "Abigail"
-            )
+                "Abigail")
 
-            val lastNames = listOf(
-                "Smith",
+            val lastNames = listOf("Smith",
                 "Johnson",
                 "Williams",
                 "Jones",
@@ -91,12 +89,9 @@ class FakeCommonFactory {
                 "Wilson",
                 "Jackson",
                 "Wright",
-                "Moore"
-            )
+                "Moore")
 
-            val emails = listOf(
-                "gmail.com", "yahoo.com", "hotmail.com", "outlook.com"
-            )
+            val emails = listOf("gmail.com", "yahoo.com", "hotmail.com", "outlook.com")
 
             val personList = List(20) {
                 val firstName = firstNames.random()
@@ -106,12 +101,10 @@ class FakeCommonFactory {
                     "$firstName.${lastName.lowercase(Locale.getDefault())}@${emails.random()}"
                 val isOnline = listOf(true, false).random()
 
-                PeopleListResponse.PersonResponse(
-                    id = it,
+                PeopleListResponse.PersonResponse(id = it,
                     fullName = fullName,
                     email = email,
-                    isOnline = isOnline
-                )
+                    isOnline = isOnline)
             }
             return personList
         }
