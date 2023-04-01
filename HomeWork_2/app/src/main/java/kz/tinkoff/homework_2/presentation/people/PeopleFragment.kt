@@ -17,6 +17,7 @@ import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
 import kz.tinkoff.coreui.ScreenState
 import kz.tinkoff.coreui.custom.viewgroup.CustomSearchEditText
+import kz.tinkoff.coreui.ext.hide
 import kz.tinkoff.coreui.ext.show
 import kz.tinkoff.homework_2.databinding.FragmentPeopleBinding
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegate
@@ -53,10 +54,7 @@ class PeopleFragment : Fragment() {
         searchEditText.setHint(getString(kz.tinkoff.core.R.string.users_with_three_dots))
         usersRecyclerView.adapter = adapter
 
-        viewModel.peopleList
-            .flowWithLifecycle(lifecycle)
-            .onEach(::render)
-            .launchIn(lifecycleScope)
+        viewModel.peopleList.flowWithLifecycle(lifecycle).onEach(::render).launchIn(lifecycleScope)
 
         searchEditText.doOnTextChanged { searchText ->
             if (searchText.isNotEmpty()) {
@@ -97,9 +95,9 @@ class PeopleFragment : Fragment() {
     }
 
     private fun hideAll() {
-        loadingState.show(false)
-        usersRecyclerView.show(false)
-        errorState.show(false)
+        loadingState.hide()
+        usersRecyclerView.hide()
+        errorState.hide()
 
     }
 

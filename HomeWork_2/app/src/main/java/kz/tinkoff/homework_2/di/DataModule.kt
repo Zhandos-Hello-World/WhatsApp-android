@@ -22,23 +22,21 @@ val dataModule = module {
     single<PeopleRemoteDataSource> {
         DefaultPeopleNetworkDataSource(
             apiService = get(),
-            mapper = get()
         )
     }
 
     single<ChannelRemoteDataSource> {
         DefaultChannelsNetworkDataSource(
             apiService = get(),
-            mapper = get()
         )
     }
 
     single<ChannelRepository> {
-        DefaultChannelRepository(dataSource = get())
+        DefaultChannelRepository(dataSource = get(), mapper = get())
     }
 
     single<PeopleRepository> {
-        DefaultPeopleRepository(dataSource = get())
+        DefaultPeopleRepository(dataSource = get(), mapper = get())
     }
 
     factory { FakeCommonFactory() }

@@ -16,6 +16,7 @@ import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
 import kz.tinkoff.coreui.ScreenState
+import kz.tinkoff.coreui.ext.hide
 import kz.tinkoff.coreui.ext.show
 import kz.tinkoff.homework_2.databinding.FragmentChannelListBinding
 import kz.tinkoff.homework_2.presentation.channels.SearchEditTextController
@@ -97,9 +98,9 @@ class ChannelsListFragment : Fragment() {
     }
 
     private fun hideAll() {
-        loadingState.show(false)
-        channelRecyclerView.show(false)
-        errorState.show(false)
+        loadingState.hide()
+        channelRecyclerView.hide()
+        errorState.hide()
     }
 
 
