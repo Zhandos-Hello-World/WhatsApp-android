@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kz.tinkoff.core.ktx.runCatchingNonCancellation
 import kz.tinkoff.coreui.ScreenState
 import kz.tinkoff.homework_2.domain.repository.PeopleRepository
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegateItem
@@ -40,18 +41,22 @@ class PeopleViewModel(
 
     fun getAll() {
         viewModelScope.launch {
-            _peopleList.emit(ScreenState.Loading)
-            try {
-                val response = repository.getAllPeople()
-                _peopleList.emit(ScreenState.Data(personDvoMapper.toPersonDelegatesFromModel(
-                    response)).also {
+            var state: ScreenState<List<PersonDelegateItem>> = ScreenState.Loading
+            _peopleList.emit(state)
+
+            val result = runCatchingNonCancellation {
+                repository.getAllPeople()
+            }.getOrNull()
+
+
+            state = if (result != null) {
+                ScreenState.Data(personDvoMapper.toPersonDelegatesFromModel(result)).also {
                     cachedPeopleList = it.data
-                })
-            } catch (ex: CancellationException) {
-                throw ex
-            } catch (ex: Exception) {
-                _peopleList.emit(ScreenState.Error)
+                }
+            } else {
+                ScreenState.Error
             }
+            _peopleList.emit(state)
         }
     }
 
@@ -62,17 +67,18 @@ class PeopleViewModel(
     }
 
     private suspend fun searchName(name: String): ScreenState<List<PersonDelegateItem>> {
-        _peopleList.emit(ScreenState.Loading)
-        var state: ScreenState<List<PersonDelegateItem>> = ScreenState.Error
+        var state: ScreenState<List<PersonDelegateItem>> = ScreenState.Loading
+        _peopleList.emit(state)
 
-        state = try {
-            val response = repository.findPerson(name)
-            ScreenState.Data(personDvoMapper.toPersonDelegatesFromModel(response)).also {
+        val result = runCatchingNonCancellation {
+            repository.findPerson(name)
+        }.getOrNull()
+
+        state = if (result != null) {
+            ScreenState.Data(personDvoMapper.toPersonDelegatesFromModel(result)).also {
                 cachedPeopleList = it.data
             }
-        } catch (ex: CancellationException) {
-            throw ex
-        } catch (ex: Exception) {
+        } else {
             ScreenState.Error
         }
         return state

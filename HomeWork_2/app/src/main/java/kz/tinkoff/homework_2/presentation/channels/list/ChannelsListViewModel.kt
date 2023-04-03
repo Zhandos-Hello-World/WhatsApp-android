@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kz.tinkoff.core.ktx.runCatchingNonCancellation
 import kz.tinkoff.coreui.ScreenState
 import kz.tinkoff.homework_2.domain.repository.ChannelRepository
 import kz.tinkoff.homework_2.presentation.mapper.ChannelDvoMapper
@@ -43,24 +44,20 @@ class ChannelsListViewModel(
 
     private fun getAllChannels() {
         viewModelScope.launch {
-            try {
-                _channels.emit(ScreenState.Loading)
+            val result = runCatchingNonCancellation {
+                repository.getAllChannels()
+            }.getOrNull()
 
-                val response = repository.getAllChannels()
-                _channels.emit(
-                    ScreenState.Data(
-                        mapper.toChannelsDelegateItems(response).also {
-                            cachedChannelsList = it
-                        }
-                    )
+            val state = if (result != null) {
+                ScreenState.Data(
+                    mapper.toChannelsDelegateItems(result).also {
+                        cachedChannelsList = it
+                    }
                 )
-            } catch (ex: CancellationException) {
-                throw ex
-            } catch (ex: Exception) {
-                _channels.emit(
-                    ScreenState.Error
-                )
+            } else {
+                ScreenState.Error
             }
+            _channels.emit(state)
         }
     }
 
@@ -77,16 +74,15 @@ class ChannelsListViewModel(
     private suspend fun searchName(name: String): ScreenState<List<ChannelDelegateItem>> {
         _channels.emit(ScreenState.Loading)
 
-        var state: ScreenState<List<ChannelDelegateItem>>  = ScreenState.Error
-        state = try {
-            val response = repository.findChannels(name)
-            ScreenState.Data(mapper.toChannelsDelegateItems(response))
-        } catch(ex: CancellationException) {
-            throw ex
-        } catch(ex: Exception) {
+        val result = runCatchingNonCancellation {
+            repository.findChannels(name)
+        }.getOrNull()
+
+        return if (result != null) {
+            ScreenState.Data(mapper.toChannelsDelegateItems(result))
+        } else {
             ScreenState.Error
         }
-        return state
     }
 
     private fun subscribeToSearchQueryChanges() {
