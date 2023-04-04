@@ -17,6 +17,10 @@ buildscript {
         rxKotlin_version = '3.0.1'
         shimmer_version = '0.5.0'
         lifecycle_viewModel_version = '2.2.0'
+        retrofit_version = '2.9.0'
+        chucker_version = '3.5.2'
+        coil_version = '2.3.0'
+        threetenadp_version = '1.3.1'
 
         deps = [
                 'androidx': [
@@ -31,7 +35,16 @@ buildscript {
                         'cicerone'        : "com.github.terrakok:cicerone:$cicerone_version",
                         'rxKotlin'        : "io.reactivex.rxjava3:rxkotlin:$rxKotlin_version",
                         'coroutineAndroid': "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_android_version",
-                        'shimmer'         : "com.facebook.shimmer:shimmer:$shimmer_version"
+                        'shimmer'         : "com.facebook.shimmer:shimmer:$shimmer_version",
+                        'retrofit'        : "com.squareup.retrofit2:retrofit:$retrofit_version",
+                        'retrofit_convert': "com.squareup.retrofit2:converter-gson:$retrofit_version",
+                        'coil'            : "io.coil-kt:coil:$coil_version",
+                        'threetenadp'     : "com.jakewharton.threetenabp:threetenabp:$threetenadp_version"
+                ],
+
+                'debugLibs': [
+                        'chuckerDebug'  : "com.github.chuckerteam.chucker:library:$chucker_version",
+                        'chuckerRelease': "com.github.chuckerteam.chucker:library-no-op:$chucker_version"
                 ]
         ]
         di = [

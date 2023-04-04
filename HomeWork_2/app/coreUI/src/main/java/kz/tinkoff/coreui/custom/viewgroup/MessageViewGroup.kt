@@ -2,13 +2,15 @@ package kz.tinkoff.coreui.custom.viewgroup
 
 import android.content.Context
 import android.os.Build
+import android.text.Html
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
+import coil.load
+import com.google.android.material.imageview.ShapeableImageView
 import kz.tinkoff.core.utils.getMaxWidth
 import kz.tinkoff.coreui.custom.dvo.MessageDvo
 import kz.tinkoff.coreui.databinding.CustomMessageViewGroupContentBinding
@@ -26,7 +28,7 @@ class MessageViewGroup @JvmOverloads constructor(
     private lateinit var viewBinding: CustomMessageViewGroupContentBinding
 
     private val reactionsViewGroup: ReactionViewGroup by lazy { viewBinding.reactions }
-    private val avatarView: ImageView by lazy { viewBinding.avatar }
+    private val avatarView: ShapeableImageView by lazy { viewBinding.avatar }
     private val messageCardView: CardView by lazy { viewBinding.messageCard }
     private val usernameView: TextView by lazy { viewBinding.title }
     private val messageView: TextView by lazy { viewBinding.messageText }
@@ -86,9 +88,19 @@ class MessageViewGroup @JvmOverloads constructor(
 
     fun setMessageDvo(dvo: MessageDvo) {
         this.data = dvo
-        usernameView.text = dvo.title
-        messageView.text = dvo.message
+        usernameView.text = dvo.senderFullName
+        messageView.text = parseHtmlValue(dvo.content)
         reactionsViewGroup.submitReactions(dvo.reactions)
+        avatarView.load(dvo.avatarUrl)
+    }
+
+    @SuppressWarnings("deprecation")
+    private fun parseHtmlValue(html: String): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
+        } else {
+            Html.fromHtml(html)
+        }.toString().trim()
     }
 
     fun addReactionClickListener(listener: (MessageDvo) -> Unit) {
@@ -111,7 +123,6 @@ class MessageViewGroup @JvmOverloads constructor(
                 listener(it, reactionViewItem)
             }
         }
-
     }
 
     companion object {

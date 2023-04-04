@@ -1,23 +1,28 @@
 package kz.tinkoff.homework_2.di
 
 import kz.tinkoff.homework_2.data.datasource.DefaultChannelsNetworkDataSource
+import kz.tinkoff.homework_2.data.datasource.DefaultMessageNetworkDataSource
 import kz.tinkoff.homework_2.data.datasource.DefaultPeopleNetworkDataSource
-import kz.tinkoff.homework_2.data.mappers.ChannelMapper
+import kz.tinkoff.homework_2.data.mappers.MessageDtoMapper
+import kz.tinkoff.homework_2.data.mappers.MessageMapper
 import kz.tinkoff.homework_2.data.mappers.PersonMapper
-import kz.tinkoff.homework_2.data.network.ApiService
-import kz.tinkoff.homework_2.data.network.FakeApiService
-import kz.tinkoff.homework_2.data.network.FakeCommonFactory
+import kz.tinkoff.homework_2.data.mappers.PresenceMapper
+import kz.tinkoff.homework_2.data.mappers.ProfileMapper
+import kz.tinkoff.homework_2.data.mappers.ReactionDtoMapper
+import kz.tinkoff.homework_2.data.mappers.StreamMapper
+import kz.tinkoff.homework_2.data.mappers.TopicMapper
 import kz.tinkoff.homework_2.data.repository.DefaultChannelRepository
+import kz.tinkoff.homework_2.data.repository.DefaultMessageRepository
 import kz.tinkoff.homework_2.data.repository.DefaultPeopleRepository
 import kz.tinkoff.homework_2.domain.datasource.ChannelRemoteDataSource
+import kz.tinkoff.homework_2.domain.datasource.MessageRemoteDataSource
 import kz.tinkoff.homework_2.domain.datasource.PeopleRemoteDataSource
 import kz.tinkoff.homework_2.domain.repository.ChannelRepository
+import kz.tinkoff.homework_2.domain.repository.MessageRepository
 import kz.tinkoff.homework_2.domain.repository.PeopleRepository
 import org.koin.dsl.module
 
 val dataModule = module {
-
-    single<ApiService> { FakeApiService(factory = get()) }
 
     single<PeopleRemoteDataSource> {
         DefaultPeopleNetworkDataSource(
@@ -31,15 +36,39 @@ val dataModule = module {
         )
     }
 
+    single<MessageRemoteDataSource> {
+        DefaultMessageNetworkDataSource(
+            apiService = get()
+        )
+    }
+
     single<ChannelRepository> {
-        DefaultChannelRepository(dataSource = get(), mapper = get())
+        DefaultChannelRepository(dataSource = get(), streamMapper = get(), topicMapper = get())
     }
 
     single<PeopleRepository> {
-        DefaultPeopleRepository(dataSource = get(), mapper = get())
+        DefaultPeopleRepository(dataSource = get(),
+            peopleMapper = get(),
+            profileMapper = get(),
+            presenceMapper = get()
+        )
     }
 
-    factory { FakeCommonFactory() }
+    single<MessageRepository> {
+        DefaultMessageRepository(
+            dataSource = get(),
+            mapper = get(),
+            dtoMessageMapper = get(),
+            dtoReactionMapper = get()
+        )
+    }
+
+    factory { ProfileMapper() }
     factory { PersonMapper() }
-    factory { ChannelMapper() }
+    factory { StreamMapper() }
+    factory { PresenceMapper() }
+    factory { TopicMapper() }
+    factory { MessageMapper() }
+    factory { MessageDtoMapper() }
+    factory { ReactionDtoMapper() }
 }

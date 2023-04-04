@@ -118,4 +118,12 @@
         <item name="cardBackgroundColor">@color/black_gray_3</item>
         <item name="cardCornerRadius">@dimen/indent_base</item>
     </style>
+
+    <style name="ShapeAppearanceOverlay.App.ProfileCornerSize" parent="">
+        <item name="cornerSize">@dimen/indent_base</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.App.CircleCornerSize" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

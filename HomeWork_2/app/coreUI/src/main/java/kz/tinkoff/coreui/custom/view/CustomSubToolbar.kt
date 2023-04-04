@@ -20,7 +20,7 @@ class CustomSubToolbar @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
 
     private val topicText: String = context.getString(R.string.topic)
-    private val descText: String = context.getString(R.string.test)
+    private var descText: String = context.getString(R.string.test)
     private val title: String get() = topicText + descText
 
     private val textPaint = Paint().apply {
@@ -43,5 +43,10 @@ class CustomSubToolbar @JvmOverloads constructor(
         val startY = textBounds.height() / 2 - textBounds.exactCenterY() + paddingBottom
         val startX = (getMaxWidth() - textBounds.width()) / 2F
         canvas?.drawText(title, startX, startY, textPaint)
+    }
+
+    fun setText(text: String) {
+        descText = text
+        requestLayout()
     }
 }

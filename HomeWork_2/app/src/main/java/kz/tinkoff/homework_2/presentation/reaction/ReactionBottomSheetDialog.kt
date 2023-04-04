@@ -3,6 +3,7 @@ package kz.tinkoff.homework_2.presentation.reaction
 import android.os.Bundle
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kz.tinkoff.core.emoji.EmojiNCS
 import kz.tinkoff.homework_2.R
 import kz.tinkoff.homework_2.databinding.DialogBottomSheetReactionsBinding
 import kz.tinkoff.homework_2.presentation.reaction.factory.DefaultReactionListFactory
@@ -28,10 +29,10 @@ class ReactionBottomSheetDialog :
     }
 
 
-    private fun setReactionsToAdapter(reactionList: List<String>) {
+    private fun setReactionsToAdapter(reactionList: List<EmojiNCS>) {
         adapter = ReactionAdapter(requireContext(), reactionList) {
             val bundle = Bundle()
-            bundle.putString(REACTION_BOTTOM_SHEET_CALLBACK_RESULT, it)
+            bundle.putString(REACTION_BOTTOM_SHEET_CALLBACK_RESULT, it.name)
             parentFragmentManager.setFragmentResult(REACTION_BOTTOM_SHEET_CALLBACK, bundle)
             dismiss()
         }

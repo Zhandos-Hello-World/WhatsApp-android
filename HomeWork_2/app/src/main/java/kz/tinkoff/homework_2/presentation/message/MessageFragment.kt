@@ -5,25 +5,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.github.terrakok.cicerone.Router
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
 import kz.tinkoff.coreui.BottomBarController
+import kz.tinkoff.coreui.ScreenState
+import kz.tinkoff.coreui.custom.dvo.MessageDvo
+import kz.tinkoff.coreui.custom.view.CustomSubToolbar
 import kz.tinkoff.coreui.custom.viewgroup.CustomMessageTextFieldBar
+import kz.tinkoff.coreui.custom.viewgroup.CustomToolbar
 import kz.tinkoff.coreui.item.ReactionViewItem
 import kz.tinkoff.homework_2.databinding.FragmentMessageBinding
-import kz.tinkoff.homework_2.navigation.Screens
 import kz.tinkoff.homework_2.presentation.delegates.date.DateDelegate
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageAdapterListener
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageDelegate
-import kz.tinkoff.homework_2.presentation.delegates.message.MessageModel
 import kz.tinkoff.homework_2.presentation.reaction.ReactionBottomSheetDialog
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MessageFragment : Fragment(), MessageAdapterListener {
+class MessageFragment(private val args: MessageArgs) : Fragment(), MessageAdapterListener {
     private var _binding: FragmentMessageBinding? = null
     private val binding get() = _binding!!
 
@@ -35,30 +39,30 @@ class MessageFragment : Fragment(), MessageAdapterListener {
         }
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentMessageBinding.inflate(inflater, container, false)
+        viewModel.args = args
+        configureHeader(args)
 
-        binding.messageRecycler.adapter = adapter
+        viewModel.getMessage()
+        viewModel.messageList.flowWithLifecycle(lifecycle).onEach(::render).launchIn(lifecycleScope)
 
-        viewModel.messageList.observe(viewLifecycleOwner) {
-            adapter.submitList(it)
-        }
+        binding.apply {
+            binding.messageRecycler.adapter = adapter
 
-        binding.messageSendEditTextBar.setOnSendClickListener {
-            if (it == CustomMessageTextFieldBar.SendMessageState.SEND_MESSAGE) {
-                val message = binding.messageSendEditTextBar.getText().toString()
-                viewModel.addMessage(message)
-                binding.messageSendEditTextBar.clearText()
+            messageSendEditTextBar.setOnSendClickListener {
+                if (it == CustomMessageTextFieldBar.SendMessageState.SEND_MESSAGE) {
+                    val message = messageSendEditTextBar.getText().toString()
+                    viewModel.addMessage(message)
+                    messageSendEditTextBar.clearText()
+                }
             }
         }
-        binding.toolbar.setOnBackClickListener {
-            viewModel.backToChannels()
-        }
-
         return binding.root
     }
 
@@ -77,14 +81,12 @@ class MessageFragment : Fragment(), MessageAdapterListener {
         _binding = null
     }
 
-    override fun addReactionClickListener(model: MessageModel) {
+    override fun addReactionClickListener(model: MessageDvo) {
         val bottomSheetDialogFragment = ReactionBottomSheetDialog()
         bottomSheetDialogFragment.show(parentFragmentManager, bottomSheetDialogFragment.tag)
 
-        parentFragmentManager.setFragmentResultListener(
-            ReactionBottomSheetDialog.REACTION_BOTTOM_SHEET_CALLBACK,
-            this
-        ) { requestKey, result ->
+        parentFragmentManager.setFragmentResultListener(ReactionBottomSheetDialog.REACTION_BOTTOM_SHEET_CALLBACK,
+            this) { requestKey, result ->
             val result =
                 result.getString(ReactionBottomSheetDialog.REACTION_BOTTOM_SHEET_CALLBACK_RESULT)
             result?.let { result ->
@@ -93,7 +95,28 @@ class MessageFragment : Fragment(), MessageAdapterListener {
         }
     }
 
-    override fun setEmojiClickListener(model: MessageModel, viewItem: ReactionViewItem) {
-        viewModel.updateDelegate(model, viewItem.emoji)
+    override fun setEmojiClickListener(model: MessageDvo, viewItem: ReactionViewItem) {
+        viewModel.updateDelegate(model, viewItem)
+    }
+
+    private fun configureHeader(args: MessageArgs) {
+        binding.apply {
+            subToolbar.setText(args.topic)
+            toolbar.apply {
+                setOnBackClickListener {
+                    viewModel.backToChannels()
+                }
+                setToolbarText(args.stream)
+            }
+        }
+    }
+
+    private fun render(state: ScreenState<List<DelegateItem>>) {
+        when (state) {
+            is ScreenState.Data -> {
+                adapter.submitList(state.data)
+            }
+            else -> {}
+        }
     }
 }
