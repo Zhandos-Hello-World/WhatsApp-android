@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.homework_2.databinding.ItemChannelBinding
+import kz.tinkoff.homework_2.presentation.dvo.ChannelDvo
 
 class ChannelDelegate(private val listener: () -> Unit) : AdapterDelegate<ChannelDelegate.ViewHolder, ChannelDelegateItem> {
 
@@ -37,7 +38,7 @@ class ChannelDelegate(private val listener: () -> Unit) : AdapterDelegate<Channe
                 binding.expandableItems.visibility = if (field) View.VISIBLE else View.GONE
             }
 
-        fun bind(model: ChannelModel) {
+        fun bind(model: ChannelDvo) {
             binding.channelBanner.setOnClickListener {
                 isExpanded = !isExpanded
             }

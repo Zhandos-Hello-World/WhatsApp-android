@@ -6,16 +6,13 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.annotation.RequiresApi
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
-import kz.tinkoff.coreui.R
 import kz.tinkoff.coreui.databinding.CustomSearchEditTextBinding
+import kz.tinkoff.coreui.ext.hideKeyboard
+import kz.tinkoff.coreui.ext.showKeyboard
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class CustomSearchEditText @JvmOverloads constructor(
@@ -27,12 +24,16 @@ class CustomSearchEditText @JvmOverloads constructor(
 
     private val viewBinding: CustomSearchEditTextBinding
 
-    private val textInputLayout: TextInputLayout get() = viewBinding.textInputLayout
+    private val textInputEditText: TextInputEditText get() = viewBinding.textInputEditText
     private val searchEditText: TextInputEditText get() = viewBinding.textInputEditText
     private val searchBtn: ImageView get() = viewBinding.searchBtn
 
     init {
         viewBinding = CustomSearchEditTextBinding.inflate(LayoutInflater.from(context), this, true)
+
+        searchBtn.setOnClickListener {
+            textInputEditText.showKeyboard()
+        }
     }
 
 
@@ -50,5 +51,19 @@ class CustomSearchEditText @JvmOverloads constructor(
 
             override fun afterTextChanged(s: Editable?) {}
         })
+    }
+
+    fun setOnFocusChangeListener(focusListener: (Boolean) -> Unit) {
+        textInputEditText.setOnFocusChangeListener { v, hasFocus ->
+            focusListener(hasFocus)
+        }
+    }
+
+    fun hideKeyboard() {
+        textInputEditText.hideKeyboard()
+    }
+
+    fun setText(text: String) {
+        textInputEditText.setText(text)
     }
 }

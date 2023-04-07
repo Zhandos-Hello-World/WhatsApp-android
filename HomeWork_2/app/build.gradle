@@ -43,8 +43,7 @@ dependencies {
 
     implementation deps.material
 
-    implementation deps.libs.cicerone
-
+    implementation deps.libs.values()
 
     implementation di.values()
 }

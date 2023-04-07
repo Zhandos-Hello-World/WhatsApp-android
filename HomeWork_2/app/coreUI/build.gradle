@@ -15,6 +15,7 @@ dependencies {
     implementation deps.androidx.core
     implementation deps.androidx.appCompat
     implementation deps.androidx.constraintLayout
+    implementation deps.androidx.lifecycle_viewModel
 
     implementation local.core.core
 

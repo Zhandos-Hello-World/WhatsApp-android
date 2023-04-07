@@ -1,20 +1,31 @@
 package kz.tinkoff.homework_2.presentation.channels
 
+import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import kz.tinkoff.homework_2.presentation.channels.list.ChannelsListFragment
 
-class ChannelsCollectionAdapter(private val fragment: Fragment) : FragmentStateAdapter(fragment) {
+class ChannelsCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+    private val fragments: MutableList<Fragment> = mutableListOf()
 
     override fun getItemCount(): Int {
-        return STREAM_TYPE
+        return fragments.size
     }
 
     override fun createFragment(position: Int): Fragment {
-       return  when (position) {
-            SUBSCRIBED -> ChannelsListFragment.getINSTANCE()
-            else -> ChannelsListFragment.getINSTANCE()
-        }
+        return fragments[position]
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun update(fragments: List<Fragment>) {
+        this.fragments.clear()
+        this.fragments.addAll(fragments)
+        notifyDataSetChanged()
+    }
+
+
+    fun getAll(position: Int) {
+        (fragments[position] as? ChannelsListFragment)?.getAll()
     }
 
     companion object {

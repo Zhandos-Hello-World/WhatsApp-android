@@ -1,4 +1,4 @@
-package kz.tinkoff.homework_2.presentation.delegates.person
+package kz.tinkoff.homework_2.domain.model
 
 class PersonModel(
     val id: Int,

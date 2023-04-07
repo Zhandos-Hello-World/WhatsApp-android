@@ -113,4 +113,9 @@
     <style name="IconColor">
         <item name="tint">@color/white</item>
     </style>
+
+    <style name="shimmer_card_style">
+        <item name="cardBackgroundColor">@color/black_gray_3</item>
+        <item name="cardCornerRadius">@dimen/indent_base</item>
+    </style>
 </resources>

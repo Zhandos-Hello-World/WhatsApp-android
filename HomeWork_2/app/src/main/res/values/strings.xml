@@ -5,4 +5,6 @@
     <string name="subscribed">Subscribed</string>
     <string name="testing">Testing</string>
     <string name="bruh">Bruh</string>
+    <string name="error">Error</string>
+    <string name="reload">Reload</string>
 </resources>

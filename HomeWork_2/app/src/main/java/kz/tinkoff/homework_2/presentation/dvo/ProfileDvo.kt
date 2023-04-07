@@ -1,4 +1,4 @@
-package kz.tinkoff.homework_2.dvo
+package kz.tinkoff.homework_2.presentation.dvo
 
 data class ProfileDvo(
     val fullName: String,

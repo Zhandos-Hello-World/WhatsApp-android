@@ -3,7 +3,7 @@ package kz.tinkoff.homework_2.presentation.profile
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kz.tinkoff.homework_2.dvo.ProfileDvo
+import kz.tinkoff.homework_2.presentation.dvo.ProfileDvo
 
 class ProfileViewModel: ViewModel() {
     private val _profileInfo = MutableLiveData<ProfileDvo>()

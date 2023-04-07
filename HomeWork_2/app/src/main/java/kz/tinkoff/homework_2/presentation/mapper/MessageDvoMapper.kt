@@ -1,4 +1,4 @@
-package kz.tinkoff.homework_2.mapper
+package kz.tinkoff.homework_2.presentation.mapper
 
 import kz.tinkoff.core.Mapper
 import kz.tinkoff.core.adapter.DelegateItem
