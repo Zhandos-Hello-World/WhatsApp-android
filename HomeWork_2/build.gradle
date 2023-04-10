@@ -21,6 +21,7 @@ buildscript {
         chucker_version = '3.5.2'
         coil_version = '2.3.0'
         threetenadp_version = '1.3.1'
+        elmslie_version = '2.1.1'
 
         deps = [
                 'androidx': [
@@ -39,7 +40,9 @@ buildscript {
                         'retrofit'        : "com.squareup.retrofit2:retrofit:$retrofit_version",
                         'retrofit_convert': "com.squareup.retrofit2:converter-gson:$retrofit_version",
                         'coil'            : "io.coil-kt:coil:$coil_version",
-                        'threetenadp'     : "com.jakewharton.threetenabp:threetenabp:$threetenadp_version"
+                        'threetenadp'     : "com.jakewharton.threetenabp:threetenabp:$threetenadp_version",
+                        'elmslie_core'    : "com.github.vivid-money.elmslie:elmslie-core:$elmslie_version",
+                        'elmslie_android' : "com.github.vivid-money.elmslie:elmslie-android:$elmslie_version"
                 ],
 
                 'debugLibs': [
