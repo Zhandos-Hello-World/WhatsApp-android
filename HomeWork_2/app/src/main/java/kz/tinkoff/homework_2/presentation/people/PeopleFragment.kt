@@ -5,30 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
-import kz.tinkoff.coreui.ScreenState
 import kz.tinkoff.coreui.custom.viewgroup.CustomSearchEditText
-import kz.tinkoff.coreui.ext.hide
-import kz.tinkoff.coreui.ext.show
 import kz.tinkoff.homework_2.databinding.FragmentPeopleBinding
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegate
-import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegateItem
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import kz.tinkoff.homework_2.presentation.people.elm.PeopleEffect
+import kz.tinkoff.homework_2.presentation.people.elm.PeopleEvent
+import kz.tinkoff.homework_2.presentation.people.elm.PeopleState
+import kz.tinkoff.homework_2.presentation.people.elm.PeopleStoreFactory
+import org.koin.android.ext.android.inject
+import vivid.money.elmslie.android.base.ElmFragment
 
-class PeopleFragment : Fragment() {
+class PeopleFragment : ElmFragment<PeopleEvent, PeopleEffect, PeopleState>() {
     private var _binding: FragmentPeopleBinding? = null
     private val binding get() = _binding!!
-
-    private val viewModel: PeopleViewModel by viewModel()
 
     private val searchEditText: CustomSearchEditText get() = binding.searchEditText
     private val usersRecyclerView: RecyclerView get() = binding.usersRecyclerView
@@ -36,6 +30,9 @@ class PeopleFragment : Fragment() {
     private val loadingState: ViewGroup get() = binding.loadingState
     private val reloadRequestBtn: Button get() = binding.reloadRequestBtn
 
+    private val peopleStoreFactory: PeopleStoreFactory by inject()
+
+    override val initEvent: PeopleEvent = PeopleEvent.Ui.LoadPeople
 
     val delegate = PersonDelegate { }
     private val adapter: MainAdapter by lazy(LazyThreadSafetyMode.NONE) {
@@ -54,51 +51,32 @@ class PeopleFragment : Fragment() {
         searchEditText.setHint(getString(kz.tinkoff.core.R.string.users_with_three_dots))
         usersRecyclerView.adapter = adapter
 
-        viewModel.peopleList.flowWithLifecycle(lifecycle).onEach(::render).launchIn(lifecycleScope)
 
         searchEditText.doOnTextChanged { searchText ->
             if (searchText.isNotEmpty()) {
-                lifecycleScope.launch {
-                    searchText.let { query -> viewModel.searchQueryState.emit(query) }
+                searchText.let { query ->
+                    store.accept(PeopleEvent.Ui.SearchPerson(query))
                 }
             } else {
-                viewModel.getAllFromCache()
+                store.accept(PeopleEvent.Ui.LoadPeople)
             }
         }
 
         reloadRequestBtn.setOnClickListener {
-            viewModel.getAll()
+            store.accept(PeopleEvent.Ui.LoadPeople)
         }
-
 
         return binding.root
     }
 
+    override fun createStore() = peopleStoreFactory.provide()
 
-    private fun render(state: ScreenState<List<PersonDelegateItem>>) {
-        when (state) {
-            is ScreenState.Loading -> {
-                hideAll()
-                loadingState.show()
-            }
-            is ScreenState.Error -> {
-                hideAll()
-                errorState.show()
-            }
-            is ScreenState.Data -> {
-                hideAll()
-                usersRecyclerView.show()
+    override fun render(state: PeopleState) {
+        loadingState.isVisible = state.isLoading
+        errorState.isVisible = state.error
 
-                adapter.submitList(state.data)
-            }
-        }
-    }
-
-    private fun hideAll() {
-        loadingState.hide()
-        usersRecyclerView.hide()
-        errorState.hide()
-
+        usersRecyclerView.isVisible = state.peopleDvo.isNotEmpty()
+        adapter.submitList(state.peopleDvo)
     }
 
 }

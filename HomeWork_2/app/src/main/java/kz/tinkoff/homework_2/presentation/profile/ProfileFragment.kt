@@ -9,23 +9,24 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
+import androidx.core.view.isVisible
 import coil.load
 import com.facebook.shimmer.ShimmerFrameLayout
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kz.tinkoff.coreui.ScreenState
-import kz.tinkoff.coreui.ext.hide
-import kz.tinkoff.coreui.ext.show
 import kz.tinkoff.homework_2.databinding.FragmentProfileBinding
 import kz.tinkoff.homework_2.presentation.dvo.ProfileDvo
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import kz.tinkoff.homework_2.presentation.profile.elm.ProfileEffect
+import kz.tinkoff.homework_2.presentation.profile.elm.ProfileEvent
+import kz.tinkoff.homework_2.presentation.profile.elm.ProfileState
+import kz.tinkoff.homework_2.presentation.profile.elm.ProfileStoreFactory
+import org.koin.android.ext.android.inject
+import vivid.money.elmslie.android.base.ElmFragment
+import vivid.money.elmslie.core.store.Store
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : ElmFragment<ProfileEvent, ProfileEffect, ProfileState>() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+
+    override val initEvent: ProfileEvent = ProfileEvent.Ui.LoadProfile
 
     private val loadingView: ShimmerFrameLayout get() = binding.loadingState
     private val dataView: ConstraintLayout get() = binding.data
@@ -35,7 +36,7 @@ class ProfileFragment : Fragment() {
     private val fullName: TextView get() = binding.profileNameText
     private val connectionStatus: TextView get() = binding.profileConnectionStatusText
 
-    private val viewModel: ProfileViewModel by viewModel()
+    private val profileStoreFactory: ProfileStoreFactory by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,46 +44,33 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        viewModel.profileInfo.flowWithLifecycle(lifecycle).onEach(::render).launchIn(lifecycleScope)
 
         reloadView.setOnClickListener {
-            viewModel.getProfile()
+            store.accept(ProfileEvent.Ui.LoadProfile)
         }
         return binding.root
     }
 
-    private fun render(state: ScreenState<ProfileDvo>) {
-        when (state) {
-            is ScreenState.Loading -> {
-                hideAll()
-                loadingView.show()
-            }
-            is ScreenState.Error -> {
-                hideAll()
-                errorView.show()
-            }
-            is ScreenState.Data -> {
-                hideAll()
-                dataView.show()
+    override fun createStore() = profileStoreFactory.provide()
 
-                state.data.let { data ->
-                    fullName.text = data.fullName
-                    avatar.load(data.avatarUrl)
-                    connectionStatus.text = data.presence.status
+    override fun render(state: ProfileState) {
+        loadingView.isVisible = state.isLoading
+        errorView.isVisible = state.error
 
-                    val color = ContextCompat.getColor(requireContext(), data.presence.colorResId)
-                    connectionStatus.setTextColor(color)
-                }
-            }
+        val profileDvo = state.profileDvo
+        dataView.isVisible = profileDvo != null
+
+        if (profileDvo != null) {
+            configureData(profileDvo)
         }
     }
 
+    private fun configureData(data: ProfileDvo) {
+        fullName.text = data.fullName
+        avatar.load(data.avatarUrl)
+        connectionStatus.text = data.presence.status
 
-    private fun hideAll() {
-        loadingView.hide()
-        dataView.hide()
-        errorView.hide()
+        val color = ContextCompat.getColor(requireContext(), data.presence.colorResId)
+        connectionStatus.setTextColor(color)
     }
-
-
 }
