@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
+import kz.tinkoff.coreui.custom.dvo.MessageDvo
 import kz.tinkoff.homework_2.databinding.ItemMessageBinding
-import kz.tinkoff.homework_2.presentation.mapper.MessageDvoMapper
 
 class MessageDelegate(private val listener: MessageAdapterListener) :
     AdapterDelegate<MessageDelegate.ViewHolder, MessageDelegateItem> {
@@ -34,16 +34,14 @@ class MessageDelegate(private val listener: MessageAdapterListener) :
     inner class ViewHolder(private val binding: ItemMessageBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(model: MessageModel) {
+        fun bind(model: MessageDvo) {
             with(binding.message) {
 
-                setMessageDvo(MessageDvoMapper().map(model))
+                setMessageDvo(model)
 
                 setEmojiClickListener { messageDvo, reactionViewItem ->
                     listener.setEmojiClickListener(
-                        model = MessageDvoMapper().toMessageModel(
-                            from = messageDvo
-                        ),
+                        model = messageDvo,
                         viewItem = reactionViewItem
                     )
                 }

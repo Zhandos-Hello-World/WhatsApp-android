@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import kz.tinkoff.core.utils.getMaxWidth
 import kz.tinkoff.core.utils.sp
@@ -19,7 +20,7 @@ class CustomToolbar @JvmOverloads constructor(
 ) : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
 
     private val image: View
-    private val text: View
+    private val toolbarTextView: TextView
     private val indentBigger = context.resources.getDimension(R.dimen.indent_bigger).toInt()
     private val indentBase = context.resources.getDimension(R.dimen.indent_base).toInt()
 
@@ -28,7 +29,7 @@ class CustomToolbar @JvmOverloads constructor(
         inflate(context, R.layout.custom_toolbar, this)
 
         image = findViewById(R.id.back)
-        text = findViewById(R.id.text)
+        toolbarTextView = findViewById(R.id.text)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -36,7 +37,7 @@ class CustomToolbar @JvmOverloads constructor(
 
         val maxWidth = getMaxWidth()
         val totalHeight =
-            paddingTop + paddingBottom + maxOf(image.measuredHeight, text.measuredHeight) + indentBigger + indentBigger
+            paddingTop + paddingBottom + maxOf(image.measuredHeight, toolbarTextView.measuredHeight) + indentBigger + indentBigger
         setMeasuredDimension(maxWidth, totalHeight)
     }
 
@@ -53,12 +54,17 @@ class CustomToolbar @JvmOverloads constructor(
 
         offsetX += image.measuredWidth + 44F.sp(context).toInt()
 
-        text.layout(
+        toolbarTextView.layout(
             offsetX,
             offsetY,
-            offsetX + text.measuredWidth,
-            offsetY + text.measuredHeight + indentBigger
+            offsetX + toolbarTextView.measuredWidth,
+            offsetY + toolbarTextView.measuredHeight + indentBigger
         )
+    }
+
+    fun setToolbarText(text: String) {
+        toolbarTextView.text = text
+        requestLayout()
     }
 
     fun setOnBackClickListener(listener: () -> Unit) {

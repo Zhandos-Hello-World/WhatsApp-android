@@ -9,7 +9,7 @@ class PersonMapper : Mapper<PeopleListResponse.PersonResponse, PersonModel> {
     override fun map(from: PeopleListResponse.PersonResponse): PersonModel {
         return PersonModel(id = from.id,
             fullName = from.fullName,
-            email = from.email,
+            email = from.deliveryEmail ?: from.email,
             isOnline = from.isOnline)
     }
 

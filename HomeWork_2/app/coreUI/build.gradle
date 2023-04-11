@@ -21,4 +21,5 @@ dependencies {
 
     implementation deps.material
     implementation deps.libs.cicerone
+    implementation deps.libs.coil
 }

@@ -4,8 +4,11 @@ import kz.tinkoff.coreui.item.ReactionViewItem
 
 data class MessageDvo(
     val id: Int,
-    val title: String,
-    val message: String,
-    val date: String,
-    val reactions: List<ReactionViewItem>
+    val senderId: Long,
+    val timestamp: Long,
+    val isMeMessage: Boolean,
+    var reactions: MutableList<ReactionViewItem>,
+    val senderFullName: String,
+    val content: String,
+    val avatarUrl: String
 )

@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.BaseAdapter
 import android.widget.TextView
+import kz.tinkoff.core.emoji.EmojiNCS
 
-class ReactionAdapter(context: Context, emojiList: List<String>, private val listener: (String) -> Unit) :
+class ReactionAdapter(context: Context, emojiList: List<EmojiNCS>, private val listener: (EmojiNCS) -> Unit) :
     BaseAdapter() {
     private val mContext: Context
-    private val mEmojiList: List<String>
+    private val mEmojiList: List<EmojiNCS>
 
     init {
         mContext = context
@@ -40,9 +41,9 @@ class ReactionAdapter(context: Context, emojiList: List<String>, private val lis
         } else {
             textView = convertView as TextView
         }
-        textView.setOnClickListener { listener(textView.text.toString()) }
+        textView.setOnClickListener { listener(mEmojiList[position]) }
 
-        textView.text = mEmojiList[position]
+        textView.text = mEmojiList[position].getCodeString()
         return textView
     }
 }

@@ -5,61 +5,85 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/profile_avatar"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="100dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/avatar_2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/data"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/profile_name_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/indent_base"
-        android:textAppearance="@style/profile_title"
-        app:layout_constraintEnd_toEndOf="@+id/profile_avatar"
-        app:layout_constraintStart_toStartOf="@+id/profile_avatar"
-        app:layout_constraintTop_toBottomOf="@+id/profile_avatar"
-        tools:text="Darrell Steward" />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/profile_avatar"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="100dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/avatar_2"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.ProfileCornerSize"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/profile_status_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/profile_subtitle"
-        app:layout_constraintEnd_toStartOf="@id/profile_connection_status_text"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="@+id/profile_avatar"
-        app:layout_constraintTop_toBottomOf="@+id/profile_name_text"
-        tools:text="In a meeting" />
+        <TextView
+            android:id="@+id/profile_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/indent_base"
+            android:textAppearance="@style/profile_title"
+            app:layout_constraintEnd_toEndOf="@+id/profile_avatar"
+            app:layout_constraintStart_toStartOf="@+id/profile_avatar"
+            app:layout_constraintTop_toBottomOf="@+id/profile_avatar"
+            tools:text="Darrell Steward" />
 
-    <TextView
-        android:id="@+id/profile_connection_status_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/profile_connection_subtitle"
-        app:layout_constraintBottom_toBottomOf="@+id/profile_status_text"
-        app:layout_constraintEnd_toEndOf="@+id/profile_avatar"
-        app:layout_constraintTop_toBottomOf="@+id/profile_name_text"
-        tools:text="online" />
+        <TextView
+            android:id="@+id/profile_connection_status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/profile_connection_subtitle"
+            app:layout_constraintEnd_toEndOf="@+id/profile_avatar"
+            app:layout_constraintStart_toStartOf="@+id/profile_name_text"
+            app:layout_constraintTop_toBottomOf="@+id/profile_name_text"
+            tools:text="active" />
 
-    <com.google.android.material.button.MaterialButton
-        style="@style/ButtonLogoutStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="56dp"
-        android:paddingVertical="@dimen/indent_base"
-        android:text="@string/log_out"
-        android:textAppearance="@style/profile_subtitle"
-        app:cornerRadius="@dimen/indent_bigger"
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/loading_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <include layout="@layout/item_profile_shimmer" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/error_state"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_avatar" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/error_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/error"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/reload_request_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reload"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/error_message" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,6 @@
 package kz.tinkoff.homework_2.presentation.dvo
 
-data class ChannelDvo(
+data class StreamDvo(
     val id: Int,
     val name: String,
     val topicsDvo: List<TopicDvo>,
@@ -10,6 +10,5 @@ data class ChannelDvo(
     data class TopicDvo(
         val id: Int,
         val name: String,
-        val count: Int
     )
 }

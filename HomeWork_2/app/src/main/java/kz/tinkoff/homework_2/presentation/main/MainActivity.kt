@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     private fun keyboardBottomNavHandle() {
         val activityRootView = binding.root
         activityRootView.viewTreeObserver
-            .addOnGlobalLayoutListener { // Check if the keyboard is shown
+            .addOnGlobalLayoutListener {
                 val r = Rect()
                 activityRootView.getWindowVisibleDisplayFrame(r)
                 val screenHeight: Int = activityRootView.rootView.height

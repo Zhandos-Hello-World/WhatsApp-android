@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -13,6 +14,14 @@ android {
         targetSdk androidTargetSdkVersion
         versionCode 1
         versionName "1.0"
+
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
+        buildConfigField 'String', 'BASE_URL', '"https://tinkoff-android-spring-2023.zulipchat.com"'
+
+        buildConfigField 'String', 'API_KEY', "\"${properties.getProperty("API_KEY")}\""
+        buildConfigField 'String', 'EMAIL', "\"${properties.getProperty("EMAIL")}\""
     }
 
     buildTypes {
@@ -46,4 +55,7 @@ dependencies {
     implementation deps.libs.values()
 
     implementation di.values()
+
+    debugImplementation deps.debugLibs.chuckerDebug
+    releaseImplementation deps.debugLibs.chuckerRelease
 }

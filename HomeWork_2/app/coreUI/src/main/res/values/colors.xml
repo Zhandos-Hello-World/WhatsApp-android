@@ -19,4 +19,6 @@
     <color name="black_gray_4">#1E1E1E</color>
     <color name="green_2">#2A9D8F</color>
     <color name="green_3">#4AB54D</color>
+    <color name="orange">#FF8B2C</color>
+    <color name="yellow">#E9C46A</color>
 </resources>

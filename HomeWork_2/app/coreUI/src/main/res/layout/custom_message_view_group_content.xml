@@ -5,12 +5,13 @@
     tools:parentTag="kz.tinkoff.coreui.custom.viewgroup.MessageViewGroup">
 
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatar"
         android:layout_width="37dp"
         android:layout_height="37dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/avatar_2"
-        />
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CircleCornerSize" />
 
 
     <androidx.cardview.widget.CardView

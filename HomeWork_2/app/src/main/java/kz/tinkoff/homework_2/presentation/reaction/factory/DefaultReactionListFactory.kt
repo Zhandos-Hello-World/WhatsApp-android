@@ -1,76 +1,13 @@
 package kz.tinkoff.homework_2.presentation.reaction.factory
 
+import kz.tinkoff.core.emoji.EmojiNCS
+import kz.tinkoff.core.emoji.emojiSetNCS
+
 class DefaultReactionListFactory: ReactionListFactory {
 
 
-    override fun createReactionList(): List<String> {
-        val reactionList: MutableList<String> = ArrayList()
-        reactionList.add("\uD83D\uDE00")
-        reactionList.add("\uD83D\uDE01")
-        reactionList.add("\uD83D\uDE02")
-        reactionList.add("\uD83D\uDE03")
-        reactionList.add("\uD83D\uDE04")
-        reactionList.add("\uD83D\uDE05")
-        reactionList.add("\uD83D\uDE06")
-        reactionList.add("\uD83D\uDE07")
-        reactionList.add("\uD83D\uDE08")
-        reactionList.add("\uD83D\uDE09")
-        reactionList.add("\uD83D\uDE0A")
-        reactionList.add("\uD83D\uDE0B")
-        reactionList.add("\uD83D\uDE0C")
-        reactionList.add("\uD83D\uDE0D")
-        reactionList.add("\uD83D\uDE0E")
-        reactionList.add("\uD83D\uDE0F")
-        reactionList.add("\uD83D\uDE10")
-        reactionList.add("\uD83D\uDE11")
-        reactionList.add("\uD83D\uDE12")
-        reactionList.add("\uD83D\uDE13")
-        reactionList.add("\uD83D\uDE14")
-        reactionList.add("\uD83D\uDE15")
-        reactionList.add("\uD83D\uDE16")
-        reactionList.add("\uD83D\uDE17")
-        reactionList.add("\uD83D\uDE18")
-        reactionList.add("\uD83D\uDE19")
-        reactionList.add("\uD83D\uDE1A")
-        reactionList.add("\uD83D\uDE1B")
-        reactionList.add("\uD83D\uDE1C")
-        reactionList.add("\uD83D\uDE1D")
-        reactionList.add("\uD83D\uDE1E")
-        reactionList.add("\uD83D\uDE1F")
-        reactionList.add("\uD83D\uDE20")
-        reactionList.add("\uD83D\uDE21")
-        reactionList.add("\uD83D\uDE22")
-        reactionList.add("\uD83D\uDE23")
-        reactionList.add("\uD83D\uDE24")
-        reactionList.add("\uD83D\uDE25")
-        reactionList.add("\uD83D\uDE26")
-        reactionList.add("\uD83D\uDE27")
-        reactionList.add("\uD83D\uDE28")
-        reactionList.add("\uD83D\uDE29")
-        reactionList.add("\uD83D\uDE2A")
-        reactionList.add("\uD83D\uDE2B")
-        reactionList.add("\uD83D\uDE2C")
-        reactionList.add("\uD83D\uDE2D")
-        reactionList.add("\uD83D\uDE2E")
-        reactionList.add("\uD83D\uDE2F")
-        reactionList.add("\uD83D\uDE30")
-        reactionList.add("\uD83D\uDE31")
-        reactionList.add("\uD83D\uDE32")
-        reactionList.add("\uD83D\uDE33")
-        reactionList.add("\uD83D\uDE34")
-        reactionList.add("\uD83D\uDE35")
-        reactionList.add("\uD83D\uDE36")
-        reactionList.add("\uD83D\uDE37")
-        reactionList.add("\uD83D\uDE38")
-        reactionList.add("\uD83D\uDE39")
-        reactionList.add("\uD83D\uDE3A")
-        reactionList.add("\uD83D\uDE3B")
-        reactionList.add("\uD83D\uDE3C")
-        reactionList.add("\uD83D\uDE3D")
-        reactionList.add("\uD83D\uDE3E")
-        reactionList.add("\uD83D\uDE3F")
-
-        return reactionList
+    override fun createReactionList(): List<EmojiNCS> {
+        return emojiSetNCS
     }
 
 }

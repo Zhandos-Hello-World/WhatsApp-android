@@ -1,245 +1,213 @@
 package kz.tinkoff.homework_2.presentation.message
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.terrakok.cicerone.Router
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kz.tinkoff.core.adapter.DelegateItem
+import kz.tinkoff.core.ktx.runCatchingNonCancellation
+import kz.tinkoff.coreui.ScreenState
+import kz.tinkoff.coreui.custom.dvo.MessageDvo
 import kz.tinkoff.coreui.item.ReactionViewItem
-import kz.tinkoff.homework_2.presentation.mapper.MessageDvoMapper
+import kz.tinkoff.homework_2.domain.model.MessageStreamParams
+import kz.tinkoff.homework_2.domain.model.MessageStreamParams.Companion.STREAM
+import kz.tinkoff.homework_2.domain.model.ReactionParams
+import kz.tinkoff.homework_2.domain.repository.MessageRepository
 import kz.tinkoff.homework_2.navigation.Screens
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageDelegateItem
-import kz.tinkoff.homework_2.presentation.delegates.message.MessageModel
+import kz.tinkoff.homework_2.presentation.mapper.MessageDvoMapper
 
 class MessageViewModel(
+    private val repository: MessageRepository,
     private val messageDvoMapper: MessageDvoMapper,
     private val router: Router,
-): ViewModel() {
-    private val _messageList = MutableLiveData<List<DelegateItem>>()
-    val messageList: LiveData<List<DelegateItem>> = _messageList
+) : ViewModel() {
+    private val _messageList =
+        MutableStateFlow<ScreenState<List<DelegateItem>>>(ScreenState.Loading)
+    val messageList: StateFlow<ScreenState<List<DelegateItem>>> get() = _messageList.asStateFlow()
+    var args: MessageArgs? = null
 
-    init {
-        _messageList.value = messageDvoMapper.toMessageWithData(messageModelList)
-    }
+    fun getMessage() {
+        viewModelScope.launch {
+            var state: ScreenState<List<DelegateItem>> = ScreenState.Loading
+            _messageList.emit(state)
 
-    fun updateDelegate(model: MessageModel, emoji: String) {
-        val delegateItem = findMessageDelegateItem(model)
-        val reactions = model.reactions.toMutableList()
+            val messageArgs = args
+            val result = runCatchingNonCancellation {
+                if (messageArgs != null) {
+                    repository.getAllMessage(
+                        streamId = messageArgs.streamId,
+                        stream = messageArgs.stream.replace("#", ""),
+                        topic = messageArgs.topic.replace("#", "")
+                    )
+                } else {
+                    null
+                }
+            }.getOrNull()
 
-        if (containsEmoji(model, emoji)) {
-            val reactionViewItem = reactions.find { it.emoji == emoji }!!
-            if (reactionViewItem.fromMe) {
-                changeReactions(reactions, reactionViewItem)
+
+            state = if (result != null) {
+                ScreenState.Data(messageDvoMapper.toMessageWithDateFromModel(result))
             } else {
-                addReactionToExist(reactions, reactionViewItem)
+                ScreenState.Error
             }
-        } else {
-            addReaction(reactions, emoji)
+
+            _messageList.emit(state)
         }
-        delegateItem ?: return
-        updateMessageModel(model, delegateItem, reactions)
     }
+
+    fun updateDelegate(model: MessageDvo, emoji: String) {
+        addReaction(model, emoji)
+    }
+
+    fun updateDelegate(model: MessageDvo, emoji: ReactionViewItem) {
+        if (emoji.fromMe) {
+            deleteReaction(model, emoji.emoji)
+        } else {
+            addReaction(model, emoji.emoji)
+        }
+    }
+
+    private fun addReaction(model: MessageDvo, emoji: String) {
+        viewModelScope.launch {
+            val response = runCatchingNonCancellation {
+                repository.addReaction(
+                    messageId = model.id,
+                    params = ReactionParams(
+                        emojiName = emoji,
+                    ),
+                )
+            }.getOrNull()
+
+            if (response == true) {
+                addReactionAfterSuccess(model, emoji)
+            }
+        }
+    }
+
+    private fun deleteReaction(model: MessageDvo, emoji: String) {
+        viewModelScope.launch {
+            val response = runCatchingNonCancellation {
+                repository.deleteReaction(
+                    messageId = model.id,
+                    params = ReactionParams(
+                        emojiName = emoji,
+                    ),
+                )
+            }.getOrNull()
+
+            if (response == true) {
+                deleteReactionAfterSuccess(model, emoji)
+            }
+        }
+    }
+
 
     fun addMessage(message: String) {
-        val delegateItem = MessageDelegateItem(
-            id = hashCode(),
-            value = MessageModel(
-                id = hashCode(),
-                fullName = "Baimurat Zhandos",
-                message = message,
-                date = DEC_7,
-                reactions = emptyList()
-            )
-        )
+        viewModelScope.launch {
+            val messageArgs = args
 
-        _messageList.value = _messageList.value?.toMutableList()?.apply {
-            add(delegateItem)
+            val response = runCatchingNonCancellation {
+                if (messageArgs != null) {
+                    repository.sendMessage(
+                        params = MessageStreamParams(
+                            type = STREAM,
+                            to = messageArgs.streamId,
+                            content = message,
+                            topic = messageArgs.topic.replace("#", "")
+                        )
+                    )
+                } else {
+                    null
+                }
+            }.getOrNull()
+
+            if (response == true) {
+                addMessageAfterSuccess(message)
+            }
         }
+    }
+
+    private suspend fun addMessageAfterSuccess(message: String) {
+        (_messageList.value as? ScreenState.Data<List<DelegateItem>>)?.let { state ->
+            val currentTime = System.currentTimeMillis()
+            val listMessages = state.data + messageDvoMapper.toMessageDelegate(
+                MessageDvo(
+                    id = currentTime.toInt(),
+                    senderId = 0,
+                    timestamp = currentTime,
+                    isMeMessage = true,
+                    reactions = mutableListOf(),
+                    senderFullName = "Baimurat Zhandos",
+                    content = message,
+                    avatarUrl = ""
+                )
+            )
+            _messageList.emit(ScreenState.Data(listMessages))
+        }
+    }
+
+    private suspend fun deleteReactionAfterSuccess(model: MessageDvo, emoji: String) {
+        (_messageList.value as? ScreenState.Data<List<DelegateItem>>)?.let { state ->
+            val message = findMessageValue(state.data, model) ?: return
+            val reactionIndex = findReactionIndex(message.content(), emoji)
+
+            if (reactionIndex != NOT_FOUND_INDEX) {
+                val reaction = message.content().reactions[reactionIndex]
+                if (reaction.count - 1 == 0) {
+                    message.content().reactions.remove(reaction)
+                } else {
+                    message.content().reactions[reactionIndex] =
+                        reaction.copy(count = reaction.count - 1)
+                }
+            }
+            _messageList.emit(state)
+        }
+    }
+
+    private suspend fun addReactionAfterSuccess(model: MessageDvo, emoji: String) {
+        (_messageList.value as? ScreenState.Data<List<DelegateItem>>)?.let { state ->
+            val message = findMessageValue(state.data, model) ?: return
+            val reactionIndex = findReactionIndex(message.content(), emoji)
+
+            if (reactionIndex != NOT_FOUND_INDEX) {
+                val reaction = message.content().reactions[reactionIndex]
+                message.content().reactions[reactionIndex] =
+                    reaction.copy(count = reaction.count + 1)
+            } else {
+                message.content().reactions.add(
+                    ReactionViewItem(
+                        id = System.currentTimeMillis().toInt(),
+                        count = 1,
+                        emoji = emoji,
+                        fromMe = true
+                    )
+                )
+            }
+            _messageList.emit(state)
+        }
+    }
+
+    private fun findMessageValue(
+        messageList: List<DelegateItem>,
+        model: MessageDvo,
+    ): MessageDelegateItem? {
+        val messageIndex = messageList.toMutableList().indexOfFirst { it.id() == model.id }
+        return messageList[messageIndex] as? MessageDelegateItem
+    }
+
+    private fun findReactionIndex(message: MessageDvo, emoji: String): Int {
+        return message.reactions.indexOfFirst { it.emoji == emoji }
     }
 
     fun backToChannels() {
         router.backTo(Screens.ChannelsScreen())
     }
 
-    private fun updateMessageModel(
-        model: MessageModel,
-        delegateItem: DelegateItem,
-        reactions: MutableList<ReactionViewItem>,
-    ) {
-        model.reactions = reactions
-        val newDelegateItem = MessageDelegateItem(
-            delegateItem.hashCode(),
-            model
-        )
-        val list = _messageList.value
-        val mutableList = list?.toMutableList()
-        mutableList?.set(list.indexOf(delegateItem), newDelegateItem)
-        _messageList.value = mutableList
-    }
-
-    private fun findMessageDelegateItem(model: MessageModel): DelegateItem? {
-        return _messageList.value?.find { delegateItem ->
-            if (delegateItem.content() is MessageModel) {
-                return@find (delegateItem.content() as MessageModel).id == model.id
-            }
-            false
-        }
-    }
-
-    private fun containsEmoji(model: MessageModel, emoji: String): Boolean {
-        val reactions = model.reactions.toMutableList()
-        return reactions.map { it.emoji }.contains(emoji)
-    }
-
-    private fun changeReactions(
-        reactions: MutableList<ReactionViewItem>,
-        reactionViewItem: ReactionViewItem,
-    ): MutableList<ReactionViewItem> {
-        val index = reactions.indexOf(reactionViewItem)
-        val newReactionViewItem = reactionViewItem.copy(count = reactionViewItem.count - 1)
-        if (newReactionViewItem.count == 0) {
-            reactions.removeAt(index)
-        } else {
-            reactions[index] =
-                reactionViewItem.copy(count = reactionViewItem.count - 1, fromMe = false)
-        }
-        return reactions
-    }
-
-    private fun addReactionToExist(
-        reactions: MutableList<ReactionViewItem>,
-        reactionViewItem: ReactionViewItem,
-    ) {
-        val index = reactions.indexOf(reactionViewItem)
-        reactions[index] =
-            reactionViewItem.copy(count = reactionViewItem.count + 1, fromMe = true)
-    }
-
-    private fun addReaction(
-        reactions: MutableList<ReactionViewItem>,
-        emoji: String,
-    ) {
-        reactions.add(ReactionViewItem(hashCode(), 1, emoji, fromMe = true))
-    }
-
     companion object {
-        private const val JUL_5 = "5 июля"
-        private const val SEP_1 = "1 сенятбря"
-        private const val SEP_12 = "12 сенятбря"
-        private const val DEC_7 = "7 декабря"
-
-        private val messageModelList = listOf(
-            MessageModel(
-                id = 123,
-                fullName = "Baimurat Zhandos",
-                message = " jiroewj giorejg ierjg er1 ioew fjioew jfor jgiowerj groe jgoriwe",
-                date = SEP_1,
-                reactions = listOf(
-                    ReactionViewItem(0, 1, "🔥")
-                )
-            ),
-            MessageModel(
-                id = 124,
-                fullName = "Baimurat Zhandos",
-                message = "2 jgerio gjeroj girwej goer fjoeiwjf e fewjio ef iewojf ioew",
-                date = SEP_1,
-                reactions = emptyList(),
-            ),
-            MessageModel(
-                id = 125,
-                fullName = "Baimurat Zhandos",
-                message = "3 qerjigo jerwig jwer",
-                date = SEP_12,
-                reactions = emptyList(),
-            ),
-            MessageModel(
-                id = 126,
-                fullName = "Diana",
-                message = " rejg ioejrg ioerj 4",
-                date = JUL_5,
-                reactions = mutableListOf(),
-            ),
-            MessageModel(
-                id = 127,
-                fullName = "Baimurat Zhandos",
-                message = "5 rjeoi gjiewr jgioer gwrjeio",
-                date = DEC_7,
-                reactions = listOf(
-                    ReactionViewItem(0, 1, "👍")
-                ),
-            ),
-            MessageModel(
-                id = 128,
-                fullName = "Diana",
-                message = " rjeigo jreiog jrieoj geir6",
-                date = DEC_7,
-                reactions = emptyList(),
-            ),
-            MessageModel(
-                id = 129,
-                fullName = "Baimurat Zhandos",
-                message = " jqio fjiroej girej  ejof jweop fwep fewp wer7",
-                date = DEC_7,
-                reactions = listOf(
-                    ReactionViewItem(0, 1, "🔥")
-                ),
-            ),
-            MessageModel(
-                id = 130,
-                fullName = "Diana",
-                message = " jer giorewj giorewjg 8",
-                date = DEC_7,
-                reactions = emptyList(),
-            ),
-            MessageModel(
-                id = 131,
-                fullName = "Baimurat Zhandos",
-                message = "9 ejriog jerio gjirewj gower",
-                date = SEP_12,
-                reactions = emptyList(),
-            ),
-            MessageModel(
-                id = 132,
-                fullName = "Diana",
-                message = "10 jrejg ioerjg oierj",
-                date = SEP_12,
-                reactions = emptyList(),
-            ),
-            MessageModel(
-                id = 133,
-                fullName = "Baimurat Zhandos",
-                message = "1 jgiorqej giorqj gioeq1",
-                date = SEP_12,
-                reactions = emptyList(),
-            ),
-            MessageModel(
-                id = 134,
-                fullName = "Baimurat Zhandos",
-                message = "1 jqgrioeg jioerwj g2",
-                date = DEC_7,
-                reactions = emptyList(),
-            ),
-            MessageModel(
-                id = 135,
-                fullName = "Diana",
-                message = "1 grioejg iorewj iore3",
-                date = SEP_12,
-                reactions = emptyList(),
-            ),
-            MessageModel(
-                id = 136,
-                fullName = "Baimurat Zhandos",
-                message = "14tjhoiwertjhipwetjhi",
-                date = SEP_12,
-                reactions = emptyList(),
-            ),
-            MessageModel(
-                id = 137,
-                fullName = "Baimurat Zhandos",
-                message = "1giwerojgiwopejhtwe5",
-                date = DEC_7,
-                reactions = emptyList(),
-            ),
-        )
+        const val NOT_FOUND_INDEX = -1
     }
 }
