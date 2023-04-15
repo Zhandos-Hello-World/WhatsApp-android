@@ -12,6 +12,7 @@ class ProfileDvoMapper : Mapper<ProfileModel, ProfileDvo> {
         return ProfileDvo(fullName = from.fullName, avatarUrl = from.avatarUrl)
     }
 
+    // не используется
     fun toProfileDvoWithConnectionStatus(
         fromProfile: ProfileModel,
         fromPresence: PresenceModel,

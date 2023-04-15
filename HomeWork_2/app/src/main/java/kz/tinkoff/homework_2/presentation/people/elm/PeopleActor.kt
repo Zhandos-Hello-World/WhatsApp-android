@@ -36,6 +36,7 @@ class PeopleActor(
         }
         is PeopleCommand.SearchPeople -> {
             flow {
+                // Надо убирать задержку
                 delay(500L)
 
                 val response = searchName(command.text)

@@ -12,6 +12,7 @@ class ReactionDtoMapper: Mapper<ReactionParams, HashMap<String, String>> {
         return filters
     }
 
+    // private
     companion object {
         const val EMOJI_NAME = "emoji_name"
         const val EMOJI_CODE = "emoji_code"

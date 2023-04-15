@@ -15,6 +15,7 @@ class MessageDtoMapper: Mapper<MessageStreamParams, HashMap<String, Any?>> {
         return filters
     }
 
+    // private
     companion object {
         const val TYPE = "type"
         const val CONTENT = "content"

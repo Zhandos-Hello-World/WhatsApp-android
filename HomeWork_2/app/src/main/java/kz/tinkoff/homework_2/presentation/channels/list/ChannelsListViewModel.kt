@@ -28,6 +28,7 @@ import kz.tinkoff.homework_2.presentation.delegates.channels.ChannelDelegateItem
 import kz.tinkoff.homework_2.presentation.mapper.StreamDvoMapper
 import kz.tinkoff.homework_2.presentation.message.MessageArgs
 
+// Надо удалить этот класс
 class ChannelsListViewModel(
     private val repository: ChannelRepository,
     private val mapper: StreamDvoMapper,

@@ -7,6 +7,7 @@ import kz.tinkoff.homework_2.domain.model.StreamModel
 import kz.tinkoff.homework_2.domain.model.TopicsModel
 import kz.tinkoff.homework_2.domain.repository.ChannelRepository
 
+// Стандартный нейминг RepoNameImpl
 class DefaultChannelRepository(
     private val dataSource: ChannelRemoteDataSource,
     private val streamMapper: StreamMapper,

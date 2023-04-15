@@ -16,10 +16,12 @@ class PersonDvoMapper : Mapper<PersonModel, PersonDvo> {
         )
     }
 
+    // не используется
     fun toPersonList(from: List<PersonModel>): List<PersonDvo> {
         return from.map { map(it) }
     }
 
+    // private
     fun toPersonDelegate(from: PersonDvo): PersonDelegateItem {
         return PersonDelegateItem(
             from.id,

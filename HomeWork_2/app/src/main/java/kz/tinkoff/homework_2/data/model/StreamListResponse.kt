@@ -4,11 +4,13 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
+// Зачем Parcelable?
 @Parcelize
 data class StreamListResponse(
     val streams: List<StreamResponse>,
 ): Parcelable {
 
+    // SerializedName лучше везде указывать
     @Parcelize
     data class StreamResponse(
         @SerializedName("stream_id")

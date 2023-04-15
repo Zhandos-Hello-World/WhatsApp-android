@@ -31,9 +31,11 @@ class ChannelsListFragment : ElmFragment<ChannelEvent, ChannelEffect, ChannelSta
     private val errorState: ViewGroup get() = binding.errorState
     private val loadingState: ViewGroup get() = binding.loadingState
 
+    // Вынеси lazy(LazyThreadSafetyMode.NONE) в функцию-делегат с названием lazyUnsafe
     private val delegate: ChannelDelegate by lazy(LazyThreadSafetyMode.NONE) {
         ChannelDelegate(listener = ::navigateToMessage)
     }
+    // Постарайся пожалуйста убрать приведение делегатов, выглядит плохо
     private val adapter: MainAdapter by lazy(LazyThreadSafetyMode.NONE) {
         MainAdapter().apply {
             addDelegate(delegate as AdapterDelegate<RecyclerView.ViewHolder, DelegateItem>)

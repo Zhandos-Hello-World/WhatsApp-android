@@ -4,10 +4,12 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
+// Зачем Parcelable?
 @Parcelize
 data class ProfileResponse(
     @SerializedName("full_name")
     val fullName: String,
+    // SerializedName лучше везде указывать
     val email: String,
     @SerializedName("user_id")
     val userId: Int,

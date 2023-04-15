@@ -28,6 +28,7 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileEffect, ProfileState>()
 
     override val initEvent: ProfileEvent = ProfileEvent.Ui.LoadProfile
 
+    // Не очень понимаю зачем создавать подобные поля
     private val loadingView: ShimmerFrameLayout get() = binding.loadingState
     private val dataView: ConstraintLayout get() = binding.data
     private val errorView: ConstraintLayout get() = binding.errorState
@@ -67,6 +68,7 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileEffect, ProfileState>()
 
     private fun configureData(data: ProfileDvo) {
         fullName.text = data.fullName
+        // Надо добавить плейсхолдер во время загрузки + в случае ошибки
         avatar.load(data.avatarUrl)
         connectionStatus.text = data.presence.status
 

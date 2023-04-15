@@ -15,6 +15,9 @@ import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 
+// В маппере должна быть 1 публичная функция, у которой есть override, если больше 1 фукнции, то надо
+// распиливать такой маппер
+// Этот маппер сложно читать
 class MessageDvoMapper : Mapper<MessageModel, MessageDvo> {
 
     override fun map(from: MessageModel): MessageDvo {

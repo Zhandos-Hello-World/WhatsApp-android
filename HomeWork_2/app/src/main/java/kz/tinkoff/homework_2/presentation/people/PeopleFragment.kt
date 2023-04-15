@@ -69,6 +69,7 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleEffect, PeopleState>() {
         return binding.root
     }
 
+    // Почему Deprecated метод?
     override fun createStore() = peopleStoreFactory.provide()
 
     override fun render(state: PeopleState) {

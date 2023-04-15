@@ -125,6 +125,7 @@ class MessageFragment(private val args: MessageArgs) :
         }
     }
 
+    // Фукнция не используется
     private fun render(state: ScreenState<List<DelegateItem>>) {
         when (state) {
             is ScreenState.Data -> {

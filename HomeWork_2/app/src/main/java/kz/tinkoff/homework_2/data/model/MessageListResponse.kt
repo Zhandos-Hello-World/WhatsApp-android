@@ -5,12 +5,14 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
+// Зачем Parcelable?
 @Parcelize
 data class MessageListResponse(
     @SerializedName("messages")
     val messages: List<MessageResponse>,
 ) : Parcelable {
 
+    // Зачем Parcelable?
     @Parcelize
     data class MessageResponse(
         val id: Int,

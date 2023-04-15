@@ -16,6 +16,7 @@ import retrofit2.http.HTTP
 import retrofit2.http.POST
 import retrofit2.http.Path
 
+// Надо будет распилить по фичам
 interface ApiService {
 
     @GET("/api/v1/streams")

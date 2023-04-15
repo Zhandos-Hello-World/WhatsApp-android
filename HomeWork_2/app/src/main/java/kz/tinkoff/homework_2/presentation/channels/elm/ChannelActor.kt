@@ -14,6 +14,7 @@ import kz.tinkoff.homework_2.navigation.Screens
 import kz.tinkoff.homework_2.presentation.mapper.StreamDvoMapper
 import vivid.money.elmslie.coroutines.Actor
 
+// Почему актор наследует ViewModel?
 class ChannelActor(
     private val repository: ChannelRepository,
     private val dvoMapper: StreamDvoMapper,
@@ -23,6 +24,8 @@ class ChannelActor(
     override fun execute(command: ChannelCommand): Flow<ChannelEvent> = when (command) {
         is ChannelCommand.LoadChannel -> {
             flow<ChannelEvent> {
+                // Во флоу можно без runCatchingNonCancellation в большинстве случаев
+                // Ошибки обрабатываются при помощи оператора catch
                 val responseStreams = runCatchingNonCancellation {
                     repository.getAllChannels()
                 }.getOrNull()
@@ -48,6 +51,7 @@ class ChannelActor(
                 )
             }
         }
+        // Это не в actor, а в обработчике Ui Event
         is ChannelCommand.NavigateToMessageCommand -> {
             flow {
                 router.navigateTo(Screens.MessageScreen(command.args))
@@ -55,6 +59,7 @@ class ChannelActor(
         }
         is ChannelCommand.SearchChannelCommand -> {
             flow {
+                // МОжно убрать задержки
                 delay(500L)
 
                 val response =

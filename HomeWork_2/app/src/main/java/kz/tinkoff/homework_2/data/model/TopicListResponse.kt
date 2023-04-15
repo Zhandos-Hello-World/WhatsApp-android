@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
+// Зачем Parcelable?
 @Parcelize
 data class TopicListResponse(
     val topics: List<TopicResponse>

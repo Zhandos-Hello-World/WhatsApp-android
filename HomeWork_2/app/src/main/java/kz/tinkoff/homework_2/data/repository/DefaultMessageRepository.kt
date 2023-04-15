@@ -22,6 +22,7 @@ class DefaultMessageRepository(
         topic: String,
     ): List<MessageModel> {
         val response = dataSource.getAllMessage()
+        // Сначала мапим а потом фильтруем, лучше изменить последовательность действий
         return mapper.map(response).filter {
             it.streamId == streamId.toString() && it.topic == topic && it.displayRecipient == stream
         }
@@ -31,6 +32,8 @@ class DefaultMessageRepository(
         return dataSource.setMessageSend(dtoMessageMapper.map(from = params)).result == SUCCESS
     }
 
+    // Можно без boolean, ошибка и так прокинется до ui слоя
+    // Из подобных методов можно ничего не возвращать
     override suspend fun addReaction(messageId: Int, params: ReactionParams): Boolean {
         return dataSource.addReaction(messageId = messageId,
             request = dtoReactionMapper.map(params)).result == SUCCESS
@@ -41,6 +44,7 @@ class DefaultMessageRepository(
             request = dtoReactionMapper.map(params)).result == SUCCESS
     }
 
+    // Это убрать над
     companion object {
         const val SUCCESS = "success"
     }
