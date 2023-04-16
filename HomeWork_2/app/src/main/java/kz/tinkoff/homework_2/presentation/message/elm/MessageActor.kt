@@ -12,12 +12,12 @@ import kz.tinkoff.homework_2.domain.model.ReactionParams
 import kz.tinkoff.homework_2.domain.repository.MessageRepository
 import kz.tinkoff.homework_2.navigation.Screens
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageDelegateItem
-import kz.tinkoff.homework_2.presentation.mapper.MessageDvoMapper
+import kz.tinkoff.homework_2.presentation.mapper.MessageDelegateItemMapper
 import vivid.money.elmslie.coroutines.Actor
 
 class MessageActor(
     private val repository: MessageRepository,
-    private val dvoMapper: MessageDvoMapper,
+    private val delegateItemMapper: MessageDelegateItemMapper,
     private val router: Router,
 ) : Actor<MessageCommand, MessageEvent> {
     private var messageList = mutableListOf<DelegateItem>()
@@ -37,7 +37,7 @@ class MessageActor(
                     }.getOrNull()
 
                     if (response != null) {
-                        messageList = dvoMapper.toMessageWithDateFromModel(
+                        messageList = delegateItemMapper.toMessageWithDateFromModel(
                             response
                         ).toMutableList()
                         emit(
@@ -63,10 +63,8 @@ class MessageActor(
                         )
                     }.getOrNull()
 
-                    if (response == true) {
-                        addMessageAfterSuccess(message)
-                        emit(MessageEvent.Internal.MessageLoaded(messageList))
-                    }
+                    addMessageAfterSuccess(message)
+                    emit(MessageEvent.Internal.MessageLoaded(messageList))
                 }
             }
             is MessageCommand.DeleteReaction -> {
@@ -82,10 +80,9 @@ class MessageActor(
                         )
                     }.getOrNull()
 
-                    if (response == true) {
-                        deleteReactionAfterSuccess(model, emoji)
-                        emit(MessageEvent.Internal.MessageLoaded(messageList))
-                    }
+                    deleteReactionAfterSuccess(model, emoji)
+                    emit(MessageEvent.Internal.MessageLoaded(messageList))
+
                 }
             }
             is MessageCommand.AddReaction -> {
@@ -102,10 +99,8 @@ class MessageActor(
                         )
                     }.getOrNull()
 
-                    if (response == true) {
-                        addReactionAfterSuccess(model, emoji)
-                        emit(MessageEvent.Internal.MessageLoaded(messageList))
-                    }
+                    addReactionAfterSuccess(model, emoji)
+                    emit(MessageEvent.Internal.MessageLoaded(messageList))
                 }
             }
             is MessageCommand.BackToChannels -> {
@@ -118,7 +113,7 @@ class MessageActor(
 
     private fun addMessageAfterSuccess(message: String) {
         val currentTime = System.currentTimeMillis()
-        messageList += dvoMapper.toMessageDelegate(
+        messageList += delegateItemMapper.toMessageDelegate(
             MessageDvo(
                 id = currentTime.toInt(),
                 senderId = 0,

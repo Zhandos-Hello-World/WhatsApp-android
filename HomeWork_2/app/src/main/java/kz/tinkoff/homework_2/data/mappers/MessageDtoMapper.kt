@@ -15,11 +15,10 @@ class MessageDtoMapper: Mapper<MessageStreamParams, HashMap<String, Any?>> {
         return filters
     }
 
-    // private
     companion object {
-        const val TYPE = "type"
-        const val CONTENT = "content"
-        const val TO = "to"
-        const val TOPIC = "topic"
+        private const val TYPE = "type"
+        private const val CONTENT = "content"
+        private const val TO = "to"
+        private const val TOPIC = "topic"
     }
 }

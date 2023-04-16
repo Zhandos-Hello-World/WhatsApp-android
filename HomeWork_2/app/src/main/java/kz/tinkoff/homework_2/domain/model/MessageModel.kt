@@ -14,7 +14,7 @@ data class MessageModel(
     val content: String,
     val displayRecipient: String,
     val type: String,
-    val streamId: String,
+    val streamId: Int,
     val avatarUrl: String,
 ) {
 

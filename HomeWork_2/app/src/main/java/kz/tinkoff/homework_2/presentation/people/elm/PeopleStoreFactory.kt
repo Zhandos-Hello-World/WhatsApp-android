@@ -5,7 +5,7 @@ import vivid.money.elmslie.coroutines.ElmStoreCompat
 class PeopleStoreFactory(private val actor: PeopleActor) {
     private val store by lazy {
         ElmStoreCompat(
-            initialState = PeopleState(),
+            initialState = PeopleState.Loading,
             reducer = PeopleReducer(),
             actor = actor
         )

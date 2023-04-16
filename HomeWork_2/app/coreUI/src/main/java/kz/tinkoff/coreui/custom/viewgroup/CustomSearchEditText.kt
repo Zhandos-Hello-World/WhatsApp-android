@@ -54,7 +54,7 @@ class CustomSearchEditText @JvmOverloads constructor(
     }
 
     fun setOnFocusChangeListener(focusListener: (Boolean) -> Unit) {
-        textInputEditText.setOnFocusChangeListener { v, hasFocus ->
+        textInputEditText.setOnFocusChangeListener { _, hasFocus ->
             focusListener(hasFocus)
         }
     }

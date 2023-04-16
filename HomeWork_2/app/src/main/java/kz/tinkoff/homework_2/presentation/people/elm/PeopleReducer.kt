@@ -7,24 +7,16 @@ class PeopleReducer : DslReducer<PeopleEvent, PeopleState, PeopleEffect, PeopleC
     override fun Result.reduce(event: PeopleEvent): Any? =
         when (event) {
             is PeopleEvent.Internal.PeopleLoaded -> {
-                state { copy(peopleDvo = event.data, error = false, isLoading = false) }
+                state { PeopleState.Data(event.data) }
             }
             is PeopleEvent.Internal.ErrorLoading -> {
-                state { copy(peopleDvo = emptyList(), error = true, isLoading = false) }
+                state { PeopleState.Error }
             }
             is PeopleEvent.Ui.LoadPeople -> {
-                state { copy(peopleDvo = emptyList(), error = false, isLoading = true) }
+                state { PeopleState.Loading }
                 commands { +PeopleCommand.LoadPeople }
             }
             is PeopleEvent.Ui.SearchPerson -> {
-                state {
-                    copy(
-                        peopleDvo = emptyList(),
-                        searchText = event.text,
-                        error = false,
-                        isLoading = true,
-                    )
-                }
                 commands { +PeopleCommand.SearchPeople(text = event.text) }
             }
         }

@@ -2,12 +2,16 @@ package kz.tinkoff.homework_2.presentation.people.elm
 
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegateItem
 
-data class PeopleState(
-    val peopleDvo: List<PersonDelegateItem> = emptyList(),
-    val searchText: String = "",
-    val error: Boolean = false,
-    val isLoading: Boolean = false,
-)
+sealed interface PeopleState {
+
+    data class Data(
+        val peopleDvo: List<PersonDelegateItem> = emptyList(),
+    ) : PeopleState
+
+    object Error: PeopleState
+
+    object Loading: PeopleState
+}
 
 sealed class PeopleEvent {
 

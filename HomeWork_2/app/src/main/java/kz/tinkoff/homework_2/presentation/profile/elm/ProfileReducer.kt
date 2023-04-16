@@ -7,13 +7,13 @@ class ProfileReducer : DslReducer<ProfileEvent, ProfileState, ProfileEffect, Pro
     override fun Result.reduce(event: ProfileEvent): Any {
         return when (event) {
             is ProfileEvent.Internal.ErrorLoading -> {
-                state { copy(profileDvo = null, error = true, isLoading = false,) }
+                state { ProfileState.Error }
             }
             is ProfileEvent.Internal.ProfileLoaded -> {
-                state { copy(profileDvo = event.data, error = false, isLoading = false) }
+                state { ProfileState.Data(event.data) }
             }
             is ProfileEvent.Ui.LoadProfile -> {
-                state { copy(profileDvo = null, error = false, isLoading = true) }
+                state { ProfileState.Loading }
                 commands { +ProfileCommand.LoadProfile }
             }
         }

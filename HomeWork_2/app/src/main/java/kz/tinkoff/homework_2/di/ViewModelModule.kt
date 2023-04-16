@@ -1,5 +1,7 @@
 package kz.tinkoff.homework_2.di
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kz.tinkoff.homework_2.presentation.channels.elm.ChannelActor
 import kz.tinkoff.homework_2.presentation.channels.elm.ChannelStoreFactory
 import kz.tinkoff.homework_2.presentation.message.elm.MessageActor
@@ -30,15 +32,15 @@ val viewModelModule = module {
         ChannelActor(
             repository = get(),
             dvoMapper = get(),
-            router = get()
+            coroutineScope = CoroutineScope(Dispatchers.IO)
         )
     }
 
     single {
         MessageActor(
             repository = get(),
-            dvoMapper = get(),
-            router = get()
+            router = get(),
+            delegateItemMapper = get()
         )
     }
 
@@ -52,7 +54,7 @@ val viewModelModule = module {
     }
 
     single {
-        ChannelStoreFactory(actor = get())
+        ChannelStoreFactory(actor = get(), router = get())
     }
 
     single {
@@ -60,7 +62,5 @@ val viewModelModule = module {
             actor = get()
         )
     }
-
-
 
 }

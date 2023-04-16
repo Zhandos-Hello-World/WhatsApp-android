@@ -2,11 +2,13 @@ package kz.tinkoff.homework_2.presentation.profile.elm
 
 import kz.tinkoff.homework_2.presentation.dvo.ProfileDvo
 
-data class ProfileState(
-    val profileDvo: ProfileDvo? = null,
-    val error: Boolean = false,
-    val isLoading: Boolean = false,
-)
+sealed interface ProfileState {
+    data class Data(val profileDvo: ProfileDvo? = null) : ProfileState
+
+    object Error : ProfileState
+
+    object Loading : ProfileState
+}
 
 sealed class ProfileEvent {
 
@@ -23,6 +25,7 @@ sealed class ProfileEvent {
         object ErrorLoading : Internal()
     }
 }
+
 class ProfileEffect
 
 sealed class ProfileCommand {

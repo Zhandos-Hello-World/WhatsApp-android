@@ -12,10 +12,9 @@ interface MessageRepository {
         topic: String
     ): List<MessageModel>
 
-    // Максимум 1 пропуск строки по код стайлу
-    suspend fun sendMessage(params: MessageStreamParams): Boolean
+    suspend fun sendMessage(params: MessageStreamParams)
 
-    suspend fun addReaction(messageId: Int, params: ReactionParams): Boolean
+    suspend fun addReaction(messageId: Int, params: ReactionParams)
 
-    suspend fun deleteReaction(messageId: Int, params: ReactionParams): Boolean
+    suspend fun deleteReaction(messageId: Int, params: ReactionParams)
 }

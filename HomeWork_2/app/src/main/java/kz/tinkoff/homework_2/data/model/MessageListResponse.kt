@@ -1,65 +1,69 @@
 package kz.tinkoff.homework_2.data.model
 
-import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
 
-// Зачем Parcelable?
-@Parcelize
+@Serializable
 data class MessageListResponse(
-    @SerializedName("messages")
+    @SerialName("messages")
     val messages: List<MessageResponse>,
-) : Parcelable {
+) {
 
-    // Зачем Parcelable?
-    @Parcelize
+    @Serializable
     data class MessageResponse(
+        @SerialName("id")
         val id: Int,
-        @SerializedName("sender_id")
+        @SerialName("sender_id")
         val senderId: Long,
-        @SerializedName("recipient_id")
+        @SerialName("recipient_id")
         val recipientId: Int,
         val timestamp: Long,
-        @SerializedName("subject")
+        @SerialName("subject")
         val topic: String,
-        @SerializedName("is_me_message")
+        @SerialName("is_me_message")
         val isMeMessage: Boolean,
+        @SerialName("reactions")
         val reactions: List<ReactionResponse>,
-        @SerializedName("sender_full_name")
+        @SerialName("sender_full_name")
         val senderFullName: String,
-        @SerializedName("sender_email")
+        @SerialName("sender_email")
         val senderEmail: String,
-        @SerializedName("sender_realm_str")
+        @SerialName("sender_realm_str")
         val senderRealmStr: String,
-        @SerializedName("display_recipient")
-        val displayRecipient: @RawValue Any,
+        @SerialName("display_recipient")
+        val displayRecipient: JsonElement? = null,
+        @SerialName("type")
         val type: String,
+        @SerialName("content")
         val content: String,
+        @SerialName("stream_id")
+        val streamId: Int? = null,
+        @SerialName("avatar_url")
+        val avatarUrl: String?,
+    )
 
-        @SerializedName("stream_id")
-        val streamId: String?,
-        @SerializedName("avatar_url")
-        val avatarUrl: String,
-        ) : Parcelable
-
-
-
-    @Parcelize
+    @Serializable
     data class ReactionResponse(
-        @SerializedName("emoji_name")
+        @SerialName("emoji_name")
         val emojiName: String,
-        @SerializedName("emoji_code")
+        @SerialName("emoji_code")
         val emojiCode: String,
-        @SerializedName("reaction_type")
+        @SerialName("reaction_type")
         val reactionType: String,
+        @SerialName("user")
         val user: UserResponse,
-    ) : Parcelable
+    )
 
-    @Parcelize
+    @Serializable
     data class UserResponse(
+        @SerialName("id")
         val id: Int,
-        @SerializedName("full_name") val fullName: String,
+        @SerialName("full_name")
+        val fullName: String,
+        @SerialName("email")
         val email: String,
-    ) : Parcelable
+        @SerialName("is_mirror_dummy")
+        val isMirrorDummy: Boolean = false,
+    )
 }

@@ -1,11 +1,12 @@
 package kz.tinkoff.homework_2.data.model
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-// Зачем Parcelable?
-@Parcelize
+@Serializable
 data class BaseResponse(
+    @SerialName("msg")
     val msg: String? = null,
-    val result: String? = null
-) : Parcelable
+    @SerialName("result")
+    val result: String? = null,
+)

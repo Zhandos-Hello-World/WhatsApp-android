@@ -1,28 +1,27 @@
 package kz.tinkoff.homework_2.data.model
 
-import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-// Зачем Parcelable?
-@Parcelize
+@Serializable
 data class StreamListResponse(
+    @SerialName("streams")
     val streams: List<StreamResponse>,
-): Parcelable {
+) {
 
-    // SerializedName лучше везде указывать
-    @Parcelize
+    @Serializable
     data class StreamResponse(
-        @SerializedName("stream_id")
+        @SerialName("stream_id")
         val id: Int,
+        @SerialName("name")
         val name: String,
-        @SerializedName("date_created")
+        @SerialName("date_created")
         val dateCreated: Long,
+        @SerialName("description")
         val description: String,
-        @SerializedName("first_message_id")
+        @SerialName("first_message_id")
         val firstMessageId: String,
-        @SerializedName("stream_post_policy")
+        @SerialName("stream_post_policy")
         val streamPostPolicy: Int,
-    ) : Parcelable
-
+    )
 }

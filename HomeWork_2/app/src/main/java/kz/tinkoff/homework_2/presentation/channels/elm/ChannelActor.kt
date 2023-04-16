@@ -1,39 +1,28 @@
 package kz.tinkoff.homework_2.presentation.channels.elm
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.github.terrakok.cicerone.Router
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kz.tinkoff.core.ktx.runCatchingNonCancellation
 import kz.tinkoff.homework_2.domain.repository.ChannelRepository
-import kz.tinkoff.homework_2.navigation.Screens
 import kz.tinkoff.homework_2.presentation.mapper.StreamDvoMapper
 import vivid.money.elmslie.coroutines.Actor
 
-// Почему актор наследует ViewModel?
 class ChannelActor(
     private val repository: ChannelRepository,
     private val dvoMapper: StreamDvoMapper,
-    private val router: Router,
-) : ViewModel(), Actor<ChannelCommand, ChannelEvent> {
+    private val coroutineScope: CoroutineScope,
+) : Actor<ChannelCommand, ChannelEvent> {
 
     override fun execute(command: ChannelCommand): Flow<ChannelEvent> = when (command) {
         is ChannelCommand.LoadChannel -> {
             flow<ChannelEvent> {
-                // Во флоу можно без runCatchingNonCancellation в большинстве случаев
-                // Ошибки обрабатываются при помощи оператора catch
-                val responseStreams = runCatchingNonCancellation {
-                    repository.getAllChannels()
-                }.getOrNull()
+                val responseStreams = repository.getAllChannels()
 
-                if (responseStreams == null) {
-                    emit(ChannelEvent.Internal.ErrorLoading)
-                    return@flow
-                }
                 val topicDeferred =
                     responseStreams.map { channelModel -> getTopicsByIdAsync(channelModel.id) }
 
@@ -49,39 +38,28 @@ class ChannelActor(
                         )
                     )
                 )
-            }
-        }
-        // Это не в actor, а в обработчике Ui Event
-        is ChannelCommand.NavigateToMessageCommand -> {
-            flow {
-                router.navigateTo(Screens.MessageScreen(command.args))
+            }.catch {
+                emit(ChannelEvent.Internal.ErrorLoading)
             }
         }
         is ChannelCommand.SearchChannelCommand -> {
-            flow {
-                // МОжно убрать задержки
-                delay(500L)
+            flow<ChannelEvent> {
+                val response = repository.findChannels(command.text)
 
-                val response =
-                    runCatchingNonCancellation { repository.findChannels(command.text) }.getOrNull()
-
-                if (response != null) {
-                    emit(
-                        ChannelEvent.Internal.ChannelLoaded(
-                            dvoMapper.toChannelsDelegateItems(response)
-                        )
+                emit(
+                    ChannelEvent.Internal.ChannelLoaded(
+                        dvoMapper.toChannelsDelegateItems(response)
                     )
-                } else {
-                    emit(ChannelEvent.Internal.ErrorLoading)
-                }
+                )
+            }.catch {
+                emit(ChannelEvent.Internal.ErrorLoading)
             }
         }
     }
 
-    private fun getTopicsByIdAsync(id: Int) = viewModelScope.async {
+    private fun getTopicsByIdAsync(id: Int) = coroutineScope.async {
         runCatchingNonCancellation {
             repository.findTopics(id)
         }.getOrNull()
     }
-
 }
