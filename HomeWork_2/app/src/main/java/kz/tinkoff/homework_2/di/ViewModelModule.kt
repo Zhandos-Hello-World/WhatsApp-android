@@ -39,8 +39,8 @@ val viewModelModule = module {
     single {
         MessageActor(
             repository = get(),
-            router = get(),
-            delegateItemMapper = get()
+            delegateItemMapper = get(),
+            router = get()
         )
     }
 

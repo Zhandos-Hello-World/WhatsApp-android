@@ -1,11 +1,13 @@
 package kz.tinkoff.homework_2.presentation.message
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import javax.inject.Inject
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
@@ -14,7 +16,11 @@ import kz.tinkoff.coreui.BottomBarController
 import kz.tinkoff.coreui.custom.dvo.MessageDvo
 import kz.tinkoff.coreui.custom.viewgroup.CustomMessageTextFieldBar
 import kz.tinkoff.coreui.item.ReactionViewItem
+import kz.tinkoff.homework_2.MainApplication
 import kz.tinkoff.homework_2.databinding.FragmentMessageBinding
+import kz.tinkoff.homework_2.di_dagger.DaggerMessageComponent
+import kz.tinkoff.homework_2.di_dagger.MessageModule
+import kz.tinkoff.homework_2.di_dagger.getApplication
 import kz.tinkoff.homework_2.presentation.delegates.date.DateDelegate
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageAdapterListener
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageDelegate
@@ -26,6 +32,7 @@ import kz.tinkoff.homework_2.presentation.reaction.ReactionBottomSheetDialog
 import org.koin.android.ext.android.inject
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
+import vivid.money.elmslie.core.store.Store
 
 class MessageFragment(private val args: MessageArgs) :
     ElmFragment<MessageEvent, MessageEffect, MessageState>(), MessageAdapterListener {
@@ -41,11 +48,9 @@ class MessageFragment(private val args: MessageArgs) :
 
     override val initEvent: MessageEvent = MessageEvent.Ui.LoadMessage(args)
 
-    private val messageStoreFactory: MessageStoreFactory by inject()
-
     override val storeHolder by lazyUnsafe {
         LifecycleAwareStoreHolder(lifecycle) {
-            messageStoreFactory.provide()
+            getApplication().messageComponent.getMessageStore().provide()
         }
     }
 

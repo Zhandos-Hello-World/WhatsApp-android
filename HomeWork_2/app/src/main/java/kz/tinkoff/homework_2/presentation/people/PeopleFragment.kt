@@ -11,6 +11,7 @@ import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
 import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.databinding.FragmentPeopleBinding
+import kz.tinkoff.homework_2.di_dagger.getApplication
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegate
 import kz.tinkoff.homework_2.presentation.people.elm.PeopleEffect
 import kz.tinkoff.homework_2.presentation.people.elm.PeopleEvent
@@ -24,11 +25,9 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleEffect, PeopleState>() {
     private var _binding: FragmentPeopleBinding? = null
     private val binding get() = _binding!!
 
-    private val peopleStoreFactory: PeopleStoreFactory by inject()
-
     override val storeHolder by lazyUnsafe {
         LifecycleAwareStoreHolder(lifecycle) {
-            peopleStoreFactory.provide()
+            getApplication().peopleComponent.getPeopleStore().provide()
         }
     }
 

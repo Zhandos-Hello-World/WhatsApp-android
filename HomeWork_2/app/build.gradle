@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlinx-serialization'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -53,6 +54,8 @@ dependencies {
     implementation deps.material
 
     implementation deps.libs.values()
+    implementation 'com.google.dagger:dagger:2.45'
+    kapt 'com.google.dagger:dagger-compiler:2.45'
 
     implementation di.values()
 

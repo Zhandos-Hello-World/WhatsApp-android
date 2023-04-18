@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.R
 import kz.tinkoff.homework_2.databinding.FragmentProfileBinding
+import kz.tinkoff.homework_2.di_dagger.getApplication
 import kz.tinkoff.homework_2.presentation.dvo.ProfileDvo
 import kz.tinkoff.homework_2.presentation.profile.elm.ProfileEffect
 import kz.tinkoff.homework_2.presentation.profile.elm.ProfileEvent
@@ -25,11 +26,9 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileEffect, ProfileState>()
 
     override val initEvent: ProfileEvent = ProfileEvent.Ui.LoadProfile
 
-    private val profileStoreFactory: ProfileStoreFactory by inject()
-
     override val storeHolder by lazyUnsafe {
         LifecycleAwareStoreHolder(lifecycle) {
-            profileStoreFactory.provide()
+            getApplication().profileComponent.getProfileStore().provide()
         }
     }
 

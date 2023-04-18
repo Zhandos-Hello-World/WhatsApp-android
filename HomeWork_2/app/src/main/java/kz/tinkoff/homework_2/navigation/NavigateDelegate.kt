@@ -4,7 +4,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import com.github.terrakok.cicerone.Navigator
 import com.github.terrakok.cicerone.NavigatorHolder
-import kz.tinkoff.homework_2.R
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 

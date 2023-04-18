@@ -1,6 +1,7 @@
 package kz.tinkoff.homework_2.presentation.channels.elm
 
 import com.github.terrakok.cicerone.Router
+import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.navigation.Screens
 import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
 
