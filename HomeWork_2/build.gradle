@@ -12,7 +12,7 @@ buildscript {
         material_version = '1.8.0'
 
         cicerone_version = '7.1'
-        koin_version = '3.3.2'
+        dagger_version = '2.45'
         koin_android_version = '3.3.2'
         coroutines_android_version = '1.3.9'
         rxKotlin_version = '3.0.1'
@@ -58,8 +58,8 @@ buildscript {
                 ]
         ]
         di = [
-                koinCore    : "io.insert-koin:koin-core:$koin_version",
-                kointAndroid: "io.insert-koin:koin-android:$koin_android_version"
+                dagger    : "com.google.dagger:dagger:$dagger_version",
+                daggerKapt: "com.google.dagger:dagger-compiler:$dagger_version"
         ]
 
         local = [

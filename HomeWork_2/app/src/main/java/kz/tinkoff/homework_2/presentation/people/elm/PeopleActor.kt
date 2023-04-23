@@ -1,5 +1,6 @@
 package kz.tinkoff.homework_2.presentation.people.elm
 
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -22,7 +23,7 @@ import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegateItem
 import kz.tinkoff.homework_2.presentation.mapper.PersonDvoMapper
 import vivid.money.elmslie.coroutines.Actor
 
-class PeopleActor(
+class PeopleActor @Inject constructor(
     private val repository: PeopleRepository,
     private val dvoMapper: PersonDvoMapper,
 ) : Actor<PeopleCommand, PeopleEvent> {

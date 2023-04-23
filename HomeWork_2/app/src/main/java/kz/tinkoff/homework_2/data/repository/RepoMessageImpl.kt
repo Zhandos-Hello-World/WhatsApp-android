@@ -1,5 +1,6 @@
 package kz.tinkoff.homework_2.data.repository
 
+import javax.inject.Inject
 import kz.tinkoff.homework_2.data.mappers.MessageDtoMapper
 import kz.tinkoff.homework_2.data.mappers.MessageMapper
 import kz.tinkoff.homework_2.data.mappers.ReactionDtoMapper
@@ -9,7 +10,7 @@ import kz.tinkoff.homework_2.domain.model.MessageStreamParams
 import kz.tinkoff.homework_2.domain.model.ReactionParams
 import kz.tinkoff.homework_2.domain.repository.MessageRepository
 
-class RepoMessageImpl(
+class RepoMessageImpl @Inject constructor(
     private val dataSource: MessageRemoteDataSource,
     private val mapper: MessageMapper,
     private val dtoMessageMapper: MessageDtoMapper,

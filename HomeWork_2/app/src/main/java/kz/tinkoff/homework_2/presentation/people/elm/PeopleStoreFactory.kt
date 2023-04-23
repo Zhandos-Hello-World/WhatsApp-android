@@ -1,8 +1,9 @@
 package kz.tinkoff.homework_2.presentation.people.elm
 
+import javax.inject.Inject
 import vivid.money.elmslie.coroutines.ElmStoreCompat
 
-class PeopleStoreFactory(private val actor: PeopleActor) {
+class PeopleStoreFactory @Inject constructor(private val actor: PeopleActor) {
     private val store by lazy {
         ElmStoreCompat(
             initialState = PeopleState.Loading,

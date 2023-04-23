@@ -1,23 +1,26 @@
 package kz.tinkoff.homework_2.presentation.people
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import javax.inject.Inject
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
 import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.databinding.FragmentPeopleBinding
-import kz.tinkoff.homework_2.di_dagger.getApplication
+import kz.tinkoff.homework_2.di_dagger.people.DaggerPeopleComponent
+import kz.tinkoff.homework_2.di_dagger.people.PeopleModule
+import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegate
 import kz.tinkoff.homework_2.presentation.people.elm.PeopleEffect
 import kz.tinkoff.homework_2.presentation.people.elm.PeopleEvent
 import kz.tinkoff.homework_2.presentation.people.elm.PeopleState
 import kz.tinkoff.homework_2.presentation.people.elm.PeopleStoreFactory
-import org.koin.android.ext.android.inject
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
@@ -25,9 +28,12 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleEffect, PeopleState>() {
     private var _binding: FragmentPeopleBinding? = null
     private val binding get() = _binding!!
 
+    @Inject
+    lateinit var storeFactory: PeopleStoreFactory
+
     override val storeHolder by lazyUnsafe {
         LifecycleAwareStoreHolder(lifecycle) {
-            getApplication().peopleComponent.getPeopleStore().provide()
+            storeFactory.provide()
         }
     }
 
@@ -38,6 +44,14 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleEffect, PeopleState>() {
         MainAdapter().apply {
             addDelegate(delegate as AdapterDelegate<RecyclerView.ViewHolder, DelegateItem>)
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        DaggerPeopleComponent.factory().create(
+            PeopleModule(),
+            requireContext().getAppComponent()
+        ).inject(this)
     }
 
     override fun onCreateView(

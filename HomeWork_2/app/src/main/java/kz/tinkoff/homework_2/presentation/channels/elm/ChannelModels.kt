@@ -3,13 +3,13 @@ package kz.tinkoff.homework_2.presentation.channels.elm
 import kz.tinkoff.homework_2.presentation.delegates.channels.ChannelDelegateItem
 import kz.tinkoff.homework_2.presentation.message.MessageArgs
 
-sealed interface ChannelState {
+sealed interface StreamState {
 
-    object Error : ChannelState
+    object Error : StreamState
 
-    object Loading : ChannelState
+    object Loading : StreamState
 
-    data class Data(val channels: List<ChannelDelegateItem>) : ChannelState
+    data class Data(val channels: List<ChannelDelegateItem>) : StreamState
 }
 
 sealed class ChannelEvent {

@@ -4,14 +4,16 @@ import android.graphics.Rect
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
+import javax.inject.Inject
 import kz.tinkoff.coreui.BottomBarController
 import kz.tinkoff.homework_2.R
 import kz.tinkoff.homework_2.databinding.ActivityMainBinding
+import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.navigation.DefaultNavigatorDelegate
 import kz.tinkoff.homework_2.navigation.NavigateDelegate
 import kz.tinkoff.homework_2.navigation.Screens
-import org.koin.android.ext.android.inject
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main),
@@ -20,12 +22,21 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
 
-    private val router: Router by inject()
+    @Inject
+    lateinit var router: Router
+
+    @Inject
+    lateinit var navigateHolder: NavigatorHolder
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        registerNavigatorDelegate(this, R.id.navHostFragment_2)
+        getAppComponent().inject(this)
+        registerNavigatorDelegate(
+            this,
+            R.id.navHostFragment_2,
+            navigateHolder
+        )
 
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

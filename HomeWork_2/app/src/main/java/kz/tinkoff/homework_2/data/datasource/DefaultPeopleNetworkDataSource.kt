@@ -1,12 +1,13 @@
 package kz.tinkoff.homework_2.data.datasource
 
+import javax.inject.Inject
 import kz.tinkoff.homework_2.data.model.PeopleListResponse
 import kz.tinkoff.homework_2.data.model.PresenceResponse
 import kz.tinkoff.homework_2.data.model.ProfileResponse
 import kz.tinkoff.homework_2.data.network.PeopleApiService
 import kz.tinkoff.homework_2.domain.datasource.PeopleRemoteDataSource
 
-class DefaultPeopleNetworkDataSource(
+class DefaultPeopleNetworkDataSource @Inject constructor(
     private val apiService: PeopleApiService,
 ) : PeopleRemoteDataSource {
 

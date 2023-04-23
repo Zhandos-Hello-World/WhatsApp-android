@@ -3,7 +3,7 @@ package kz.tinkoff.homework_2.domain.datasource
 import kz.tinkoff.homework_2.data.model.StreamListResponse
 import kz.tinkoff.homework_2.data.model.TopicListResponse
 
-interface ChannelRemoteDataSource {
+interface StreamRemoteDataSource {
 
     suspend fun getAllStreams(): StreamListResponse
 

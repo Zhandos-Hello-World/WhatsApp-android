@@ -55,9 +55,10 @@ dependencies {
 
     implementation deps.libs.values()
     implementation 'com.google.dagger:dagger:2.45'
-    kapt 'com.google.dagger:dagger-compiler:2.45'
 
-    implementation di.values()
+
+    kapt di.daggerKapt
+    implementation di.dagger
 
     debugImplementation deps.debugLibs.chuckerDebug
     releaseImplementation deps.debugLibs.chuckerRelease
