@@ -1,9 +1,11 @@
 package kz.tinkoff.homework_2.data.repository
 
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kz.tinkoff.homework_2.data.mappers.MessageDtoMapper
 import kz.tinkoff.homework_2.data.mappers.MessageMapper
 import kz.tinkoff.homework_2.data.mappers.ReactionDtoMapper
+import kz.tinkoff.homework_2.domain.datasource.MessageLocalDataSource
 import kz.tinkoff.homework_2.domain.datasource.MessageRemoteDataSource
 import kz.tinkoff.homework_2.domain.model.MessageModel
 import kz.tinkoff.homework_2.domain.model.MessageStreamParams
@@ -11,7 +13,8 @@ import kz.tinkoff.homework_2.domain.model.ReactionParams
 import kz.tinkoff.homework_2.domain.repository.MessageRepository
 
 class RepoMessageImpl @Inject constructor(
-    private val dataSource: MessageRemoteDataSource,
+    private val remoteDataSource: MessageRemoteDataSource,
+    private val localDataSource: MessageLocalDataSource,
     private val mapper: MessageMapper,
     private val dtoMessageMapper: MessageDtoMapper,
     private val dtoReactionMapper: ReactionDtoMapper,
@@ -21,27 +24,36 @@ class RepoMessageImpl @Inject constructor(
         streamId: Int,
         stream: String,
         topic: String,
+        numBefore: Int ,
+        numAfter: Int ,
     ): List<MessageModel> {
-        val response = dataSource.getAllMessage()
+        val response = remoteDataSource.getAllMessage(
+            stream)
         val mappedResponse = mapper.map(response)
-        return mappedResponse.filter {
-            it.streamId == streamId && it.topic == topic && it.displayRecipient == stream
+        val filter = mappedResponse.filter {
+            it.topic == topic
         }
+        filter.forEach { localDataSource.addMessage(it) }
+        return filter
+    }
+
+    override fun getAllMessageLocally(streamId: Int): Flow<List<MessageModel>> {
+        return localDataSource.getMessageByStreamId(streamId)
     }
 
     override suspend fun sendMessage(params: MessageStreamParams) {
-        dataSource.setMessageSend(dtoMessageMapper.map(from = params))
+        remoteDataSource.setMessageSend(dtoMessageMapper.map(from = params))
     }
 
     override suspend fun addReaction(messageId: Int, params: ReactionParams) {
-        dataSource.addReaction(
+        remoteDataSource.addReaction(
             messageId = messageId,
             request = dtoReactionMapper.map(params)
         )
     }
 
     override suspend fun deleteReaction(messageId: Int, params: ReactionParams) {
-        dataSource.deleteReaction(
+        remoteDataSource.deleteReaction(
             messageId = messageId,
             request = dtoReactionMapper.map(params)
         )

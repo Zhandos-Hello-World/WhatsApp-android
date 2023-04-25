@@ -16,8 +16,13 @@ sealed interface MessageState {
 sealed class MessageEvent {
 
     sealed class Ui : MessageEvent() {
+        data class ItemShowed(val args: MessageArgs, val position: Int) : Ui()
 
-        data class LoadMessage(val args: MessageArgs) : Ui()
+        data class LoadMessageRemote(val args: MessageArgs) : Ui()
+
+        data class LoadMessageRemoteSilently(val args: MessageArgs) : Ui()
+
+        data class LoadMessageLocal(val args: MessageArgs) : Ui()
 
         data class AddReaction(
             val args: MessageArgs,
@@ -39,7 +44,9 @@ sealed class MessageEvent {
 
     sealed class Internal : MessageEvent() {
 
-        data class MessageLoaded(val data: List<DelegateItem>) : Internal()
+        data class MessageLoadedRemote(val data: List<DelegateItem>) : Internal()
+
+        data class MessageLoadedLocal(val data: List<DelegateItem>) : Internal()
 
         object ErrorLoading : Internal()
     }
@@ -48,7 +55,10 @@ sealed class MessageEvent {
 class MessageEffect
 
 sealed class MessageCommand {
-    data class LoadMessage(val args: MessageArgs) : MessageCommand()
+    data class ItemShowed(val args: MessageArgs, val position: Int) : MessageCommand()
+    data class LoadMessageRemoteSilently(val args: MessageArgs) : MessageCommand()
+    data class LoadMessageRemote(val args: MessageArgs) : MessageCommand()
+    data class LoadMessageLocal(val args: MessageArgs) : MessageCommand()
     data class AddReaction(val args: MessageArgs, val model: MessageDvo, val emoji: String) :
         MessageCommand()
 

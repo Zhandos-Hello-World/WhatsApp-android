@@ -14,15 +14,31 @@ class MessageReducer : DslReducer<MessageEvent, MessageState, MessageEffect, Mes
         is MessageEvent.Ui.DeleteReaction -> {
             commands { +MessageCommand.DeleteReaction(event.args, event.model, event.emoji) }
         }
-        is MessageEvent.Ui.LoadMessage -> {
+        is MessageEvent.Ui.LoadMessageLocal -> {
+            commands { +MessageCommand.LoadMessageLocal(event.args) }
+        }
+        is MessageEvent.Ui.LoadMessageRemote -> {
             state { MessageState.Loading }
-            commands { +MessageCommand.LoadMessage(event.args) }
+            commands { +MessageCommand.LoadMessageRemote(event.args) }
+        }
+        is MessageEvent.Ui.ItemShowed -> {
+            commands { +MessageCommand.ItemShowed(event.args, event.position) }
+        }
+        is MessageEvent.Ui.LoadMessageRemoteSilently -> {
+            commands { +MessageCommand.LoadMessageRemoteSilently(event.args) }
         }
         is MessageEvent.Ui.BackToChannels -> {
             commands { +MessageCommand.BackToChannels }
         }
-        is MessageEvent.Internal.MessageLoaded -> {
+        is MessageEvent.Internal.MessageLoadedRemote -> {
             state { MessageState.Data(event.data) }
+        }
+        is MessageEvent.Internal.MessageLoadedLocal -> {
+            if (event.data.isEmpty()) {
+                state { MessageState.Loading }
+            } else {
+                state { MessageState.Data(event.data) }
+            }
         }
         is MessageEvent.Internal.ErrorLoading -> {
             state { MessageState.Error }

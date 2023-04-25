@@ -3,6 +3,7 @@ package kz.tinkoff.homework_2.presentation.message.elm
 import com.github.terrakok.cicerone.Router
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.ktx.runCatchingNonCancellation
@@ -22,18 +23,80 @@ class MessageActor @Inject constructor(
     private val router: Router,
 ) : Actor<MessageCommand, MessageEvent> {
     private var messageList = mutableListOf<DelegateItem>()
+    private val numBefore get() = if (messageList.size < LOAD_ITEMS) LOAD_ITEMS else messageList.size
+    private val numAfter get() = numBefore - 20
 
     override fun execute(command: MessageCommand): Flow<MessageEvent> {
         return when (command) {
-            is MessageCommand.LoadMessage -> {
+            is MessageCommand.LoadMessageLocal -> {
                 flow {
-
+                    val response = repository.getAllMessageLocally(command.args.streamId)
+                    messageList += delegateItemMapper.toMessageWithDateFromModel(
+                        response.first()
+                    ).toMutableList()
+                    emit(MessageEvent.Internal.MessageLoadedLocal(messageList))
+                    emit(MessageEvent.Ui.LoadMessageRemoteSilently(command.args))
+                }
+            }
+            is MessageCommand.LoadMessageRemoteSilently -> {
+                flow {
                     val messageArgs = command.args
                     val response = runCatchingNonCancellation {
                         repository.getAllMessage(
                             streamId = messageArgs.streamId,
                             stream = messageArgs.stream.replace("#", ""),
-                            topic = messageArgs.topic.replace("#", "")
+                            topic = messageArgs.topic.replace("#", ""),
+                            numBefore = numBefore,
+                            numAfter = numAfter
+                        )
+                    }.getOrNull()
+
+                    if (response != null) {
+                        messageList += delegateItemMapper.toMessageWithDateFromModel(
+                            response
+                        ).toMutableList()
+                        emit(
+                            MessageEvent.Internal.MessageLoadedRemote(messageList)
+                        )
+                    }
+                }
+            }
+            is MessageCommand.ItemShowed -> {
+                flow {
+                    if (command.position >= messageList.size - LAST_LEFT_ITEMS) {
+                        val messageArgs = command.args
+                        val response = runCatchingNonCancellation {
+                            repository.getAllMessage(
+                                streamId = messageArgs.streamId,
+                                stream = messageArgs.stream.replace("#", ""),
+                                topic = messageArgs.topic.replace("#", ""),
+                                numBefore = numBefore,
+                                numAfter = numAfter
+                            )
+                        }.getOrNull()
+
+                        if (response != null) {
+                            messageList += delegateItemMapper.toMessageWithDateFromModel(
+                                response
+                            ).toMutableList()
+                            emit(
+                                MessageEvent.Internal.MessageLoadedRemote(messageList)
+                            )
+                        }
+                    }
+
+                }
+            }
+            is MessageCommand.LoadMessageRemote -> {
+                flow {
+                    val messageArgs = command.args
+                    val response = runCatchingNonCancellation {
+                        repository.getAllMessage(
+                            streamId = messageArgs.streamId,
+                            stream = messageArgs.stream.replace("#", ""),
+                            topic = messageArgs.topic.replace("#", ""),
+                            numBefore = numBefore,
+                            numAfter = numAfter
                         )
                     }.getOrNull()
 
@@ -42,7 +105,7 @@ class MessageActor @Inject constructor(
                             response
                         ).toMutableList()
                         emit(
-                            MessageEvent.Internal.MessageLoaded(messageList)
+                            MessageEvent.Internal.MessageLoadedRemote(messageList)
                         )
                     } else {
                         emit(MessageEvent.Internal.ErrorLoading)
@@ -65,7 +128,7 @@ class MessageActor @Inject constructor(
                     }.getOrNull()
 
                     addMessageAfterSuccess(message)
-                    emit(MessageEvent.Internal.MessageLoaded(messageList))
+                    emit(MessageEvent.Internal.MessageLoadedRemote(messageList))
                 }
             }
             is MessageCommand.DeleteReaction -> {
@@ -82,7 +145,7 @@ class MessageActor @Inject constructor(
                     }.getOrNull()
 
                     deleteReactionAfterSuccess(model, emoji)
-                    emit(MessageEvent.Internal.MessageLoaded(messageList))
+                    emit(MessageEvent.Internal.MessageLoadedRemote(messageList))
 
                 }
             }
@@ -101,7 +164,7 @@ class MessageActor @Inject constructor(
                     }.getOrNull()
 
                     addReactionAfterSuccess(model, emoji)
-                    emit(MessageEvent.Internal.MessageLoaded(messageList))
+                    emit(MessageEvent.Internal.MessageLoadedRemote(messageList))
                 }
             }
             is MessageCommand.BackToChannels -> {
@@ -178,6 +241,8 @@ class MessageActor @Inject constructor(
     companion object {
         const val NOT_FOUND_INDEX = -1
 
+        const val LAST_LEFT_ITEMS = 5
+        const val LOAD_ITEMS = 20
     }
 
 }
