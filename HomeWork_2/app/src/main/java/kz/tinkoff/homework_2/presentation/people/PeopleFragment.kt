@@ -4,41 +4,38 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
-import kz.tinkoff.coreui.ScreenState
-import kz.tinkoff.coreui.custom.viewgroup.CustomSearchEditText
-import kz.tinkoff.coreui.ext.hide
-import kz.tinkoff.coreui.ext.show
+import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.databinding.FragmentPeopleBinding
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegate
-import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegateItem
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import kz.tinkoff.homework_2.presentation.people.elm.PeopleEffect
+import kz.tinkoff.homework_2.presentation.people.elm.PeopleEvent
+import kz.tinkoff.homework_2.presentation.people.elm.PeopleState
+import kz.tinkoff.homework_2.presentation.people.elm.PeopleStoreFactory
+import org.koin.android.ext.android.inject
+import vivid.money.elmslie.android.base.ElmFragment
+import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
-class PeopleFragment : Fragment() {
+class PeopleFragment : ElmFragment<PeopleEvent, PeopleEffect, PeopleState>() {
     private var _binding: FragmentPeopleBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: PeopleViewModel by viewModel()
+    private val peopleStoreFactory: PeopleStoreFactory by inject()
 
-    private val searchEditText: CustomSearchEditText get() = binding.searchEditText
-    private val usersRecyclerView: RecyclerView get() = binding.usersRecyclerView
-    private val errorState: ViewGroup get() = binding.errorState
-    private val loadingState: ViewGroup get() = binding.loadingState
-    private val reloadRequestBtn: Button get() = binding.reloadRequestBtn
+    override val storeHolder by lazyUnsafe {
+        LifecycleAwareStoreHolder(lifecycle) {
+            peopleStoreFactory.provide()
+        }
+    }
 
+    override val initEvent: PeopleEvent = PeopleEvent.Ui.LoadPeople
 
     val delegate = PersonDelegate { }
-    private val adapter: MainAdapter by lazy(LazyThreadSafetyMode.NONE) {
+    private val adapter: MainAdapter by lazyUnsafe {
         MainAdapter().apply {
             addDelegate(delegate as AdapterDelegate<RecyclerView.ViewHolder, DelegateItem>)
         }
@@ -51,54 +48,49 @@ class PeopleFragment : Fragment() {
     ): View {
         _binding = FragmentPeopleBinding.inflate(inflater, container, false)
 
-        searchEditText.setHint(getString(kz.tinkoff.core.R.string.users_with_three_dots))
-        usersRecyclerView.adapter = adapter
+        binding.apply {
+            searchEditText.setHint(getString(kz.tinkoff.core.R.string.users_with_three_dots))
 
-        viewModel.peopleList.flowWithLifecycle(lifecycle).onEach(::render).launchIn(lifecycleScope)
-
-        searchEditText.doOnTextChanged { searchText ->
-            if (searchText.isNotEmpty()) {
-                lifecycleScope.launch {
-                    searchText.let { query -> viewModel.searchQueryState.emit(query) }
+            searchEditText.doOnTextChanged { searchText ->
+                if (searchText.isNotEmpty()) {
+                    searchText.let { query ->
+                        store.accept(PeopleEvent.Ui.SearchPerson(query))
+                    }
+                } else {
+                    store.accept(PeopleEvent.Ui.LoadPeople)
                 }
-            } else {
-                viewModel.getAllFromCache()
+            }
+            usersRecyclerView.adapter = adapter
+
+            reloadRequestBtn.setOnClickListener {
+                store.accept(PeopleEvent.Ui.LoadPeople)
             }
         }
-
-        reloadRequestBtn.setOnClickListener {
-            viewModel.getAll()
-        }
-
 
         return binding.root
     }
 
-
-    private fun render(state: ScreenState<List<PersonDelegateItem>>) {
+    override fun render(state: PeopleState) {
+        hideAll()
         when (state) {
-            is ScreenState.Loading -> {
-                hideAll()
-                loadingState.show()
+            is PeopleState.Data -> {
+                binding.usersRecyclerView.isVisible = true
+                adapter.submitList(state.peopleDvo)
             }
-            is ScreenState.Error -> {
-                hideAll()
-                errorState.show()
+            is PeopleState.Loading -> {
+                binding.loadingState.isVisible = true
             }
-            is ScreenState.Data -> {
-                hideAll()
-                usersRecyclerView.show()
-
-                adapter.submitList(state.data)
+            is PeopleState.Error -> {
+                binding.errorState.isVisible = true
             }
         }
     }
 
     private fun hideAll() {
-        loadingState.hide()
-        usersRecyclerView.hide()
-        errorState.hide()
-
+        binding.apply {
+            usersRecyclerView.isVisible = false
+            loadingState.isVisible = false
+            errorState.isVisible = false
+        }
     }
-
 }

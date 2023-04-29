@@ -7,18 +7,18 @@ import kz.tinkoff.homework_2.domain.model.StreamModel
 import kz.tinkoff.homework_2.domain.model.TopicsModel
 import kz.tinkoff.homework_2.domain.repository.ChannelRepository
 
-class DefaultChannelRepository(
+class RepoStreamImpl(
     private val dataSource: ChannelRemoteDataSource,
     private val streamMapper: StreamMapper,
-    private val topicMapper: TopicMapper
+    private val topicMapper: TopicMapper,
 ) : ChannelRepository {
 
     override suspend fun getAllChannels(): List<StreamModel> {
-        return streamMapper.toListChannel(dataSource.getAllChannels())
+        return streamMapper.toListChannel(dataSource.getAllStreams())
     }
 
     override suspend fun findChannels(name: String): List<StreamModel> {
-        return streamMapper.toListChannel(dataSource.findChannels(name))
+        return streamMapper.toListChannel(dataSource.findStreams(name))
     }
 
     override suspend fun findTopics(id: Int): TopicsModel {

@@ -9,11 +9,11 @@ import kz.tinkoff.homework_2.domain.model.PresenceModel
 import kz.tinkoff.homework_2.domain.model.ProfileModel
 import kz.tinkoff.homework_2.domain.repository.PeopleRepository
 
-class DefaultPeopleRepository(
+class RepoPeopleImpl(
     private val dataSource: PeopleRemoteDataSource,
     private val peopleMapper: PersonMapper,
     private val profileMapper: ProfileMapper,
-    private val presenceMapper: PresenceMapper
+    private val presenceMapper: PresenceMapper,
 ) : PeopleRepository {
 
     override suspend fun getAllPeople(): List<PersonModel> {

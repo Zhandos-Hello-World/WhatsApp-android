@@ -17,7 +17,7 @@ class ProfileMapper: Mapper<ProfileResponse, ProfileModel> {
             isGuest = from.isGuest,
             timezone = from.timezone,
             isActive = from.isActive,
-            avatarUrl = from.avatarUrl,
+            avatarUrl = from.avatarUrl.orEmpty(),
             dateJoined = from.dateJoined,
             deliveredEmail = from.deliveredEmail
         )
