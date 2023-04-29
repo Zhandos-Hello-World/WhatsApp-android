@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
+import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.databinding.FragmentChannelListBinding
 import kz.tinkoff.homework_2.presentation.channels.SearchEditTextController
 import kz.tinkoff.homework_2.presentation.channels.elm.ChannelEffect
@@ -19,6 +20,7 @@ import kz.tinkoff.homework_2.presentation.delegates.channels.ChannelDelegate
 import kz.tinkoff.homework_2.presentation.message.MessageArgs
 import org.koin.android.ext.android.inject
 import vivid.money.elmslie.android.base.ElmFragment
+import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
 class ChannelsListFragment : ElmFragment<ChannelEvent, ChannelEffect, ChannelState>() {
     private var _binding: FragmentChannelListBinding? = null
@@ -31,10 +33,17 @@ class ChannelsListFragment : ElmFragment<ChannelEvent, ChannelEffect, ChannelSta
     private val errorState: ViewGroup get() = binding.errorState
     private val loadingState: ViewGroup get() = binding.loadingState
 
-    private val delegate: ChannelDelegate by lazy(LazyThreadSafetyMode.NONE) {
+    override val storeHolder by lazyUnsafe {
+        LifecycleAwareStoreHolder(lifecycle) {
+            channelStoreFactory.provide()
+        }
+    }
+
+    private val delegate: ChannelDelegate by lazyUnsafe {
         ChannelDelegate(listener = ::navigateToMessage)
     }
-    private val adapter: MainAdapter by lazy(LazyThreadSafetyMode.NONE) {
+
+    private val adapter: MainAdapter by lazyUnsafe {
         MainAdapter().apply {
             addDelegate(delegate as AdapterDelegate<RecyclerView.ViewHolder, DelegateItem>)
         }
@@ -60,14 +69,26 @@ class ChannelsListFragment : ElmFragment<ChannelEvent, ChannelEffect, ChannelSta
         return binding.root
     }
 
-    override fun createStore() = channelStoreFactory.provide()
-
     override fun render(state: ChannelState) {
-        loadingState.isVisible = state.isLoading
-        errorState.isVisible = state.error
-        channelRecyclerView.isVisible = state.channels.isNotEmpty()
+        hideAll()
+        when (state) {
+            is ChannelState.Loading -> {
+                loadingState.isVisible = true
+            }
+            is ChannelState.Error -> {
+                errorState.isVisible = true
+            }
+            is ChannelState.Data -> {
+                channelRecyclerView.isVisible = state.channels.isNotEmpty()
+                adapter.submitList(state.channels)
+            }
+        }
+    }
 
-        adapter.submitList(state.channels)
+    private fun hideAll() {
+        loadingState.isVisible = false
+        errorState.isVisible = false
+        channelRecyclerView.isVisible = false
     }
 
     private fun navigateToMessage(args: MessageArgs) {

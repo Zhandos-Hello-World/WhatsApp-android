@@ -1,18 +1,19 @@
 package kz.tinkoff.homework_2.data.model
 
-import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class TopicListResponse(
-    val topics: List<TopicResponse>
-): Parcelable {
+    @SerialName("topics")
+    val topics: List<TopicResponse>,
+) {
 
-    @Parcelize
+    @Serializable
     data class TopicResponse(
-        @SerializedName("max_id")
+        @SerialName("max_id")
         val id: Int,
+        @SerialName("name")
         val name: String,
-    ): Parcelable
+    )
 }

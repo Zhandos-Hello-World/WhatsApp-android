@@ -5,7 +5,7 @@ import vivid.money.elmslie.coroutines.ElmStoreCompat
 class ProfileStoreFactory(private val actor: ProfileActor) {
     private val store by lazy {
         ElmStoreCompat(
-            initialState = ProfileState(),
+            initialState = ProfileState.Loading,
             reducer = ProfileReducer(),
             actor = actor
         )

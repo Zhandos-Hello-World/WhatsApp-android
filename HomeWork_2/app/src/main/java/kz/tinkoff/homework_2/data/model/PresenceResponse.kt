@@ -1,24 +1,25 @@
 package kz.tinkoff.homework_2.data.model
 
-import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class PresenceResponse(
-    @SerializedName("presence")
+    @SerialName("presence")
     val presence: Presence,
-) : Parcelable {
+) {
 
-    @Parcelize
+    @Serializable
     data class Presence(
-        @SerializedName("aggregated")
+        @SerialName("aggregated")
         val aggregated: Aggregated,
-    ) : Parcelable
+    )
 
-    @Parcelize
+    @Serializable
     data class Aggregated(
+        @SerialName("status")
         val status: String,
+        @SerialName("timestamp")
         val timestamp: Long,
-    ) : Parcelable
+    )
 }

@@ -1,5 +1,8 @@
 package kz.tinkoff.homework_2.data.mappers
 
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
 import kz.tinkoff.core.Mapper
 import kz.tinkoff.homework_2.data.model.MessageListResponse
 import kz.tinkoff.homework_2.domain.model.MessageModel
@@ -7,32 +10,49 @@ import kz.tinkoff.homework_2.domain.model.MessageModel
 class MessageMapper : Mapper<MessageListResponse, List<MessageModel>> {
 
     override fun map(from: MessageListResponse): List<MessageModel> {
-        return from.messages.map { responseFrom ->
-            MessageModel(id = responseFrom.id,
-                senderId = responseFrom.senderId,
-                recipientId = responseFrom.recipientId,
-                timestamp = responseFrom.timestamp,
-                topic = responseFrom.topic,
-                isMeMessage = responseFrom.isMeMessage,
-                reactions = toReactionModel(responseFrom.reactions),
-                senderFullName = responseFrom.senderFullName,
-                senderEmail = responseFrom.senderEmail,
-                senderRealmStr = responseFrom.senderRealmStr,
-                displayRecipient = responseFrom.displayRecipient.toString().orEmpty(),
-                type = responseFrom.type,
-                streamId = responseFrom.streamId.orEmpty(),
-                avatarUrl = responseFrom.avatarUrl,
-                content = responseFrom.content
-            )
+        try {
+            val mapped = from.messages.map { responseFrom ->
+                MessageModel(
+                    id = responseFrom.id,
+                    senderId = responseFrom.senderId,
+                    recipientId = responseFrom.recipientId,
+                    timestamp = responseFrom.timestamp,
+                    topic = responseFrom.topic,
+                    isMeMessage = responseFrom.isMeMessage,
+                    reactions = toReactionModel(responseFrom.reactions),
+                    senderFullName = responseFrom.senderFullName,
+                    senderEmail = responseFrom.senderEmail,
+                    senderRealmStr = responseFrom.senderRealmStr,
+                    displayRecipient = toDisplayRecipient(responseFrom.displayRecipient),
+                    type = responseFrom.type,
+                    streamId = responseFrom.streamId ?: -1,
+                    avatarUrl = responseFrom.avatarUrl.orEmpty(),
+                    content = responseFrom.content
+                )
+            }
+            return mapped
+        } catch (ex: Exception) {
+            return listOf()
         }
     }
 
+    private fun toDisplayRecipient(element: JsonElement?): String {
+        return try {
+            element?.jsonArray?.toString().orEmpty()
+        } catch (ex: IllegalArgumentException) {
+            element?.jsonPrimitive?.content.orEmpty()
+        }
+    }
+
+
     private fun toReactionModel(from: List<MessageListResponse.ReactionResponse>): List<MessageModel.ReactionModel> {
         return from.map { from ->
-            MessageModel.ReactionModel(emojiCode = from.emojiCode,
+            MessageModel.ReactionModel(
+                emojiCode = from.emojiCode,
                 emojiName = from.emojiName,
                 reactionType = from.reactionType,
-                user = toUserModel(from.user))
+                user = toUserModel(from.user)
+            )
         }
     }
 

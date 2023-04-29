@@ -15,17 +15,17 @@ class MessageReducer : DslReducer<MessageEvent, MessageState, MessageEffect, Mes
             commands { +MessageCommand.DeleteReaction(event.args, event.model, event.emoji) }
         }
         is MessageEvent.Ui.LoadMessage -> {
-            state { copy(messageDvo = emptyList(), error = false, isLoading = true) }
+            state { MessageState.Loading }
             commands { +MessageCommand.LoadMessage(event.args) }
         }
         is MessageEvent.Ui.BackToChannels -> {
             commands { +MessageCommand.BackToChannels }
         }
         is MessageEvent.Internal.MessageLoaded -> {
-            state { copy(messageDvo = event.data, error = false, isLoading = false) }
+            state { MessageState.Data(event.data) }
         }
         is MessageEvent.Internal.ErrorLoading -> {
-            state { copy(messageDvo = emptyList(), error = true, isLoading = false) }
+            state { MessageState.Error }
         }
 
     }

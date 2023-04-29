@@ -12,10 +12,9 @@ interface MessageRepository {
         topic: String
     ): List<MessageModel>
 
+    suspend fun sendMessage(params: MessageStreamParams)
 
-    suspend fun sendMessage(params: MessageStreamParams): Boolean
+    suspend fun addReaction(messageId: Int, params: ReactionParams)
 
-    suspend fun addReaction(messageId: Int, params: ReactionParams): Boolean
-
-    suspend fun deleteReaction(messageId: Int, params: ReactionParams): Boolean
+    suspend fun deleteReaction(messageId: Int, params: ReactionParams)
 }

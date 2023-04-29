@@ -2,10 +2,11 @@ package kz.tinkoff.homework_2.data.datasource
 
 import kz.tinkoff.homework_2.data.model.BaseResponse
 import kz.tinkoff.homework_2.data.model.MessageListResponse
-import kz.tinkoff.homework_2.data.network.ApiService
+import kz.tinkoff.homework_2.data.network.MessageApiService
 import kz.tinkoff.homework_2.domain.datasource.MessageRemoteDataSource
 
-class DefaultMessageNetworkDataSource(private val apiService: ApiService): MessageRemoteDataSource {
+class DefaultMessageNetworkDataSource(private val apiService: MessageApiService) :
+    MessageRemoteDataSource {
 
     override suspend fun getAllMessage(): MessageListResponse {
         return apiService.getAllMessage()
@@ -15,7 +16,10 @@ class DefaultMessageNetworkDataSource(private val apiService: ApiService): Messa
         return apiService.sendMessageStream(request)
     }
 
-    override suspend fun addReaction(messageId: Int, request: HashMap<String, String>): BaseResponse {
+    override suspend fun addReaction(
+        messageId: Int,
+        request: HashMap<String, String>,
+    ): BaseResponse {
         return apiService.addReaction(messageId, request)
     }
 

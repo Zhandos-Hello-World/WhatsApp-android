@@ -3,11 +3,14 @@ package kz.tinkoff.homework_2.presentation.channels.elm
 import kz.tinkoff.homework_2.presentation.delegates.channels.ChannelDelegateItem
 import kz.tinkoff.homework_2.presentation.message.MessageArgs
 
-data class ChannelState(
-    val channels: List<ChannelDelegateItem> = emptyList(),
-    val error: Boolean = false,
-    val isLoading: Boolean = false,
-)
+sealed interface ChannelState {
+
+    object Error : ChannelState
+
+    object Loading : ChannelState
+
+    data class Data(val channels: List<ChannelDelegateItem>) : ChannelState
+}
 
 sealed class ChannelEvent {
 
@@ -15,9 +18,9 @@ sealed class ChannelEvent {
 
         object LoadChannel : Ui()
 
-        data class SearchChannel(val text: String): Ui()
+        data class SearchChannel(val text: String) : Ui()
 
-        data class NavigateToMessage(val args: MessageArgs): ChannelEvent()
+        data class NavigateToMessage(val args: MessageArgs) : ChannelEvent()
 
     }
 
@@ -33,7 +36,6 @@ class ChannelEffect
 
 sealed class ChannelCommand {
     object LoadChannel : ChannelCommand()
-    data class NavigateToMessageCommand(val args: MessageArgs): ChannelCommand()
-    data class SearchChannelCommand(val text: String): ChannelCommand()
+    data class SearchChannelCommand(val text: String) : ChannelCommand()
 
 }

@@ -1,33 +1,35 @@
 package kz.tinkoff.homework_2.data.model
 
-import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class PeopleListResponse(
-    @SerializedName("members")
-    val listResponse: List<PersonResponse>
-): Parcelable {
-    @Parcelize
+    @SerialName("members")
+    val listResponse: List<PersonResponse>,
+) {
+
+    @Serializable
     data class PersonResponse(
-        @SerializedName("user_id")
+        @SerialName("user_id")
         val id: Int,
-        @SerializedName("full_name")
+        @SerialName("full_name")
         val fullName: String,
+        @SerialName("email")
         val email: String,
-        @SerializedName("is_admin")
+        @SerialName("is_admin")
         val isAdmin: Boolean,
-        @SerializedName("is_guest")
+        @SerialName("is_guest")
         val isGuest: Boolean,
-        @SerializedName("is_owner")
+        @SerialName("is_owner")
         val isOwner: Boolean,
-        @SerializedName("is_active")
+        @SerialName("is_active")
         val isOnline: Boolean,
-        @SerializedName("avatar_url")
-        val avatarUrl: String,
+        @SerialName("avatar_url")
+        val avatarUrl: String?,
+        @SerialName("timezone")
         val timezone: String,
-        @SerializedName("delivery_email")
-        val deliveryEmail: String?
-    ) : Parcelable
+        @SerialName("delivery_email")
+        val deliveryEmail: String?,
+    )
 }

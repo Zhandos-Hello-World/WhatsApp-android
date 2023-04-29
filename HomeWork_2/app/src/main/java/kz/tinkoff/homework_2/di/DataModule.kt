@@ -1,6 +1,6 @@
 package kz.tinkoff.homework_2.di
 
-import kz.tinkoff.homework_2.data.datasource.DefaultChannelsNetworkDataSource
+import kz.tinkoff.homework_2.data.datasource.DefaultStreamNetworkDataSource
 import kz.tinkoff.homework_2.data.datasource.DefaultMessageNetworkDataSource
 import kz.tinkoff.homework_2.data.datasource.DefaultPeopleNetworkDataSource
 import kz.tinkoff.homework_2.data.mappers.MessageDtoMapper
@@ -11,9 +11,9 @@ import kz.tinkoff.homework_2.data.mappers.ProfileMapper
 import kz.tinkoff.homework_2.data.mappers.ReactionDtoMapper
 import kz.tinkoff.homework_2.data.mappers.StreamMapper
 import kz.tinkoff.homework_2.data.mappers.TopicMapper
-import kz.tinkoff.homework_2.data.repository.DefaultChannelRepository
-import kz.tinkoff.homework_2.data.repository.DefaultMessageRepository
-import kz.tinkoff.homework_2.data.repository.DefaultPeopleRepository
+import kz.tinkoff.homework_2.data.repository.RepoStreamImpl
+import kz.tinkoff.homework_2.data.repository.RepoMessageImpl
+import kz.tinkoff.homework_2.data.repository.RepoPeopleImpl
 import kz.tinkoff.homework_2.domain.datasource.ChannelRemoteDataSource
 import kz.tinkoff.homework_2.domain.datasource.MessageRemoteDataSource
 import kz.tinkoff.homework_2.domain.datasource.PeopleRemoteDataSource
@@ -31,7 +31,7 @@ val dataModule = module {
     }
 
     single<ChannelRemoteDataSource> {
-        DefaultChannelsNetworkDataSource(
+        DefaultStreamNetworkDataSource(
             apiService = get(),
         )
     }
@@ -43,11 +43,11 @@ val dataModule = module {
     }
 
     single<ChannelRepository> {
-        DefaultChannelRepository(dataSource = get(), streamMapper = get(), topicMapper = get())
+        RepoStreamImpl(dataSource = get(), streamMapper = get(), topicMapper = get())
     }
 
     single<PeopleRepository> {
-        DefaultPeopleRepository(dataSource = get(),
+        RepoPeopleImpl(dataSource = get(),
             peopleMapper = get(),
             profileMapper = get(),
             presenceMapper = get()
@@ -55,7 +55,7 @@ val dataModule = module {
     }
 
     single<MessageRepository> {
-        DefaultMessageRepository(
+        RepoMessageImpl(
             dataSource = get(),
             mapper = get(),
             dtoMessageMapper = get(),

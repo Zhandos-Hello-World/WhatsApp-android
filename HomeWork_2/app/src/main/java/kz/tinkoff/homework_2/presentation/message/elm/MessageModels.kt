@@ -4,11 +4,14 @@ import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.coreui.custom.dvo.MessageDvo
 import kz.tinkoff.homework_2.presentation.message.MessageArgs
 
-data class MessageState(
-    val messageDvo: List<DelegateItem> = emptyList(),
-    val error: Boolean = false,
-    val isLoading: Boolean = false,
-)
+sealed interface MessageState {
+
+    data class Data(val messageDvo: List<DelegateItem>) : MessageState
+
+    object Error : MessageState
+
+    object Loading: MessageState
+}
 
 sealed class MessageEvent {
 

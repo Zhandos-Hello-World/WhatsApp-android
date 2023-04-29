@@ -9,9 +9,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
-import coil.load
+import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 import kz.tinkoff.core.utils.getMaxWidth
+import kz.tinkoff.coreui.R
 import kz.tinkoff.coreui.custom.dvo.MessageDvo
 import kz.tinkoff.coreui.databinding.CustomMessageViewGroupContentBinding
 import kz.tinkoff.coreui.item.ReactionViewItem
@@ -46,7 +47,8 @@ class MessageViewGroup @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         measureChildren(widthMeasureSpec, heightMeasureSpec)
 
-        val totalWidth = paddingLeft + paddingRight + avatarView.measuredWidth + messageCardView.measuredWidth
+        val totalWidth =
+            paddingLeft + paddingRight + avatarView.measuredWidth + messageCardView.measuredWidth
         val totalHeight =
             paddingTop + paddingBottom + maxOf(
                 avatarView.measuredHeight,
@@ -91,7 +93,12 @@ class MessageViewGroup @JvmOverloads constructor(
         usernameView.text = dvo.senderFullName
         messageView.text = parseHtmlValue(dvo.content)
         reactionsViewGroup.submitReactions(dvo.reactions)
-        avatarView.load(dvo.avatarUrl)
+
+        Glide.with(this)
+            .load(dvo.avatarUrl)
+            .placeholder(R.drawable.placeholder)
+            .error(R.drawable.ic_placeholder_error_state)
+            .into(avatarView)
     }
 
     @SuppressWarnings("deprecation")

@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
+import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.coreui.BottomBarController
-import kz.tinkoff.coreui.ScreenState
 import kz.tinkoff.coreui.custom.dvo.MessageDvo
 import kz.tinkoff.coreui.custom.viewgroup.CustomMessageTextFieldBar
 import kz.tinkoff.coreui.item.ReactionViewItem
@@ -25,13 +25,14 @@ import kz.tinkoff.homework_2.presentation.message.elm.MessageStoreFactory
 import kz.tinkoff.homework_2.presentation.reaction.ReactionBottomSheetDialog
 import org.koin.android.ext.android.inject
 import vivid.money.elmslie.android.base.ElmFragment
+import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
 class MessageFragment(private val args: MessageArgs) :
     ElmFragment<MessageEvent, MessageEffect, MessageState>(), MessageAdapterListener {
     private var _binding: FragmentMessageBinding? = null
     private val binding get() = _binding!!
 
-    private val adapter: MainAdapter by lazy(LazyThreadSafetyMode.NONE) {
+    private val adapter: MainAdapter by lazyUnsafe {
         MainAdapter().apply {
             addDelegate(DateDelegate() as AdapterDelegate<RecyclerView.ViewHolder, DelegateItem>)
             addDelegate(MessageDelegate(listener = this@MessageFragment) as AdapterDelegate<RecyclerView.ViewHolder, DelegateItem>)
@@ -41,6 +42,12 @@ class MessageFragment(private val args: MessageArgs) :
     override val initEvent: MessageEvent = MessageEvent.Ui.LoadMessage(args)
 
     private val messageStoreFactory: MessageStoreFactory by inject()
+
+    override val storeHolder by lazyUnsafe {
+        LifecycleAwareStoreHolder(lifecycle) {
+            messageStoreFactory.provide()
+        }
+    }
 
 
     override fun onCreateView(
@@ -80,12 +87,23 @@ class MessageFragment(private val args: MessageArgs) :
         _binding = null
     }
 
-    override fun createStore() = messageStoreFactory.provide()
 
     override fun render(state: MessageState) {
+        hideAll()
+        when (state) {
+            is MessageState.Data -> {
+                binding.apply {
+                    messageRecycler.isVisible = state.messageDvo.isNotEmpty()
+                    adapter.submitList(state.messageDvo)
+                }
+            }
+            else -> {}
+        }
+    }
+
+    private fun hideAll() {
         binding.apply {
-            messageRecycler.isVisible = state.messageDvo.isNotEmpty()
-            adapter.submitList(state.messageDvo)
+            messageRecycler.isVisible = false
         }
     }
 
@@ -122,15 +140,6 @@ class MessageFragment(private val args: MessageArgs) :
                 }
                 setToolbarText(args.stream)
             }
-        }
-    }
-
-    private fun render(state: ScreenState<List<DelegateItem>>) {
-        when (state) {
-            is ScreenState.Data -> {
-                adapter.submitList(state.data)
-            }
-            else -> {}
         }
     }
 }

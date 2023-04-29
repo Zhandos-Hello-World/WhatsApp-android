@@ -2,19 +2,19 @@ package kz.tinkoff.homework_2.data.datasource
 
 import kz.tinkoff.homework_2.data.model.StreamListResponse
 import kz.tinkoff.homework_2.data.model.TopicListResponse
-import kz.tinkoff.homework_2.data.network.ApiService
+import kz.tinkoff.homework_2.data.network.StreamApiService
 import kz.tinkoff.homework_2.domain.datasource.ChannelRemoteDataSource
 
-class DefaultChannelsNetworkDataSource(
-    private val apiService: ApiService,
+class DefaultStreamNetworkDataSource(
+    private val apiService: StreamApiService,
 ) : ChannelRemoteDataSource {
 
-    override suspend fun getAllChannels(): StreamListResponse {
+    override suspend fun getAllStreams(): StreamListResponse {
         return apiService.getAllStreams()
     }
 
-    override suspend fun findChannels(name: String): StreamListResponse {
-        return apiService.findChannels(name)
+    override suspend fun findStreams(name: String): StreamListResponse {
+        return apiService.findStreams(name)
     }
 
     override suspend fun findTopics(id: Int): TopicListResponse {

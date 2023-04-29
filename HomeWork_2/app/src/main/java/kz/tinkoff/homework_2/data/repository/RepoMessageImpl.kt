@@ -9,7 +9,7 @@ import kz.tinkoff.homework_2.domain.model.MessageStreamParams
 import kz.tinkoff.homework_2.domain.model.ReactionParams
 import kz.tinkoff.homework_2.domain.repository.MessageRepository
 
-class DefaultMessageRepository(
+class RepoMessageImpl(
     private val dataSource: MessageRemoteDataSource,
     private val mapper: MessageMapper,
     private val dtoMessageMapper: MessageDtoMapper,
@@ -22,26 +22,27 @@ class DefaultMessageRepository(
         topic: String,
     ): List<MessageModel> {
         val response = dataSource.getAllMessage()
-        return mapper.map(response).filter {
-            it.streamId == streamId.toString() && it.topic == topic && it.displayRecipient == stream
+        val mappedResponse = mapper.map(response)
+        return mappedResponse.filter {
+            it.streamId == streamId && it.topic == topic && it.displayRecipient == stream
         }
     }
 
-    override suspend fun sendMessage(params: MessageStreamParams): Boolean {
-        return dataSource.setMessageSend(dtoMessageMapper.map(from = params)).result == SUCCESS
+    override suspend fun sendMessage(params: MessageStreamParams) {
+        dataSource.setMessageSend(dtoMessageMapper.map(from = params))
     }
 
-    override suspend fun addReaction(messageId: Int, params: ReactionParams): Boolean {
-        return dataSource.addReaction(messageId = messageId,
-            request = dtoReactionMapper.map(params)).result == SUCCESS
+    override suspend fun addReaction(messageId: Int, params: ReactionParams) {
+        dataSource.addReaction(
+            messageId = messageId,
+            request = dtoReactionMapper.map(params)
+        )
     }
 
-    override suspend fun deleteReaction(messageId: Int, params: ReactionParams): Boolean {
-        return dataSource.deleteReaction(messageId = messageId,
-            request = dtoReactionMapper.map(params)).result == SUCCESS
-    }
-
-    companion object {
-        const val SUCCESS = "success"
+    override suspend fun deleteReaction(messageId: Int, params: ReactionParams) {
+        dataSource.deleteReaction(
+            messageId = messageId,
+            request = dtoReactionMapper.map(params)
+        )
     }
 }

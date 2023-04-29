@@ -4,14 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
-import coil.load
-import com.facebook.shimmer.ShimmerFrameLayout
+import com.bumptech.glide.Glide
+import kz.tinkoff.core.utils.lazyUnsafe
+import kz.tinkoff.homework_2.R
 import kz.tinkoff.homework_2.databinding.FragmentProfileBinding
 import kz.tinkoff.homework_2.presentation.dvo.ProfileDvo
 import kz.tinkoff.homework_2.presentation.profile.elm.ProfileEffect
@@ -20,7 +17,7 @@ import kz.tinkoff.homework_2.presentation.profile.elm.ProfileState
 import kz.tinkoff.homework_2.presentation.profile.elm.ProfileStoreFactory
 import org.koin.android.ext.android.inject
 import vivid.money.elmslie.android.base.ElmFragment
-import vivid.money.elmslie.core.store.Store
+import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
 class ProfileFragment : ElmFragment<ProfileEvent, ProfileEffect, ProfileState>() {
     private var _binding: FragmentProfileBinding? = null
@@ -28,15 +25,13 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileEffect, ProfileState>()
 
     override val initEvent: ProfileEvent = ProfileEvent.Ui.LoadProfile
 
-    private val loadingView: ShimmerFrameLayout get() = binding.loadingState
-    private val dataView: ConstraintLayout get() = binding.data
-    private val errorView: ConstraintLayout get() = binding.errorState
-    private val reloadView: Button get() = binding.reloadRequestBtn
-    private val avatar: ImageView get() = binding.profileAvatar
-    private val fullName: TextView get() = binding.profileNameText
-    private val connectionStatus: TextView get() = binding.profileConnectionStatusText
-
     private val profileStoreFactory: ProfileStoreFactory by inject()
+
+    override val storeHolder by lazyUnsafe {
+        LifecycleAwareStoreHolder(lifecycle) {
+            profileStoreFactory.provide()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,32 +40,52 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileEffect, ProfileState>()
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
 
-        reloadView.setOnClickListener {
+        binding.reloadRequestBtn.setOnClickListener {
             store.accept(ProfileEvent.Ui.LoadProfile)
         }
         return binding.root
     }
 
-    override fun createStore() = profileStoreFactory.provide()
-
     override fun render(state: ProfileState) {
-        loadingView.isVisible = state.isLoading
-        errorView.isVisible = state.error
+        hideAll()
+        when (state) {
+            is ProfileState.Data -> {
+                val profileDvo = state.profileDvo
+                binding.data.isVisible = profileDvo != null
+                if (profileDvo != null) {
+                    configureData(profileDvo)
+                }
+            }
+            is ProfileState.Loading -> {
+                binding.loadingState.isVisible = true
+            }
+            is ProfileState.Error -> {
+                binding.loadingState.isVisible = true
+            }
+        }
+    }
 
-        val profileDvo = state.profileDvo
-        dataView.isVisible = profileDvo != null
-
-        if (profileDvo != null) {
-            configureData(profileDvo)
+    private fun hideAll() {
+        binding.apply {
+            loadingState.isVisible = false
+            errorState.isVisible = false
+            data.isVisible = false
         }
     }
 
     private fun configureData(data: ProfileDvo) {
-        fullName.text = data.fullName
-        avatar.load(data.avatarUrl)
-        connectionStatus.text = data.presence.status
+        binding.apply {
+            profileNameText.text = data.fullName
 
-        val color = ContextCompat.getColor(requireContext(), data.presence.colorResId)
-        connectionStatus.setTextColor(color)
+            Glide.with(requireContext())
+                .load(data.avatarUrl)
+                .placeholder(kz.tinkoff.coreui.R.drawable.placeholder)
+                .error(kz.tinkoff.coreui.R.drawable.ic_placeholder_error_state)
+                .into(profileAvatar)
+            profileConnectionStatusText.text = data.presence.status
+
+            val color = ContextCompat.getColor(requireContext(), data.presence.colorResId)
+            profileConnectionStatusText.setTextColor(color)
+        }
     }
 }

@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
-import kz.tinkoff.coreui.custom.viewgroup.CustomSearchEditText
+import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.databinding.FragmentPeopleBinding
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegate
 import kz.tinkoff.homework_2.presentation.people.elm.PeopleEffect
@@ -19,23 +18,24 @@ import kz.tinkoff.homework_2.presentation.people.elm.PeopleState
 import kz.tinkoff.homework_2.presentation.people.elm.PeopleStoreFactory
 import org.koin.android.ext.android.inject
 import vivid.money.elmslie.android.base.ElmFragment
+import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
 class PeopleFragment : ElmFragment<PeopleEvent, PeopleEffect, PeopleState>() {
     private var _binding: FragmentPeopleBinding? = null
     private val binding get() = _binding!!
 
-    private val searchEditText: CustomSearchEditText get() = binding.searchEditText
-    private val usersRecyclerView: RecyclerView get() = binding.usersRecyclerView
-    private val errorState: ViewGroup get() = binding.errorState
-    private val loadingState: ViewGroup get() = binding.loadingState
-    private val reloadRequestBtn: Button get() = binding.reloadRequestBtn
-
     private val peopleStoreFactory: PeopleStoreFactory by inject()
+
+    override val storeHolder by lazyUnsafe {
+        LifecycleAwareStoreHolder(lifecycle) {
+            peopleStoreFactory.provide()
+        }
+    }
 
     override val initEvent: PeopleEvent = PeopleEvent.Ui.LoadPeople
 
     val delegate = PersonDelegate { }
-    private val adapter: MainAdapter by lazy(LazyThreadSafetyMode.NONE) {
+    private val adapter: MainAdapter by lazyUnsafe {
         MainAdapter().apply {
             addDelegate(delegate as AdapterDelegate<RecyclerView.ViewHolder, DelegateItem>)
         }
@@ -48,35 +48,49 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleEffect, PeopleState>() {
     ): View {
         _binding = FragmentPeopleBinding.inflate(inflater, container, false)
 
-        searchEditText.setHint(getString(kz.tinkoff.core.R.string.users_with_three_dots))
-        usersRecyclerView.adapter = adapter
+        binding.apply {
+            searchEditText.setHint(getString(kz.tinkoff.core.R.string.users_with_three_dots))
 
-
-        searchEditText.doOnTextChanged { searchText ->
-            if (searchText.isNotEmpty()) {
-                searchText.let { query ->
-                    store.accept(PeopleEvent.Ui.SearchPerson(query))
+            searchEditText.doOnTextChanged { searchText ->
+                if (searchText.isNotEmpty()) {
+                    searchText.let { query ->
+                        store.accept(PeopleEvent.Ui.SearchPerson(query))
+                    }
+                } else {
+                    store.accept(PeopleEvent.Ui.LoadPeople)
                 }
-            } else {
+            }
+            usersRecyclerView.adapter = adapter
+
+            reloadRequestBtn.setOnClickListener {
                 store.accept(PeopleEvent.Ui.LoadPeople)
             }
-        }
-
-        reloadRequestBtn.setOnClickListener {
-            store.accept(PeopleEvent.Ui.LoadPeople)
         }
 
         return binding.root
     }
 
-    override fun createStore() = peopleStoreFactory.provide()
-
     override fun render(state: PeopleState) {
-        loadingState.isVisible = state.isLoading
-        errorState.isVisible = state.error
-
-        usersRecyclerView.isVisible = state.peopleDvo.isNotEmpty()
-        adapter.submitList(state.peopleDvo)
+        hideAll()
+        when (state) {
+            is PeopleState.Data -> {
+                binding.usersRecyclerView.isVisible = true
+                adapter.submitList(state.peopleDvo)
+            }
+            is PeopleState.Loading -> {
+                binding.loadingState.isVisible = true
+            }
+            is PeopleState.Error -> {
+                binding.errorState.isVisible = true
+            }
+        }
     }
 
+    private fun hideAll() {
+        binding.apply {
+            usersRecyclerView.isVisible = false
+            loadingState.isVisible = false
+            errorState.isVisible = false
+        }
+    }
 }
