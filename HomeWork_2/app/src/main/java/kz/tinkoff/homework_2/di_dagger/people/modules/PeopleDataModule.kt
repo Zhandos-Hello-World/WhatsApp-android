@@ -1,30 +1,19 @@
-package kz.tinkoff.homework_2.di_dagger.people
+package kz.tinkoff.homework_2.di_dagger.people.modules
 
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import kz.tinkoff.homework_2.data.datasource.DefaultPeopleNetworkDataSource
 import kz.tinkoff.homework_2.data.mappers.PersonMapper
 import kz.tinkoff.homework_2.data.mappers.PresenceMapper
 import kz.tinkoff.homework_2.data.mappers.ProfileMapper
-import kz.tinkoff.homework_2.data.network.PeopleApiService
 import kz.tinkoff.homework_2.data.repository.RepoPeopleImpl
-import kz.tinkoff.homework_2.domain.datasource.PeopleRemoteDataSource
 import kz.tinkoff.homework_2.domain.repository.PeopleRepository
 import kz.tinkoff.homework_2.presentation.mapper.PersonDelegateItemMapper
 import kz.tinkoff.homework_2.presentation.mapper.PersonDvoMapper
 import kz.tinkoff.homework_2.presentation.mapper.ProfileDvoMapper
-import retrofit2.Retrofit
 
-@Module(includes = [PeopleModule.BindsPeopleModule::class])
-class PeopleModule {
-
-    @PeopleScope
-    @Provides
-    fun providePeopleApiService(retrofit: Retrofit): PeopleApiService {
-        return retrofit.create(PeopleApiService::class.java)
-    }
-
+@Module(includes = [PeopleDataModule.BindsPeopleDataModule::class])
+class PeopleDataModule {
     @Provides
     fun providePersonMapper(): PersonMapper {
         return PersonMapper()
@@ -55,15 +44,9 @@ class PeopleModule {
         return PersonDvoMapper(delegateItemMapper)
     }
 
-
     @Module
-    interface BindsPeopleModule {
-
+    interface BindsPeopleDataModule {
         @Binds
         fun provideProfileRepository(impl: RepoPeopleImpl): PeopleRepository
-
-        @Binds
-        fun providePeopleDataSource(impl: DefaultPeopleNetworkDataSource): PeopleRemoteDataSource
     }
-
 }

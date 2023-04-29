@@ -14,7 +14,8 @@ import kz.tinkoff.core.adapter.MainAdapter
 import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.databinding.FragmentChannelListBinding
 import kz.tinkoff.homework_2.di_dagger.stream.DaggerStreamComponent
-import kz.tinkoff.homework_2.di_dagger.stream.StreamModule
+import kz.tinkoff.homework_2.di_dagger.stream.modules.StreamDataModule
+import kz.tinkoff.homework_2.di_dagger.stream.modules.StreamNetworkModule
 import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.presentation.channels.SearchEditTextController
 import kz.tinkoff.homework_2.presentation.channels.elm.ChannelEffect
@@ -57,10 +58,11 @@ class ChannelsListFragment : ElmFragment<ChannelEvent, ChannelEffect, StreamStat
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        DaggerStreamComponent.factory().create(
-            requireContext().getAppComponent(),
-            StreamModule()
-        ).inject(this)
+        DaggerStreamComponent.builder()
+            .streamDataModule(StreamDataModule())
+            .streamNetworkModule(StreamNetworkModule())
+            .appComponent(requireContext().getAppComponent())
+            .build().inject(this)
     }
 
     override fun onCreateView(

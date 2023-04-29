@@ -14,7 +14,8 @@ import kz.tinkoff.core.adapter.MainAdapter
 import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.databinding.FragmentPeopleBinding
 import kz.tinkoff.homework_2.di_dagger.people.DaggerPeopleComponent
-import kz.tinkoff.homework_2.di_dagger.people.PeopleModule
+import kz.tinkoff.homework_2.di_dagger.people.modules.PeopleDataModule
+import kz.tinkoff.homework_2.di_dagger.people.modules.PeopleNetworkModule
 import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegate
 import kz.tinkoff.homework_2.presentation.people.elm.PeopleEffect
@@ -48,10 +49,12 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleEffect, PeopleState>() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        DaggerPeopleComponent.factory().create(
-            PeopleModule(),
-            requireContext().getAppComponent()
-        ).inject(this)
+        DaggerPeopleComponent.builder()
+            .peopleDataModule(PeopleDataModule())
+            .peopleNetworkModule(PeopleNetworkModule())
+            .appComponent(
+                requireContext().getAppComponent()
+            ).build().inject(this)
     }
 
     override fun onCreateView(

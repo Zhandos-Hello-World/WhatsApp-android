@@ -12,7 +12,8 @@ import javax.inject.Inject
 import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.databinding.FragmentProfileBinding
 import kz.tinkoff.homework_2.di_dagger.people.DaggerPeopleComponent
-import kz.tinkoff.homework_2.di_dagger.people.PeopleModule
+import kz.tinkoff.homework_2.di_dagger.people.modules.PeopleDataModule
+import kz.tinkoff.homework_2.di_dagger.people.modules.PeopleNetworkModule
 import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.presentation.dvo.ProfileDvo
 import kz.tinkoff.homework_2.presentation.profile.elm.ProfileEffect
@@ -39,10 +40,12 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileEffect, ProfileState>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        DaggerPeopleComponent.factory().create(
-            PeopleModule(),
-            requireContext().getAppComponent()
-        ).inject(this)
+        DaggerPeopleComponent.builder()
+            .peopleDataModule(PeopleDataModule())
+            .peopleNetworkModule(PeopleNetworkModule())
+            .appComponent(
+                requireContext().getAppComponent()
+            ).build().inject(this)
     }
 
     override fun onCreateView(
