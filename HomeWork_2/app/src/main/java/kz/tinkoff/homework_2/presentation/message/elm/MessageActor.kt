@@ -116,16 +116,14 @@ class MessageActor @Inject constructor(
                 flow {
                     val messageArgs = command.args
                     val message = command.message
-                    val response = runCatchingNonCancellation {
-                        repository.sendMessage(
-                            params = MessageStreamParams(
-                                type = MessageStreamParams.STREAM,
-                                to = messageArgs.streamId,
-                                content = message,
-                                topic = messageArgs.topic.replace("#", "")
-                            )
+                    repository.sendMessage(
+                        params = MessageStreamParams(
+                            type = MessageStreamParams.STREAM,
+                            to = messageArgs.streamId,
+                            content = message,
+                            topic = messageArgs.topic.replace("#", "")
                         )
-                    }.getOrNull()
+                    )
 
                     addMessageAfterSuccess(message)
                     emit(MessageEvent.Internal.MessageLoadedRemote(messageList))
@@ -135,14 +133,12 @@ class MessageActor @Inject constructor(
                 flow {
                     val model = command.model
                     val emoji = command.emoji
-                    val response = runCatchingNonCancellation {
-                        repository.deleteReaction(
-                            messageId = model.id,
-                            params = ReactionParams(
-                                emojiName = emoji,
-                            ),
-                        )
-                    }.getOrNull()
+                    repository.deleteReaction(
+                        messageId = model.id,
+                        params = ReactionParams(
+                            emojiName = emoji,
+                        ),
+                    )
 
                     deleteReactionAfterSuccess(model, emoji)
                     emit(MessageEvent.Internal.MessageLoadedRemote(messageList))
@@ -153,15 +149,12 @@ class MessageActor @Inject constructor(
                 flow {
                     val model = command.model
                     val emoji = command.emoji
-
-                    val response = runCatchingNonCancellation {
-                        repository.addReaction(
-                            messageId = model.id,
-                            params = ReactionParams(
-                                emojiName = emoji,
-                            ),
-                        )
-                    }.getOrNull()
+                    repository.addReaction(
+                        messageId = model.id,
+                        params = ReactionParams(
+                            emojiName = emoji,
+                        ),
+                    )
 
                     addReactionAfterSuccess(model, emoji)
                     emit(MessageEvent.Internal.MessageLoadedRemote(messageList))

@@ -34,4 +34,6 @@ data class MessageEntity(
     val streamId: Int? = null,
     @ColumnInfo("avatar_url")
     val avatarUrl: String?,
+    @ColumnInfo("reactions")
+    val reactions: ReactionListEntity,
 )

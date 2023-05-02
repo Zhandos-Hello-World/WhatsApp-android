@@ -3,10 +3,14 @@ package kz.tinkoff.homework_2.di_dagger.message.modules
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import kz.tinkoff.homework_2.data.datasource.DefaultMessageLocalDataSource
 import kz.tinkoff.homework_2.data.mappers.MessageDtoMapper
+import kz.tinkoff.homework_2.data.mappers.MessageEntityMapper
 import kz.tinkoff.homework_2.data.mappers.MessageMapper
+import kz.tinkoff.homework_2.data.mappers.MessageModelEntityMapper
 import kz.tinkoff.homework_2.data.mappers.ReactionDtoMapper
 import kz.tinkoff.homework_2.data.repository.RepoMessageImpl
+import kz.tinkoff.homework_2.domain.datasource.MessageLocalDataSource
 import kz.tinkoff.homework_2.domain.repository.MessageRepository
 import kz.tinkoff.homework_2.presentation.mapper.MessageDelegateItemMapper
 import kz.tinkoff.homework_2.presentation.mapper.MessageDvoMapper
@@ -49,8 +53,21 @@ class MessageDataModule {
         return ReactionDtoMapper()
     }
 
+    @Provides
+    fun provideMessageEntityMapper(): MessageEntityMapper {
+        return MessageEntityMapper()
+    }
+
+    @Provides
+    fun provideMessageModelEntityMapper(): MessageModelEntityMapper {
+        return MessageModelEntityMapper()
+    }
+
     @Module
     interface BindsMessageDataModule {
+
+        @Binds
+        fun provideMessageLocalDataSource(impl: DefaultMessageLocalDataSource): MessageLocalDataSource
 
         @Binds
         fun provideMessageRepository(impl: RepoMessageImpl): MessageRepository

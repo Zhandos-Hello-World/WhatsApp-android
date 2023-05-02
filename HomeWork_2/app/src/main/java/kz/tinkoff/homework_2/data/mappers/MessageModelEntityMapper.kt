@@ -3,6 +3,7 @@ package kz.tinkoff.homework_2.data.mappers
 import kz.tinkoff.core.Mapper
 import kz.tinkoff.homework_2.data.enitiy.MessageEntity
 import kz.tinkoff.homework_2.data.enitiy.ReactionEntity
+import kz.tinkoff.homework_2.data.enitiy.ReactionListEntity
 import kz.tinkoff.homework_2.data.enitiy.UserEntity
 import kz.tinkoff.homework_2.domain.model.MessageModel
 
@@ -23,7 +24,8 @@ class MessageModelEntityMapper : Mapper<MessageModel, MessageEntity> {
             type = from.type,
             content = from.content,
             streamId = from.streamId,
-            avatarUrl = from.avatarUrl
+            avatarUrl = from.avatarUrl,
+            reactions = ReactionListEntity(from.reactions.map { toReactionEntity(it) })
         )
     }
 

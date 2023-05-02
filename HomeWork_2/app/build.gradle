@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlinx-serialization'
     id 'kotlin-kapt'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -15,6 +16,9 @@ android {
         targetSdk androidTargetSdkVersion
         versionCode 1
         versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
 
         Properties properties = new Properties()
         properties.load(project.rootProject.file("local.properties").newDataInputStream())
@@ -32,8 +36,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -66,4 +70,20 @@ dependencies {
 
     debugImplementation deps.debugLibs.chuckerDebug
     releaseImplementation deps.debugLibs.chuckerRelease
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    def okhhtp_version = "4.10.0"
+    implementation "com.squareup.okhttp3:okhttp:$okhhtp_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhhtp_version"
+    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhhtp_version"
+
+    def fragment_version = "1.6.0-alpha04"
+    debugImplementation "androidx.fragment:fragment-testing:$fragment_version"
+
+
+
+
 }

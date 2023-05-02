@@ -7,7 +7,6 @@ import dagger.Provides
 import javax.inject.Singleton
 import kz.tinkoff.homework_2.data.dao.MessageDao
 import kz.tinkoff.homework_2.data.database.MessageDatabase
-import kz.tinkoff.homework_2.data.database.converter.ReactionConverter
 
 @Module
 class DatabaseModule {

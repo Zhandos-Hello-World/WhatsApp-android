@@ -16,7 +16,7 @@ class MessageEntityMapper : Mapper<MessageEntity, MessageModel> {
             timestamp = from.timestamp,
             topic = from.topic,
             isMeMessage = from.isMeMessage,
-            reactions = listOf(),
+            reactions = toReactionModels(from.reactions.list),
             senderFullName = from.senderFullName,
             senderEmail = from.senderEmail,
             senderRealmStr = from.senderRealmStr,
@@ -24,7 +24,7 @@ class MessageEntityMapper : Mapper<MessageEntity, MessageModel> {
             displayRecipient = from.displayRecipient.orEmpty(),
             type = from.type,
             streamId = from.streamId ?: 0,
-            avatarUrl = from.avatarUrl.orEmpty()
+            avatarUrl = from.avatarUrl.orEmpty(),
         )
     }
 
