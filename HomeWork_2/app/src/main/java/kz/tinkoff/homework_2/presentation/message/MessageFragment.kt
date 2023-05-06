@@ -13,7 +13,6 @@ import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
 import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.coreui.BottomBarController
-import kz.tinkoff.coreui.custom.dvo.MessageDvo
 import kz.tinkoff.coreui.custom.viewgroup.CustomMessageTextFieldBar
 import kz.tinkoff.coreui.item.ReactionViewItem
 import kz.tinkoff.homework_2.databinding.FragmentMessageBinding
@@ -45,7 +44,7 @@ class MessageFragment(private val args: MessageArgs) :
         }
     }
 
-    override val initEvent: MessageEvent = MessageEvent.Ui.LoadMessageLocal(args)
+    override val initEvent: MessageEvent = MessageEvent.Ui.LoadMessages(args)
 
     @Inject
     lateinit var messageStoreFactory: MessageStoreFactory
@@ -79,14 +78,14 @@ class MessageFragment(private val args: MessageArgs) :
             binding.messageRecycler.adapter = adapter
             binding.messageRecycler.addOnScrollListener(
                 MessageScrollControllerListener {
-                    store.accept(MessageEvent.Ui.ItemShowed(args, it))
+                    store.accept(MessageEvent.Ui.ItemShowed(it))
                 }
             )
 
             messageSendEditTextBar.setOnSendClickListener {
                 if (it == CustomMessageTextFieldBar.SendMessageState.SEND_MESSAGE) {
                     val message = messageSendEditTextBar.getText().toString()
-                    store.accept(MessageEvent.Ui.AddMessage(args, message))
+                    store.accept(MessageEvent.Ui.AddMessage(message))
                     messageSendEditTextBar.clearText()
                 }
             }
@@ -117,6 +116,12 @@ class MessageFragment(private val args: MessageArgs) :
                 binding.apply {
                     messageRecycler.isVisible = state.messageDvo.isNotEmpty()
                     adapter.submitList(state.messageDvo)
+                    messageRecycler.scrollToPosition(state.messageDvo.size - 1)
+                }
+            }
+            is MessageState.UpdatedPosition -> {
+                binding.apply {
+                    messageRecycler.adapter?.notifyItemChanged(state.position)
                 }
             }
             is MessageState.Loading -> {
@@ -124,7 +129,11 @@ class MessageFragment(private val args: MessageArgs) :
                     loadingState.isVisible = true
                 }
             }
-            else -> {}
+            is MessageState.Error -> {
+                binding.apply {
+                    errorState.isVisible = true
+                }
+            }
         }
     }
 
@@ -132,10 +141,11 @@ class MessageFragment(private val args: MessageArgs) :
         binding.apply {
             messageRecycler.isVisible = false
             loadingState.isVisible = false
+            errorState.isVisible = false
         }
     }
 
-    override fun addReactionClickListener(model: MessageDvo) {
+    override fun addReactionClickListener(position: Int) {
         val bottomSheetDialogFragment = ReactionBottomSheetDialog()
         bottomSheetDialogFragment.show(parentFragmentManager, bottomSheetDialogFragment.tag)
 
@@ -146,16 +156,16 @@ class MessageFragment(private val args: MessageArgs) :
             val result =
                 result.getString(ReactionBottomSheetDialog.REACTION_BOTTOM_SHEET_CALLBACK_RESULT)
             result?.let { result ->
-                store.accept(MessageEvent.Ui.AddReaction(args, model, result))
+                store.accept(MessageEvent.Ui.AddReaction(position, result))
             }
         }
     }
 
-    override fun setEmojiClickListener(model: MessageDvo, viewItem: ReactionViewItem) {
+    override fun setEmojiClickListener(position: Int, viewItem: ReactionViewItem) {
         if (viewItem.fromMe) {
-            store.accept(MessageEvent.Ui.DeleteReaction(args, model, viewItem.emoji))
+            store.accept(MessageEvent.Ui.DeleteReaction(position, viewItem.emoji))
         } else {
-            store.accept(MessageEvent.Ui.AddReaction(args, model, viewItem.emoji))
+            store.accept(MessageEvent.Ui.AddReaction(position, viewItem.emoji))
         }
     }
 

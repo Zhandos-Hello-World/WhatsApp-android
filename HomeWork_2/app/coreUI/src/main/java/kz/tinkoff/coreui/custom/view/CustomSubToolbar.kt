@@ -10,8 +10,11 @@ import kz.tinkoff.core.utils.getMaxWidth
 import kz.tinkoff.core.utils.sp
 import kz.tinkoff.core.R
 import kz.tinkoff.coreui.R as uiR
+import android.os.Build
+import androidx.annotation.RequiresApi
 
 
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class CustomSubToolbar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -21,7 +24,7 @@ class CustomSubToolbar @JvmOverloads constructor(
 
     private val topicText: String = context.getString(R.string.topic)
     private var descText: String = context.getString(R.string.test)
-    private val title: String get() = topicText + descText
+    val title: String get() = topicText + descText
 
     private val textPaint = Paint().apply {
         textSize = 20F.sp(context)

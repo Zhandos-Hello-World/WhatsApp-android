@@ -10,6 +10,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.content.withStyledAttributes
+import kz.tinkoff.core.utils.dp
 import kz.tinkoff.core.utils.sp
 import kz.tinkoff.coreui.R
 import kz.tinkoff.coreui.item.ReactionViewItem
@@ -25,7 +26,7 @@ class ReactionView @JvmOverloads constructor(
     private val emojiWithCount get() = "${item.emoji}${item.count}"
 
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 24F.sp(context)
+        textSize = 14F.sp(context)
         color = Color.WHITE
     }
     private val textBounds = Rect()
@@ -44,18 +45,24 @@ class ReactionView @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         textPaint.getTextBounds(emojiWithCount, 0, emojiWithCount.length, textBounds)
 
-        val textWidth = textBounds.width() + paddingStart + paddingEnd
-        val textHeight = textBounds.height() + paddingTop + paddingBottom
+        val textWidth =
+            textBounds.width() + paddingStart + paddingEnd + PADDING_LEFT.dp(context) + PADDING_RIGHT.dp(
+                context
+            )
+        val textHeight =
+            textBounds.height() + paddingTop + paddingBottom + PADDING_TOP.dp(context) + PADDING_BOTTOM.dp(
+                context
+            )
 
-        val measureWidth = resolveSize(textWidth, widthMeasureSpec)
-        val measureHeight = resolveSize(textHeight, heightMeasureSpec)
+        val measureWidth = resolveSize(textWidth.toInt(), widthMeasureSpec)
+        val measureHeight = resolveSize(textHeight.toInt(), heightMeasureSpec)
 
         setMeasuredDimension(measureWidth, measureHeight)
     }
 
     override fun onDraw(canvas: Canvas?) {
-        val startY = textBounds.height() / 2 - textBounds.exactCenterY() + paddingBottom
-        canvas?.drawText(emojiWithCount, paddingTop.toFloat(), startY, textPaint)
+        val startY = -textPaint.fontMetrics.ascent + paddingTop + PADDING_TOP.dp(context).toInt()
+        canvas?.drawText(emojiWithCount, paddingStart.toFloat() + PADDING_LEFT, startY, textPaint)
     }
 
     fun setReactionType(item: ReactionViewItem) {
@@ -66,5 +73,12 @@ class ReactionView @JvmOverloads constructor(
 
     fun getItem(): ReactionViewItem {
         return item
+    }
+
+    companion object {
+        const val PADDING_TOP = 5F
+        const val PADDING_RIGHT = 8F
+        const val PADDING_LEFT = 8F
+        const val PADDING_BOTTOM = 5F
     }
 }

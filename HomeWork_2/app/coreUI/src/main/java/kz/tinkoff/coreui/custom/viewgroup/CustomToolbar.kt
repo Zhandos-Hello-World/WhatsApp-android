@@ -29,7 +29,7 @@ class CustomToolbar @JvmOverloads constructor(
         inflate(context, R.layout.custom_toolbar, this)
 
         image = findViewById(R.id.back)
-        toolbarTextView = findViewById(R.id.text)
+        toolbarTextView = findViewById(R.id.toolbar_text)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -65,6 +65,10 @@ class CustomToolbar @JvmOverloads constructor(
     fun setToolbarText(text: String) {
         toolbarTextView.text = text
         requestLayout()
+    }
+
+    fun getToolbarText(): String {
+        return toolbarTextView.text.toString()
     }
 
     fun setOnBackClickListener(listener: () -> Unit) {

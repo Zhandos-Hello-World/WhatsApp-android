@@ -53,7 +53,7 @@ class NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(converter: Converter.Factory, httpClient: OkHttpClient): Retrofit {
-        return Retrofit.Builder().baseUrl(BuildConfig.BASE_URL).addConverterFactory(converter)
+        return Retrofit.Builder().baseUrl(Constants.BASE_URL).addConverterFactory(converter)
             .client(httpClient).build()
     }
 

@@ -34,7 +34,10 @@ class MessageDatabaseTest {
 
     @Test
     fun checkEmptyTest() = runBlocking {
-        val size = messageDao.getAllMessages().first().size
+        val size = messageDao.getAllMessages(
+            "general",
+            "test"
+        ).size
         assertEquals(0, size)
     }
 
@@ -110,7 +113,10 @@ class MessageDatabaseTest {
             list.add(entity)
             messageDao.addMessage(entity)
         }
-        val returnedList = messageDao.getAllMessages().first()
+        val returnedList = messageDao.getAllMessages(
+            "hello",
+            "test"
+        )
         assertEquals(list, returnedList)
     }
 

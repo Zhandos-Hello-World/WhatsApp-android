@@ -47,14 +47,14 @@ class MessageViewGroup @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         measureChildren(widthMeasureSpec, heightMeasureSpec)
 
-        val totalWidth =
-            paddingLeft + paddingRight + avatarView.measuredWidth + messageCardView.measuredWidth
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+
         val totalHeight =
             paddingTop + paddingBottom + maxOf(
                 avatarView.measuredHeight,
                 messageCardView.measuredHeight
             ) + reactionsViewGroup.measuredHeight
-        setMeasuredDimension(totalWidth, totalHeight)
+        setMeasuredDimension(widthSize, totalHeight)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
@@ -70,11 +70,10 @@ class MessageViewGroup @JvmOverloads constructor(
 
         offsetX += avatarView.measuredWidth
 
-
         messageCardView.layout(
             offsetX + PADDING_BETWEEN_ITEMS,
             offsetY,
-            offsetX + messageCardView.measuredWidth - PADDING_BETWEEN_ITEMS,
+            width,
             offsetY + messageCardView.measuredHeight
         )
 
@@ -83,9 +82,10 @@ class MessageViewGroup @JvmOverloads constructor(
         reactionsViewGroup.layout(
             offsetX + PADDING_BETWEEN_ITEMS,
             offsetY,
-            getMaxWidth(),
+            width,
             offsetY + reactionsViewGroup.measuredHeight
         )
+        reactionsViewGroup.requestLayout()
     }
 
     fun setMessageDvo(dvo: MessageDvo) {

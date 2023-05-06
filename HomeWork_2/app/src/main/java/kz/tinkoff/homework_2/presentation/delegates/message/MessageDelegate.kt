@@ -25,7 +25,7 @@ class MessageDelegate(private val listener: MessageAdapterListener) :
         item: MessageDelegateItem,
         position: Int,
     ) {
-        holder.bind(item.content())
+        holder.bind(item.content(), position)
     }
 
     override fun isOfViewType(item: DelegateItem): Boolean =
@@ -34,20 +34,20 @@ class MessageDelegate(private val listener: MessageAdapterListener) :
     inner class ViewHolder(private val binding: ItemMessageBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(model: MessageDvo) {
+        fun bind(model: MessageDvo, position: Int) {
             with(binding.message) {
 
                 setMessageDvo(model)
 
                 setEmojiClickListener { messageDvo, reactionViewItem ->
                     listener.setEmojiClickListener(
-                        model = messageDvo,
+                        position = position,
                         viewItem = reactionViewItem
                     )
                 }
 
                 addReactionClickListener {
-                    listener.addReactionClickListener(model)
+                    listener.addReactionClickListener(position)
                 }
             }
         }

@@ -12,10 +12,10 @@ interface MessageRepository {
         stream: String,
         topic: String,
         numBefore: Int = 1000,
-        numAfter: Int = 1000
+        numAfter: Int = 1000,
     ): List<MessageModel>
 
-    fun getAllMessageLocally(streamId: Int): Flow<List<MessageModel>>
+    fun getAllMessageLocally(stream: String, topic: String): Flow<List<MessageModel>>
 
     suspend fun sendMessage(params: MessageStreamParams)
 
@@ -23,4 +23,7 @@ interface MessageRepository {
 
     suspend fun deleteReaction(messageId: Int, params: ReactionParams)
 
+    suspend fun saveDataLocally(data: List<MessageModel>)
+
+    suspend fun updateMessage(messageId: Int, emoji: String)
 }

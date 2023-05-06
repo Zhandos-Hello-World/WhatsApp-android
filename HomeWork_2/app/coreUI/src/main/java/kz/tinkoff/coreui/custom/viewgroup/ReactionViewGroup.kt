@@ -3,9 +3,11 @@ package kz.tinkoff.coreui.custom.viewgroup
 import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import java.lang.Integer.max
+import kotlin.math.ceil
 import kz.tinkoff.coreui.R
 import kz.tinkoff.coreui.custom.view.AddReactionView
 import kz.tinkoff.coreui.custom.view.ReactionView
@@ -18,69 +20,57 @@ class ReactionViewGroup @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0,
 ) : ViewGroup(context, attrs, defStyleAttr, defStyleRes) {
-    private var numColumns = 8
-    private var horizontalSpacing = 10
-    private var verticalSpacing = 7
-
     private var reactionViews = mutableListOf<ReactionView>()
-    private var reactionViewItems: List<ReactionViewItem> = mutableListOf()
     private var addReaction: AddReactionView? = null
 
     private var listener: ((ReactionViewItem) -> Unit)? = null
 
-    init {
-        attrs?.let {
-            val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ReactionViewGroup)
-            numColumns = typedArray.getInteger(R.styleable.ReactionViewGroup_numColumns, 2)
-            horizontalSpacing =
-                typedArray.getDimensionPixelSize(R.styleable.ReactionViewGroup_horizontalSpacing, 0)
-            verticalSpacing =
-                typedArray.getDimensionPixelSize(R.styleable.ReactionViewGroup_verticalSpacing, 0)
-            typedArray.recycle()
-        }
-    }
+    private var mNumColumns = 2
+    private var childMeasuredWidth = -1
+    private var childMeasuredHeight = -1
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val parentWidth = MeasureSpec.getSize(widthMeasureSpec)
-        val columnWidth = (parentWidth - horizontalSpacing * (numColumns - 1)) / numColumns
-        var xPosition = 0
-        var yPosition = 0
-        var maxHeightInRow = 0
-
+    public override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         for (i in 0 until childCount) {
             val child = getChildAt(i)
 
-            val childWidthMeasureSpec =
-                MeasureSpec.makeMeasureSpec(columnWidth, MeasureSpec.EXACTLY)
-            val childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-
-            child.measure(childWidthMeasureSpec, childHeightMeasureSpec)
-
-            val childWidth = child.measuredWidth
-            val childHeight = child.measuredHeight
-
-            if (xPosition + childWidth > parentWidth) {
-                xPosition = 0
-                yPosition += maxHeightInRow + verticalSpacing
-                maxHeightInRow = 0
+            child.measure(
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
+            )
+            if (childMeasuredWidth == -1) {
+                childMeasuredWidth = child.measuredWidth
+                childMeasuredHeight = child.measuredHeight
             }
-
-            val left = xPosition
-            val top = yPosition
-            val right = left + childWidth
-            val bottom = top + childHeight
-
-            xPosition += childWidth + horizontalSpacing
-            maxHeightInRow = max(maxHeightInRow, childHeight)
-
-            child.layout(left, top, right, bottom)
         }
 
-        val totalHeight = yPosition + maxHeightInRow
-        setMeasuredDimension(parentWidth, totalHeight)
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+
+        mNumColumns = widthSize / (childMeasuredWidth + HORIZONTAL_PADDING)
+
+        val rowCount = ceil(childCount.toFloat() / mNumColumns).toInt()
+        val height = rowCount * (childMeasuredHeight + VERTICAL_PADDING)
+        setMeasuredDimension(widthSize, height)
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        val childCount = childCount
+
+        for (i in 0 until childCount) {
+            val child = getChildAt(i)
+            drawChild(i, child)
+        }
+    }
+
+    private fun drawChild(childIndex: Int, child: View) {
+        val row = childIndex / mNumColumns
+        val column = childIndex % mNumColumns
+
+        val left = column * child.measuredWidth
+        val top = row * child.measuredHeight
+        val right = left + child.measuredWidth
+        val bottom = top + child.measuredHeight
+
+        child.layout(left + HORIZONTAL_PADDING, top + VERTICAL_PADDING, right, bottom)
     }
 
     fun submitReaction(viewItem: ReactionViewItem) {
@@ -94,7 +84,6 @@ class ReactionViewGroup @JvmOverloads constructor(
     fun submitReactions(viewItems: List<ReactionViewItem>) {
         removeAllViews()
         with(viewItems) {
-
             forEach {
                 submitReaction(it)
             }
@@ -102,13 +91,6 @@ class ReactionViewGroup @JvmOverloads constructor(
             reactionViews.forEach { reactionView ->
                 reactionView.setOnClickListener {
                     listener?.invoke(reactionView.getItem())
-                }
-            }
-
-            if (isNotEmpty()) {
-                addReaction = AddReactionView(context)
-                addReaction?.let {
-                    addView(it)
                 }
             }
         }
@@ -124,4 +106,10 @@ class ReactionViewGroup @JvmOverloads constructor(
     fun setEmojiClickListener(listener: (ReactionViewItem) -> Unit) {
         this.listener = listener
     }
+
+    companion object {
+        const val HORIZONTAL_PADDING = 2
+        const val VERTICAL_PADDING = 2
+    }
+
 }

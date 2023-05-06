@@ -24,21 +24,20 @@ class RepoMessageImpl @Inject constructor(
         streamId: Int,
         stream: String,
         topic: String,
-        numBefore: Int ,
-        numAfter: Int ,
+        numBefore: Int,
+        numAfter: Int,
     ): List<MessageModel> {
-        val response = remoteDataSource.getAllMessage(
-            stream)
+        val response = remoteDataSource.getAllMessage(stream)
         val mappedResponse = mapper.map(response)
-        val filter = mappedResponse.filter {
-            it.topic == topic
-        }
-        filter.forEach { localDataSource.addMessage(it) }
-        return filter
+        return mappedResponse.filter { it.topic == topic }
     }
 
-    override fun getAllMessageLocally(streamId: Int): Flow<List<MessageModel>> {
-        return localDataSource.getMessageByStreamId(streamId)
+    override suspend fun saveDataLocally(data: List<MessageModel>) {
+        data.forEach { localDataSource.addMessage(it) }
+    }
+
+    override fun getAllMessageLocally(stream: String, topic: String): Flow<List<MessageModel>> {
+        return localDataSource.getAllMessage(stream, topic)
     }
 
     override suspend fun sendMessage(params: MessageStreamParams) {
@@ -58,4 +57,9 @@ class RepoMessageImpl @Inject constructor(
             request = dtoReactionMapper.map(params)
         )
     }
+
+    override suspend fun updateMessage(messageId: Int, emoji: String) {
+        localDataSource.updateMessage(messageId, emoji)
+    }
+
 }
