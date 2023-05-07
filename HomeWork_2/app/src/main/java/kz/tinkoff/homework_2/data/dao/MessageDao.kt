@@ -13,7 +13,7 @@ import kz.tinkoff.homework_2.domain.model.MessageModel
 interface MessageDao {
 
     @Query("SELECT * FROM MessageEntity WHERE display_recipient == :stream AND subject == :topic")
-    fun getAllMessages(stream: String, topic: String): Flow<List<MessageEntity>>
+    suspend fun getAllMessages(stream: String, topic: String): List<MessageEntity>
 
     @Query("SELECT * FROM MessageEntity WHERE id == :id")
     fun getMessageById(id: Int): Flow<MessageEntity>
@@ -24,6 +24,4 @@ interface MessageDao {
     @Insert(entity = MessageEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun addMessage(message: MessageEntity)
 
-    @Update(entity = MessageEntity::class)
-    suspend fun updateMessage(message: MessageEntity)
 }

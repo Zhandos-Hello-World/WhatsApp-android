@@ -11,7 +11,6 @@ import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
-import kz.tinkoff.core.utils.getMaxWidth
 import kz.tinkoff.coreui.R
 import kz.tinkoff.coreui.custom.dvo.MessageDvo
 import kz.tinkoff.coreui.databinding.CustomMessageViewGroupContentBinding
@@ -85,7 +84,6 @@ class MessageViewGroup @JvmOverloads constructor(
             width,
             offsetY + reactionsViewGroup.measuredHeight
         )
-        reactionsViewGroup.requestLayout()
     }
 
     fun setMessageDvo(dvo: MessageDvo) {

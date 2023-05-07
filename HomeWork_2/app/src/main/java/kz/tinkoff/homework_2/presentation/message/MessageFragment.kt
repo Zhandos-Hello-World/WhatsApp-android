@@ -78,7 +78,7 @@ class MessageFragment(private val args: MessageArgs) :
             binding.messageRecycler.adapter = adapter
             binding.messageRecycler.addOnScrollListener(
                 MessageScrollControllerListener {
-                    store.accept(MessageEvent.Ui.ItemShowed(it))
+                    //store.accept(MessageEvent.Ui.ItemShowed(it))
                 }
             )
 
@@ -114,13 +114,18 @@ class MessageFragment(private val args: MessageArgs) :
         when (state) {
             is MessageState.Data -> {
                 binding.apply {
+                    adapter.submitList(emptyList())
+                    messageRecycler.adapter = null
                     messageRecycler.isVisible = state.messageDvo.isNotEmpty()
+
                     adapter.submitList(state.messageDvo)
+                    messageRecycler.adapter = adapter
                     messageRecycler.scrollToPosition(state.messageDvo.size - 1)
                 }
             }
             is MessageState.UpdatedPosition -> {
                 binding.apply {
+                    messageRecycler.isVisible = true
                     messageRecycler.adapter?.notifyItemChanged(state.position)
                 }
             }

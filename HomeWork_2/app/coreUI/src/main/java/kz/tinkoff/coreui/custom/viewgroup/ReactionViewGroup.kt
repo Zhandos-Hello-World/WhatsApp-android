@@ -6,9 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
-import java.lang.Integer.max
 import kotlin.math.ceil
-import kz.tinkoff.coreui.R
 import kz.tinkoff.coreui.custom.view.AddReactionView
 import kz.tinkoff.coreui.custom.view.ReactionView
 import kz.tinkoff.coreui.item.ReactionViewItem
@@ -94,7 +92,6 @@ class ReactionViewGroup @JvmOverloads constructor(
                 }
             }
         }
-        requestLayout()
     }
 
     fun addReactionClickListener(listener: () -> Unit) {

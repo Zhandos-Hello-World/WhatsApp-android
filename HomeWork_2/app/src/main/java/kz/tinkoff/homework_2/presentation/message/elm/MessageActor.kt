@@ -1,17 +1,14 @@
 package kz.tinkoff.homework_2.presentation.message.elm
 
+import android.util.Log
 import com.github.terrakok.cicerone.Router
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kz.tinkoff.core.adapter.DelegateItem
+import kz.tinkoff.core.emoji.emojiSetNCS
 import kz.tinkoff.coreui.custom.dvo.MessageDvo
-import kz.tinkoff.homework_2.domain.model.MessageModel
+import kz.tinkoff.coreui.item.ReactionViewItem
 import kz.tinkoff.homework_2.domain.model.MessageStreamParams
 import kz.tinkoff.homework_2.domain.model.ReactionParams
 import kz.tinkoff.homework_2.domain.repository.MessageRepository
@@ -36,7 +33,7 @@ class MessageActor @Inject constructor(
             is MessageCommand.LoadMessages -> {
                 flow<MessageEvent> {
                     args = command.args
-                    var responseLocally = getMessagesLocally(command.args).first()
+                    var responseLocally = getMessagesLocally(command.args)
                     if (responseLocally.isNotEmpty()) {
                         messageList = responseLocally
                         emit(MessageEvent.Internal.MessageLoaded(messageList))
@@ -50,7 +47,8 @@ class MessageActor @Inject constructor(
                         numAfter = MIN_LOAD
                     )
                     repository.saveDataLocally(response)
-                    responseLocally = getMessagesLocally(command.args).first()
+                    Log.d("equalsResponse", (responseLocally == getMessagesLocally(command.args)).toString())
+                    responseLocally = getMessagesLocally(command.args)
                     if (responseLocally.isNotEmpty()) {
                         messageList = responseLocally
                         emit(MessageEvent.Internal.MessageLoaded(messageList))
@@ -76,38 +74,28 @@ class MessageActor @Inject constructor(
             }
             is MessageCommand.DeleteReaction -> {
                 flow {
-                    val model = messageList[command.position] as MessageDelegateItem
-                    val emoji = command.emoji
-                    repository.deleteReaction(
-                        messageId = model.id,
-                        params = ReactionParams(
-                            emojiName = emoji,
-                        ),
-                    )
-                    repository.updateMessage(model.id, emoji)
-                    args?.let { args ->
-                        messageList = getMessagesLocally(args).first()
-                        emit(MessageEvent.Internal.MessageLoaded(messageList))
-                        emit(MessageEvent.Internal.UpdatePosition(command.position))
-                    }
+                    changeMessage(command.position, command.emoji)
+                    emit(MessageEvent.Internal.MessageLoaded(messageList))
+                    emit(MessageEvent.Internal.UpdatePosition(command.position))
+
+                    val message = messageList[command.position] as MessageDelegateItem
+                    val emoji =
+                        if (isEmojiUnicode(command.emoji)) getEmojiNameFromUnicode(command.emoji)
+                            ?: "" else command.emoji
+                    repository.deleteReaction(message.id, ReactionParams(emojiName = emoji))
                 }
             }
             is MessageCommand.AddReaction -> {
                 flow {
-                    val model = messageList[command.position] as MessageDelegateItem
-                    val emoji = command.emoji
-                    repository.addReaction(
-                        messageId = model.id,
-                        params = ReactionParams(
-                            emojiName = emoji,
-                        ),
-                    )
-                    repository.updateMessage(model.id, emoji)
-                    args?.let { args ->
-                        messageList = getMessagesLocally(args).first()
-                        emit(MessageEvent.Internal.MessageLoaded(messageList))
-                        emit(MessageEvent.Internal.UpdatePosition(command.position))
-                    }
+                    changeMessage(command.position, command.emoji)
+                    emit(MessageEvent.Internal.MessageLoaded(messageList))
+                    emit(MessageEvent.Internal.UpdatePosition(command.position))
+
+                    val message = messageList[command.position] as MessageDelegateItem
+                    val emoji =
+                        if (isEmojiUnicode(command.emoji)) getEmojiNameFromUnicode(command.emoji)
+                            ?: "" else command.emoji
+                    repository.addReaction(message.id, ReactionParams(emojiName = emoji))
                 }
             }
             is MessageCommand.BackToChannels -> {
@@ -116,10 +104,66 @@ class MessageActor @Inject constructor(
                 }
             }
             is MessageCommand.ItemShowed -> {
-                TODO()
+                flow { }
             }
         }
     }
+
+    private fun changeMessage(position: Int, emoji: String) {
+        val model = messageList[position] as MessageDelegateItem
+        val reactions = model.content().reactions
+
+        val isEmojiUnicode = isEmojiUnicode(emoji)
+
+        val emojiDvo = if (isEmojiUnicode) {
+            emoji
+        } else {
+            getEmojiUnicodeFromName(emoji) ?: return
+        }
+
+        val reaction = reactions.find { it.emoji == emojiDvo }
+        if (reaction != null) {
+            val reactionIndex = reactions.indexOf(reaction)
+            if (reaction.fromMe) {
+                if (reaction.count == 1) {
+                    reactions.removeAt(reactionIndex)
+                } else {
+                    reactions[reactionIndex] =
+                        reaction.copy(count = reaction.count - 1, fromMe = false)
+                }
+            } else {
+                reactions[reactionIndex] = reaction.copy(count = reaction.count + 1, fromMe = true)
+            }
+        } else {
+            reactions.add(
+                ReactionViewItem(
+                    reactions.hashCode(),
+                    count = 1,
+                    emoji = emojiDvo,
+                    fromMe = true
+                ),
+            )
+        }
+    }
+
+    private fun isEmojiUnicode(value: String): Boolean {
+        val character = try {
+            value[0]
+        } catch (ex: Exception) {
+            return false
+        }
+        val type = Character.getType(character)
+        return type == Character.SURROGATE.toInt() || type == Character.OTHER_SYMBOL.toInt()
+    }
+
+    private fun getEmojiUnicodeFromName(emojiName: String): String? {
+        return emojiSetNCS.find { it.name == emojiName }?.getCodeString()
+    }
+
+    private fun getEmojiNameFromUnicode(code: String): String? {
+        return emojiSetNCS.find { it.getCodeString() == code }?.name
+    }
+
 
     private fun addMessageAfterSuccess(message: String) {
         val currentTime = System.currentTimeMillis()
@@ -137,12 +181,12 @@ class MessageActor @Inject constructor(
         )
     }
 
-    private fun getMessagesLocally(args: MessageArgs): Flow<List<DelegateItem>> {
+    private suspend fun getMessagesLocally(args: MessageArgs): List<DelegateItem> {
         val messagesResponse = repository.getAllMessageLocally(
             args.stream.replace("#", ""),
             args.topic.replace("#", "")
         )
-        return messagesResponse.map { delegateItemMapper.toMessageWithDateFromModel(it) }
+        return delegateItemMapper.toMessageWithDateFromModel(messagesResponse)
     }
 
     companion object {

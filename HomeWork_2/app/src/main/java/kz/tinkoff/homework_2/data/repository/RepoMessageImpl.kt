@@ -36,7 +36,7 @@ class RepoMessageImpl @Inject constructor(
         data.forEach { localDataSource.addMessage(it) }
     }
 
-    override fun getAllMessageLocally(stream: String, topic: String): Flow<List<MessageModel>> {
+    override suspend fun getAllMessageLocally(stream: String, topic: String): List<MessageModel> {
         return localDataSource.getAllMessage(stream, topic)
     }
 
@@ -57,9 +57,4 @@ class RepoMessageImpl @Inject constructor(
             request = dtoReactionMapper.map(params)
         )
     }
-
-    override suspend fun updateMessage(messageId: Int, emoji: String) {
-        localDataSource.updateMessage(messageId, emoji)
-    }
-
 }

@@ -14,7 +14,6 @@ import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.navigation.DefaultNavigatorDelegate
 import kz.tinkoff.homework_2.navigation.NavigateDelegate
 import kz.tinkoff.homework_2.navigation.Screens
-import kz.tinkoff.homework_2.presentation.message.MessageArgs
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main),
@@ -44,13 +43,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
         binding.bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.channels_item ->         router.replaceScreen(Screens.MessageScreen(
-                    MessageArgs(
-                        streamId = 379888,
-                        stream = "general",
-                        topic = "test"
-                    )
-                ))
+                R.id.channels_item -> router.replaceScreen(Screens.ChannelsScreen())
                 R.id.people_item -> router.replaceScreen(Screens.PeopleScreen())
                 R.id.profile_item -> router.replaceScreen(Screens.ProfileScreen())
             }

@@ -15,12 +15,10 @@ class ReactionViewItemMapper : Mapper<MessageModel.ReactionModel, ReactionViewIt
         )
     }
 
-
     private fun getEmojiByUnicode(unicode: String): String {
         val unicodeInt = unicode.toInt(16)
         return String(Character.toChars(unicodeInt))
     }
-
 
     fun toReactionViewItems(from: List<MessageModel.ReactionModel>): MutableList<ReactionViewItem> {
         val fromMapped = from.map { map(it) }
