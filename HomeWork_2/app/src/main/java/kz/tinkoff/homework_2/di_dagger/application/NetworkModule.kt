@@ -13,6 +13,7 @@ import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
 
@@ -24,7 +25,11 @@ class NetworkModule {
     fun provideClient(context: Context): OkHttpClient {
         val httpClient = OkHttpClient.Builder()
 
+        val httpLogger = HttpLoggingInterceptor()
+        httpLogger.setLevel(HttpLoggingInterceptor.Level.BASIC)
+
         httpClient.addInterceptor(ChuckerInterceptor.Builder(context).build())
+        httpClient.addInterceptor(httpLogger)
         httpClient.networkInterceptors().add(Interceptor { chain ->
             val original = chain.request()
 

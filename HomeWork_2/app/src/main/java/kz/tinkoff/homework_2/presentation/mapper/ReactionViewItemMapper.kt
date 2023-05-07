@@ -16,7 +16,11 @@ class ReactionViewItemMapper : Mapper<MessageModel.ReactionModel, ReactionViewIt
     }
 
     private fun getEmojiByUnicode(unicode: String): String {
-        val unicodeInt = unicode.toInt(16)
+        val unicodeInt = try {
+            unicode.toInt(16)
+        } catch (ex: Exception) {
+            return "😉"
+        }
         return String(Character.toChars(unicodeInt))
     }
 

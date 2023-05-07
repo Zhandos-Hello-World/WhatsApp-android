@@ -13,7 +13,6 @@ import kz.tinkoff.homework_2.presentation.message.MessageFragment
 import kz.tinkoff.homework_2.util.MockRequestDispatcher
 import kz.tinkoff.homework_2.util.loadFromAssets
 import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -99,11 +98,4 @@ class MessageScreenIntegrateTest : TestCase() {
         }
     }
 
-    
-
-
-    @After
-    fun tearDown() {
-        mockServer.shutdown()
-    }
 }
