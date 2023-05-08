@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kz.tinkoff.homework_2.data.dao.MessageDao
 import kz.tinkoff.homework_2.data.enitiy.MessageEntity
 import kz.tinkoff.homework_2.data.enitiy.ReactionEntity
@@ -17,6 +18,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class MessageDatabaseTest {
 
@@ -33,18 +35,18 @@ class MessageDatabaseTest {
     }
 
     @Test
-    fun checkEmptyTest() = runBlocking {
-        val size = messageDao.getAllMessages(
+    fun checkEmptyTest() = runTest {
+        val expectedSize = messageDao.getAllMessages(
             "general",
             "test"
         ).size
-        assertEquals(0, size)
+        assertEquals(0, expectedSize)
     }
 
     @Test
-    fun readAndWrite() = runBlocking {
+    fun readAndWrite() = runTest {
         val streamId = 21
-        val message = MessageEntity(
+        val expectedMessage = MessageEntity(
             id = streamId,
             senderId = 435,
             recipientId = 2454,
@@ -71,17 +73,17 @@ class MessageDatabaseTest {
                 )
             )
         )
-        messageDao.addMessage(message)
+        messageDao.addMessage(expectedMessage)
         val returnedEntity = messageDao.getMessageById(streamId).first()
 
-        assertEquals(message, returnedEntity)
+        assertEquals(expectedMessage, returnedEntity)
     }
 
 
     @Test
-    fun writeAndCheckListOfEntity() = runBlocking {
+    fun writeAndCheckListOfEntity() = runTest {
         val streams = 1000
-        val list = mutableListOf<MessageEntity>()
+        val expectedMessagesList = mutableListOf<MessageEntity>()
         for (i in 0..streams) {
             val entity = MessageEntity(
                 id = i,
@@ -110,14 +112,14 @@ class MessageDatabaseTest {
                     )
                 )
             )
-            list.add(entity)
+            expectedMessagesList.add(entity)
             messageDao.addMessage(entity)
         }
         val returnedList = messageDao.getAllMessages(
             "hello",
             "test"
         )
-        assertEquals(list, returnedList)
+        assertEquals(expectedMessagesList, returnedList)
     }
 
 
@@ -125,5 +127,4 @@ class MessageDatabaseTest {
     fun tearDown() {
         db.close()
     }
-
 }

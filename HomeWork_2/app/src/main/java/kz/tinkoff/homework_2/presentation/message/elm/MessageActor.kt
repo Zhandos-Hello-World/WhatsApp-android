@@ -4,6 +4,7 @@ import android.util.Log
 import com.github.terrakok.cicerone.Router
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.emoji.emojiSetNCS
@@ -46,13 +47,19 @@ class MessageActor @Inject constructor(
                         numBefore = MAX_LOAD,
                         numAfter = MIN_LOAD
                     )
+
                     repository.saveDataLocally(response)
-                    Log.d("equalsResponse", (responseLocally == getMessagesLocally(command.args)).toString())
+                    Log.d(
+                        "equalsResponse",
+                        (responseLocally == getMessagesLocally(command.args)).toString()
+                    )
                     responseLocally = getMessagesLocally(command.args)
                     if (responseLocally.isNotEmpty()) {
                         messageList = responseLocally
                         emit(MessageEvent.Internal.MessageLoaded(messageList))
                     }
+                }.catch {
+                    emit(MessageEvent.Internal.ErrorLoading)
                 }
             }
             is MessageCommand.AddMessage -> {

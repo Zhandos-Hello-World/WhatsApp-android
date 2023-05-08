@@ -67,33 +67,18 @@ dependencies {
     implementation di.dagger
 
     implementation database.room_runtime
+    implementation database.room_ktx
     annotationProcessor database.room_compile
     kapt database.room_compile
     kapt database.room_ktx
-    implementation database.room_ktx
 
     debugImplementation deps.debugLibs.chuckerDebug
     releaseImplementation deps.debugLibs.chuckerRelease
 
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
-    def okhhtp_version = "4.10.0"
-    implementation "com.squareup.okhttp3:okhttp:$okhhtp_version"
-    implementation "com.squareup.okhttp3:logging-interceptor:$okhhtp_version"
-    androidTestImplementation "com.squareup.okhttp3:mockwebserver:$okhhtp_version"
-    androidTestImplementation "com.kaspersky.android-components:kaspresso:1.5.1"
-
-    def fragment_version = "1.6.0-alpha04"
-    debugImplementation "androidx.fragment:fragment-testing:$fragment_version"
-
-
-    testImplementation "androidx.arch.core:core-testing:2.2.0"
-
-    androidTestImplementation 'androidx.test:runner:1.5.2'
-    androidTestUtil 'androidx.test:orchestrator:1.4.2'
-
+    androidTestImplementation androidTestLibs.values()
+    testImplementation unitTestLibs.values()
+    androidTestUtil testUtils.values()
+    debugImplementation debug.values()
 
 
 }

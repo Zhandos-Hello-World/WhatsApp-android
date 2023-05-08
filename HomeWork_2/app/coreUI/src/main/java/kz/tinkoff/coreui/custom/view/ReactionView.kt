@@ -75,7 +75,7 @@ class ReactionView @JvmOverloads constructor(
         return item
     }
 
-    companion object {
+    private companion object {
         const val PADDING_TOP = 5F
         const val PADDING_RIGHT = 8F
         const val PADDING_LEFT = 8F

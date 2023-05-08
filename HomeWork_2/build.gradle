@@ -28,6 +28,16 @@ buildscript {
         kotlinx_serialization_factory_version = "0.8.0"
         room_version = "2.5.1"
         gson_version = '2.9.0'
+        okhttp_version = '4.10.0'
+        andorid_junit_version = '1.1.5'
+        espresso_version = '3.5.1'
+        kasspresso_version = '1.5.1'
+        test_runner_version = '1.5.2'
+        junit_version = '4.13.2'
+        core_testing_version = '2.2.0'
+        fragment_test_version = '1.6.0-alpha04'
+        orchestrator_test_version = '1.4.2'
+        coroutines_test_version = '1.6.4'
 
 
         deps = [
@@ -53,13 +63,33 @@ buildscript {
                         'elmslie_coroutine'   : "com.github.vivid-money.elmslie:elmslie-coroutines:$elmslie_version",
                         'serialization'       : "org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinx_serialization_version",
                         'serialzation_factory': "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:$kotlinx_serialization_factory_version",
-                        'gson'                : "com.google.code.gson:gson:$gson_version"
+                        'gson'                : "com.google.code.gson:gson:$gson_version",
+                        "okhttp3"             : "com.squareup.okhttp3:okhttp:$okhttp_version",
+                        "okhttp3_interceptor" : "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
                 ],
 
                 'debugLibs': [
                         'chuckerDebug'  : "com.github.chuckerteam.chucker:library:$chucker_version",
                         'chuckerRelease': "com.github.chuckerteam.chucker:library-no-op:$chucker_version"
                 ]
+        ]
+        androidTestLibs = [
+                junit        : "androidx.test.ext:junit:$andorid_junit_version",
+                espresso     : "androidx.test.espresso:espresso-core:$espresso_version",
+                mockWebServer: "com.squareup.okhttp3:mockwebserver:$okhttp_version",
+                kasspresso   : "com.kaspersky.android-components:kaspresso:$kasspresso_version",
+                testRunner   : "androidx.test:runner:$test_runner_version",
+                coroutines   : "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_test_version"
+        ]
+        unitTestLibs = [
+                junit             : "junit:junit:$junit_version",
+                androidCoreTesting: "androidx.arch.core:core-testing:$core_testing_version",
+        ]
+        debug = [
+                fragmentTesting: "androidx.fragment:fragment-testing:$fragment_test_version"
+        ]
+        testUtils = [
+                orchestrator: "androidx.test:orchestrator:$orchestrator_test_version"
         ]
         di = [
                 dagger    : "com.google.dagger:dagger:$dagger_version",

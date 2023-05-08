@@ -29,7 +29,8 @@ class MessageScreen : KScreen<MessageScreen>() {
     val errorState = KView(function = { withId(R.id.error_state) })
 
     class MessageItem(parent: Matcher<View>) : KRecyclerItem<MessageItem>(parent) {
-        val cardItem = KView(function = { withId(R.id.message)})
+        val cardItem = KView(function = { withId(R.id.message) })
+        val reactions = KView(function = {})
     }
 
 }
