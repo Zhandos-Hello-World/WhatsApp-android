@@ -4,19 +4,19 @@ import com.github.terrakok.cicerone.Router
 import kz.tinkoff.homework_2.navigation.Screens
 import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
 
-class ChannelReducer(private val router: Router) :
-    DslReducer<ChannelEvent, ChannelState, ChannelEffect, ChannelCommand>() {
+class StreamReducer(private val router: Router) :
+    DslReducer<ChannelEvent, StreamState, ChannelEffect, ChannelCommand>() {
 
     override fun Result.reduce(event: ChannelEvent): Any? {
         return when (event) {
             is ChannelEvent.Internal.ChannelLoaded -> {
-                state { ChannelState.Data(event.data) }
+                state { StreamState.Data(event.data) }
             }
             is ChannelEvent.Internal.ErrorLoading -> {
-                state { ChannelState.Error }
+                state { StreamState.Error }
             }
             is ChannelEvent.Ui.LoadChannel -> {
-                state { ChannelState.Loading }
+                state { StreamState.Loading }
                 commands { +ChannelCommand.LoadChannel }
             }
             is ChannelEvent.Ui.NavigateToMessage -> {

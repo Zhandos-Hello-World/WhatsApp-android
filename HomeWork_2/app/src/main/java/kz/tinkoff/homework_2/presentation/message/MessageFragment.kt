@@ -1,11 +1,13 @@
 package kz.tinkoff.homework_2.presentation.message
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import javax.inject.Inject
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.adapter.MainAdapter
@@ -15,6 +17,10 @@ import kz.tinkoff.coreui.custom.dvo.MessageDvo
 import kz.tinkoff.coreui.custom.viewgroup.CustomMessageTextFieldBar
 import kz.tinkoff.coreui.item.ReactionViewItem
 import kz.tinkoff.homework_2.databinding.FragmentMessageBinding
+import kz.tinkoff.homework_2.di_dagger.message.DaggerMessageComponent
+import kz.tinkoff.homework_2.di_dagger.message.modules.MessageDataModule
+import kz.tinkoff.homework_2.di_dagger.message.modules.MessageNetworkModule
+import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.presentation.delegates.date.DateDelegate
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageAdapterListener
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageDelegate
@@ -23,7 +29,6 @@ import kz.tinkoff.homework_2.presentation.message.elm.MessageEvent
 import kz.tinkoff.homework_2.presentation.message.elm.MessageState
 import kz.tinkoff.homework_2.presentation.message.elm.MessageStoreFactory
 import kz.tinkoff.homework_2.presentation.reaction.ReactionBottomSheetDialog
-import org.koin.android.ext.android.inject
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
@@ -41,12 +46,23 @@ class MessageFragment(private val args: MessageArgs) :
 
     override val initEvent: MessageEvent = MessageEvent.Ui.LoadMessage(args)
 
-    private val messageStoreFactory: MessageStoreFactory by inject()
+    @Inject
+    lateinit var messageStoreFactory: MessageStoreFactory
 
     override val storeHolder by lazyUnsafe {
         LifecycleAwareStoreHolder(lifecycle) {
             messageStoreFactory.provide()
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        DaggerMessageComponent.builder()
+            .messageDataModule(MessageDataModule())
+            .messageNetworkModule(MessageNetworkModule())
+            .appComponent(requireContext().getAppComponent())
+            .build().inject(this)
     }
 
 

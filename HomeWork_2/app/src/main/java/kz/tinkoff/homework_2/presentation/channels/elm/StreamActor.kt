@@ -1,19 +1,19 @@
 package kz.tinkoff.homework_2.presentation.channels.elm
 
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kz.tinkoff.core.ktx.runCatchingNonCancellation
-import kz.tinkoff.homework_2.domain.repository.ChannelRepository
+import kz.tinkoff.homework_2.domain.repository.StreamRepository
 import kz.tinkoff.homework_2.presentation.mapper.StreamDvoMapper
 import vivid.money.elmslie.coroutines.Actor
 
-class ChannelActor(
-    private val repository: ChannelRepository,
+class StreamActor @Inject constructor(
+    private val repository: StreamRepository,
     private val dvoMapper: StreamDvoMapper,
     private val coroutineScope: CoroutineScope,
 ) : Actor<ChannelCommand, ChannelEvent> {

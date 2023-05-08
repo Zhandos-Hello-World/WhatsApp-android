@@ -1,11 +1,12 @@
 package kz.tinkoff.homework_2.data.datasource
 
+import javax.inject.Inject
 import kz.tinkoff.homework_2.data.model.BaseResponse
 import kz.tinkoff.homework_2.data.model.MessageListResponse
 import kz.tinkoff.homework_2.data.network.MessageApiService
 import kz.tinkoff.homework_2.domain.datasource.MessageRemoteDataSource
 
-class DefaultMessageNetworkDataSource(private val apiService: MessageApiService) :
+class DefaultMessageNetworkDataSource @Inject constructor(private val apiService: MessageApiService) :
     MessageRemoteDataSource {
 
     override suspend fun getAllMessage(): MessageListResponse {

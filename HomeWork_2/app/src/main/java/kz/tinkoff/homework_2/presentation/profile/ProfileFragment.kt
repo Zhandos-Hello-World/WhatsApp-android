@@ -1,5 +1,6 @@
 package kz.tinkoff.homework_2.presentation.profile
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,15 +8,18 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
+import javax.inject.Inject
 import kz.tinkoff.core.utils.lazyUnsafe
-import kz.tinkoff.homework_2.R
 import kz.tinkoff.homework_2.databinding.FragmentProfileBinding
+import kz.tinkoff.homework_2.di_dagger.people.DaggerPeopleComponent
+import kz.tinkoff.homework_2.di_dagger.people.modules.PeopleDataModule
+import kz.tinkoff.homework_2.di_dagger.people.modules.PeopleNetworkModule
+import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.presentation.dvo.ProfileDvo
 import kz.tinkoff.homework_2.presentation.profile.elm.ProfileEffect
 import kz.tinkoff.homework_2.presentation.profile.elm.ProfileEvent
 import kz.tinkoff.homework_2.presentation.profile.elm.ProfileState
 import kz.tinkoff.homework_2.presentation.profile.elm.ProfileStoreFactory
-import org.koin.android.ext.android.inject
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
@@ -25,12 +29,23 @@ class ProfileFragment : ElmFragment<ProfileEvent, ProfileEffect, ProfileState>()
 
     override val initEvent: ProfileEvent = ProfileEvent.Ui.LoadProfile
 
-    private val profileStoreFactory: ProfileStoreFactory by inject()
+    @Inject
+    lateinit var storeFactory: ProfileStoreFactory
 
     override val storeHolder by lazyUnsafe {
         LifecycleAwareStoreHolder(lifecycle) {
-            profileStoreFactory.provide()
+            storeFactory.provide()
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        DaggerPeopleComponent.builder()
+            .peopleDataModule(PeopleDataModule())
+            .peopleNetworkModule(PeopleNetworkModule())
+            .appComponent(
+                requireContext().getAppComponent()
+            ).build().inject(this)
     }
 
     override fun onCreateView(

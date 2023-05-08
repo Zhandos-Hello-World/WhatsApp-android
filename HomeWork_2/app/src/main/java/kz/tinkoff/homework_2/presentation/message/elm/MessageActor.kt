@@ -1,6 +1,7 @@
 package kz.tinkoff.homework_2.presentation.message.elm
 
 import com.github.terrakok.cicerone.Router
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kz.tinkoff.core.adapter.DelegateItem
@@ -15,7 +16,7 @@ import kz.tinkoff.homework_2.presentation.delegates.message.MessageDelegateItem
 import kz.tinkoff.homework_2.presentation.mapper.MessageDelegateItemMapper
 import vivid.money.elmslie.coroutines.Actor
 
-class MessageActor(
+class MessageActor @Inject constructor(
     private val repository: MessageRepository,
     private val delegateItemMapper: MessageDelegateItemMapper,
     private val router: Router,

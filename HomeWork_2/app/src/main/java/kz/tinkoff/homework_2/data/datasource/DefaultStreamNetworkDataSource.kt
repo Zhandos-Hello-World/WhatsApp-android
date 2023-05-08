@@ -1,13 +1,14 @@
 package kz.tinkoff.homework_2.data.datasource
 
+import javax.inject.Inject
 import kz.tinkoff.homework_2.data.model.StreamListResponse
 import kz.tinkoff.homework_2.data.model.TopicListResponse
 import kz.tinkoff.homework_2.data.network.StreamApiService
-import kz.tinkoff.homework_2.domain.datasource.ChannelRemoteDataSource
+import kz.tinkoff.homework_2.domain.datasource.StreamRemoteDataSource
 
-class DefaultStreamNetworkDataSource(
+class DefaultStreamNetworkDataSource @Inject constructor(
     private val apiService: StreamApiService,
-) : ChannelRemoteDataSource {
+) : StreamRemoteDataSource {
 
     override suspend fun getAllStreams(): StreamListResponse {
         return apiService.getAllStreams()

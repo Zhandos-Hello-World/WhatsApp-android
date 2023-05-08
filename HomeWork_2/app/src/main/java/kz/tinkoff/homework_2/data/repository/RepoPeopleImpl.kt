@@ -1,5 +1,6 @@
 package kz.tinkoff.homework_2.data.repository
 
+import javax.inject.Inject
 import kz.tinkoff.homework_2.data.mappers.PersonMapper
 import kz.tinkoff.homework_2.data.mappers.PresenceMapper
 import kz.tinkoff.homework_2.data.mappers.ProfileMapper
@@ -9,7 +10,7 @@ import kz.tinkoff.homework_2.domain.model.PresenceModel
 import kz.tinkoff.homework_2.domain.model.ProfileModel
 import kz.tinkoff.homework_2.domain.repository.PeopleRepository
 
-class RepoPeopleImpl(
+class RepoPeopleImpl @Inject constructor(
     private val dataSource: PeopleRemoteDataSource,
     private val peopleMapper: PersonMapper,
     private val profileMapper: ProfileMapper,

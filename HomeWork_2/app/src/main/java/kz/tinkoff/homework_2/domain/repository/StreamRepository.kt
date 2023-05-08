@@ -3,7 +3,7 @@ package kz.tinkoff.homework_2.domain.repository
 import kz.tinkoff.homework_2.domain.model.StreamModel
 import kz.tinkoff.homework_2.domain.model.TopicsModel
 
-interface ChannelRepository {
+interface StreamRepository {
 
     suspend fun getAllChannels(): List<StreamModel>
 

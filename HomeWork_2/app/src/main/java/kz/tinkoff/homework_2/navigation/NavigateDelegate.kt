@@ -4,21 +4,27 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import com.github.terrakok.cicerone.Navigator
 import com.github.terrakok.cicerone.NavigatorHolder
-import kz.tinkoff.homework_2.R
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 interface NavigateDelegate {
     fun onResumeFragmentsNavigator()
-    fun registerNavigatorDelegate(activity: FragmentActivity, containerId: Int)
     fun onPauseFragmentsNavigator()
+    fun registerNavigatorDelegate(
+        activity: FragmentActivity,
+        containerId: Int,
+        navHolder: NavigatorHolder,
+    )
 }
 
-class DefaultNavigatorDelegate: NavigateDelegate, KoinComponent, DefaultLifecycleObserver {
-    private val navigatorHolder: NavigatorHolder by inject()
+class DefaultNavigatorDelegate : NavigateDelegate, DefaultLifecycleObserver {
+    private lateinit var navigatorHolder: NavigatorHolder
     private lateinit var navigator: Navigator
 
-    override fun registerNavigatorDelegate(activity: FragmentActivity, containerId: Int) {
+    override fun registerNavigatorDelegate(
+        activity: FragmentActivity,
+        containerId: Int,
+        navHolder: NavigatorHolder,
+    ) {
+        this.navigatorHolder = navHolder
         activity.lifecycle.addObserver(this)
         navigator = MyNavigator(activity, containerId)
     }
@@ -30,6 +36,5 @@ class DefaultNavigatorDelegate: NavigateDelegate, KoinComponent, DefaultLifecycl
     override fun onPauseFragmentsNavigator() {
         navigatorHolder.removeNavigator()
     }
-
 
 }
