@@ -58,6 +58,12 @@ dependencies {
     kapt di.daggerKapt
     implementation di.dagger
 
+    implementation database.room_runtime
+    annotationProcessor database.room_compile
+    kapt database.room_compile
+    kapt database.room_ktx
+    implementation database.room_ktx
+
     debugImplementation deps.debugLibs.chuckerDebug
     releaseImplementation deps.debugLibs.chuckerRelease
 }

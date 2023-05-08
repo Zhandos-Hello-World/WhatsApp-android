@@ -5,7 +5,7 @@ import kz.tinkoff.homework_2.data.model.MessageListResponse
 
 interface MessageRemoteDataSource {
 
-    suspend fun getAllMessage(): MessageListResponse
+    suspend fun getAllMessage(stream: String, numBefore: Int = 1000, numAfter: Int = 1000): MessageListResponse
 
     suspend fun setMessageSend(request: HashMap<String, Any?>): BaseResponse
 

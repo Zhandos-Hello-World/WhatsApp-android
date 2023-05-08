@@ -24,6 +24,7 @@ import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.presentation.delegates.date.DateDelegate
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageAdapterListener
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageDelegate
+import kz.tinkoff.homework_2.presentation.delegates.message.MessageScrollControllerListener
 import kz.tinkoff.homework_2.presentation.message.elm.MessageEffect
 import kz.tinkoff.homework_2.presentation.message.elm.MessageEvent
 import kz.tinkoff.homework_2.presentation.message.elm.MessageState
@@ -44,7 +45,7 @@ class MessageFragment(private val args: MessageArgs) :
         }
     }
 
-    override val initEvent: MessageEvent = MessageEvent.Ui.LoadMessage(args)
+    override val initEvent: MessageEvent = MessageEvent.Ui.LoadMessageLocal(args)
 
     @Inject
     lateinit var messageStoreFactory: MessageStoreFactory
@@ -76,6 +77,11 @@ class MessageFragment(private val args: MessageArgs) :
 
         binding.apply {
             binding.messageRecycler.adapter = adapter
+            binding.messageRecycler.addOnScrollListener(
+                MessageScrollControllerListener {
+                    store.accept(MessageEvent.Ui.ItemShowed(args, it))
+                }
+            )
 
             messageSendEditTextBar.setOnSendClickListener {
                 if (it == CustomMessageTextFieldBar.SendMessageState.SEND_MESSAGE) {
@@ -113,6 +119,11 @@ class MessageFragment(private val args: MessageArgs) :
                     adapter.submitList(state.messageDvo)
                 }
             }
+            is MessageState.Loading -> {
+                binding.apply {
+                    loadingState.isVisible = true
+                }
+            }
             else -> {}
         }
     }
@@ -120,6 +131,7 @@ class MessageFragment(private val args: MessageArgs) :
     private fun hideAll() {
         binding.apply {
             messageRecycler.isVisible = false
+            loadingState.isVisible = false
         }
     }
 

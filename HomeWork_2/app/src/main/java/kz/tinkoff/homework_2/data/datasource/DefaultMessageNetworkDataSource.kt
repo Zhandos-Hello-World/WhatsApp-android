@@ -9,8 +9,9 @@ import kz.tinkoff.homework_2.domain.datasource.MessageRemoteDataSource
 class DefaultMessageNetworkDataSource @Inject constructor(private val apiService: MessageApiService) :
     MessageRemoteDataSource {
 
-    override suspend fun getAllMessage(): MessageListResponse {
-        return apiService.getAllMessage()
+    override suspend fun getAllMessage(stream: String, numBefore: Int, numAfter: Int): MessageListResponse {
+        val narrow = "[{\"operator\": \"stream\", \"operand\": \"$stream\"}]"
+        return apiService.getAllMessage(narrow, numBefore, numAfter)
     }
 
     override suspend fun setMessageSend(request: HashMap<String, Any?>): BaseResponse {
