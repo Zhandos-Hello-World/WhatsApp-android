@@ -38,4 +38,7 @@ sealed interface CreateStreamEffect {
 sealed interface CreateStreamCommand {
 
     data class CreateStreamRequest(val name: String, val desc: String) : CreateStreamCommand
+
+    object BackToStreams : CreateStreamCommand
+
 }

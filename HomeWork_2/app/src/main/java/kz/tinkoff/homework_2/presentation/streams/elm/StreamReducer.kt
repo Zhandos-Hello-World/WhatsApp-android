@@ -1,10 +1,8 @@
 package kz.tinkoff.homework_2.presentation.streams.elm
 
-import com.github.terrakok.cicerone.Router
-import kz.tinkoff.homework_2.navigation.Screens
 import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
 
-class StreamReducer(private val router: Router) :
+class StreamReducer :
     DslReducer<StreamEvent, StreamState, StreamEffect, StreamCommand>() {
 
     override fun Result.reduce(event: StreamEvent): Any? {
@@ -20,7 +18,7 @@ class StreamReducer(private val router: Router) :
                 commands { +StreamCommand.LoadStream(event.args) }
             }
             is StreamEvent.Ui.NavigateToMessage -> {
-                router.navigateTo(Screens.MessageScreen(event.args))
+                commands { +StreamCommand.NavigateToMessage(event.args) }
             }
             is StreamEvent.Ui.SearchStream -> {
                 commands { +StreamCommand.SearchStreamCommand(event.text) }
@@ -30,6 +28,17 @@ class StreamReducer(private val router: Router) :
             }
             is StreamEvent.Ui.LoadTopic -> {
                 commands { +StreamCommand.LoadTopic(event.streamId) }
+            }
+            is StreamEvent.Internal.CreateTopic -> {
+                effects { +StreamEffect.CreateTopic(event.dvo, event.position) }
+            }
+            is StreamEvent.Ui.NavigateToCreateTopic -> {
+                commands {
+                    +StreamCommand.NavigateToCreateTopic(
+                        dvo = event.dvo,
+                        position = event.position
+                    )
+                }
             }
         }
     }

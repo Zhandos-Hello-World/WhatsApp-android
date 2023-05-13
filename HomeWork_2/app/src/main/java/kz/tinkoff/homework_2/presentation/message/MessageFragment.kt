@@ -77,11 +77,6 @@ class MessageFragment(private val args: MessageArgs) :
 
         binding.apply {
             messageRecycler.adapter = adapter
-            messageRecycler.addOnScrollListener(
-                MessageScrollControllerListener {
-                    //store.accept(MessageEvent.Ui.ItemShowed(it))
-                }
-            )
 
             messageSendEditTextBar.setOnSendClickListener {
                 if (it == CustomMessageTextFieldBar.SendMessageState.SEND_MESSAGE) {

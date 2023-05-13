@@ -1,15 +1,18 @@
 package kz.tinkoff.homework_2.presentation.create_stream.elm
 
+import com.github.terrakok.cicerone.Router
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kz.tinkoff.homework_2.domain.model.CreateStreamParams
 import kz.tinkoff.homework_2.domain.repository.StreamRepository
+import kz.tinkoff.homework_2.navigation.Screens
 import vivid.money.elmslie.coroutines.Actor
 
 class CreateStreamActor @Inject constructor(
     private val repo: StreamRepository,
+    private val router: Router,
 ) : Actor<CreateStreamCommand, CreateStreamEvent> {
 
     override fun execute(command: CreateStreamCommand): Flow<CreateStreamEvent> {
@@ -33,6 +36,11 @@ class CreateStreamActor @Inject constructor(
                     }
                 }.catch {
                     emit(CreateStreamEvent.Internal.ErrorLoading)
+                }
+            }
+            CreateStreamCommand.BackToStreams -> {
+                flow {
+                    router.backTo(Screens.StreamsScreen())
                 }
             }
         }

@@ -1,6 +1,5 @@
 package kz.tinkoff.homework_2.di_dagger.stream.modules
 
-import com.github.terrakok.cicerone.Router
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -55,25 +54,6 @@ class StreamDataModule {
     @Provides
     fun provideCreateStreamDtoMapper(): CreateStreamDtoMapper {
         return CreateStreamDtoMapper()
-    }
-
-    @Provides
-    fun provideStreamsFactory(actor: StreamActor, router: Router): StreamStoreFactory {
-        return StreamStoreFactory(
-            actor = actor,
-            router = router
-        )
-    }
-
-    @Provides
-    fun provideCreateStreamFactory(
-        actor: CreateStreamActor,
-        router: Router,
-    ): CreateStreamStoreFactory {
-        return CreateStreamStoreFactory(
-            actor = actor,
-            router
-        )
     }
 
     @Module

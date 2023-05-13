@@ -1,5 +1,6 @@
 package kz.tinkoff.homework_2.presentation.streams.elm
 
+import com.github.terrakok.cicerone.Router
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kz.tinkoff.core.ktx.runCatchingNonCancellation
 import kz.tinkoff.homework_2.domain.repository.StreamRepository
+import kz.tinkoff.homework_2.navigation.Screens
 import kz.tinkoff.homework_2.presentation.dvo.StreamDvo
 import kz.tinkoff.homework_2.presentation.mapper.StreamDvoMapper
 import kz.tinkoff.homework_2.presentation.mapper.SubscribedStreamDvoMapper
@@ -19,6 +21,7 @@ class StreamActor @Inject constructor(
     private val streamDvoMapper: StreamDvoMapper,
     private val subscribedDvoMapper: SubscribedStreamDvoMapper,
     private val coroutineScope: CoroutineScope,
+    private val router: Router,
 ) : Actor<StreamCommand, StreamEvent> {
     private var args: StreamsListArgs? = null
     private var streams = listOf<StreamDvo>()
@@ -66,12 +69,37 @@ class StreamActor @Inject constructor(
                     streamDvo.topicsDvo = streamDvoMapper.toTopics(topics)
                 }
                 streamDvo.expanded = !streamDvo.expanded
-                emit(
-                    StreamEvent.Internal.UpdatePosition(
-                        streams.indexOf(streamDvo),
-                        streamDvo.expanded
+
+                if (streamDvo.topicsDvo.isEmpty() && streamDvo.expanded) {
+                    emit(
+                        StreamEvent.Internal.CreateTopic(
+                            dvo = streamDvo,
+                            position = streams.indexOf(streamDvo)
+                        )
+                    )
+                } else {
+                    emit(
+                        StreamEvent.Internal.UpdatePosition(
+                            position = streams.indexOf(streamDvo),
+                            expanded = streamDvo.expanded
+                        )
+                    )
+                }
+
+            }
+        }
+        is StreamCommand.NavigateToCreateTopic -> {
+            flow {
+                router.navigateTo(
+                    Screens.CreateTopicScreen(
+                        command.dvo
                     )
                 )
+            }
+        }
+        is StreamCommand.NavigateToMessage -> {
+            flow {
+                router.navigateTo(Screens.MessageScreen(command.args))
             }
         }
     }

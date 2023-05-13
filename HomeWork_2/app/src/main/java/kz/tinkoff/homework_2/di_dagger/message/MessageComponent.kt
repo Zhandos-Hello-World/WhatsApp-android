@@ -5,9 +5,8 @@ import dagger.Component
 import kz.tinkoff.homework_2.di_dagger.application.ApplicationComponent
 import kz.tinkoff.homework_2.di_dagger.message.modules.MessageDataModule
 import kz.tinkoff.homework_2.di_dagger.message.modules.MessageNetworkModule
-import kz.tinkoff.homework_2.presentation.create_stream.CreateStreamFragment
+import kz.tinkoff.homework_2.presentation.create_topic.CreateTopicFragment
 import kz.tinkoff.homework_2.presentation.message.MessageFragment
-import kz.tinkoff.homework_2.presentation.streams.StreamsContainerFragment
 
 @MessageScope
 @Component(
@@ -17,6 +16,7 @@ import kz.tinkoff.homework_2.presentation.streams.StreamsContainerFragment
 interface MessageComponent {
 
     fun inject(fragment: MessageFragment)
+    fun inject(fragment: CreateTopicFragment)
 
 
     @Component.Builder

@@ -1,10 +1,8 @@
 package kz.tinkoff.homework_2.presentation.create_stream.elm
 
-import com.github.terrakok.cicerone.Router
-import kz.tinkoff.homework_2.navigation.Screens
 import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
 
-class CreateStreamReducer constructor(private val router: Router) :
+class CreateStreamReducer :
     DslReducer<CreateStreamEvent, CreateStreamState, CreateStreamEffect, CreateStreamCommand>() {
 
     override fun Result.reduce(event: CreateStreamEvent): Any {
@@ -14,18 +12,16 @@ class CreateStreamReducer constructor(private val router: Router) :
             }
             is CreateStreamEvent.Internal.ErrorLoading -> {
                 state { CreateStreamState.Error }
-                effects { CreateStreamEffect.CreateStreamError }
+                effects { +CreateStreamEffect.CreateStreamError }
             }
             is CreateStreamEvent.Ui.CreateStreamRequest -> {
                 state { CreateStreamState.Loading }
                 commands { +CreateStreamCommand.CreateStreamRequest(event.name, event.desc) }
             }
-            CreateStreamEvent.Ui.NotInit -> {
-
-            }
             CreateStreamEvent.Ui.BackToStreams -> {
-                router.navigateTo(Screens.StreamsScreen())
+                commands { +CreateStreamCommand.BackToStreams }
             }
+            CreateStreamEvent.Ui.NotInit -> {}
         }
     }
 }

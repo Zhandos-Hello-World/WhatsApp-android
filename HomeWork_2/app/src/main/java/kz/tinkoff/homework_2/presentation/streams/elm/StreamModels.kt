@@ -1,6 +1,7 @@
 package kz.tinkoff.homework_2.presentation.streams.elm
 
 import kz.tinkoff.homework_2.presentation.delegates.channels.StreamDelegateItem
+import kz.tinkoff.homework_2.presentation.dvo.StreamDvo
 import kz.tinkoff.homework_2.presentation.message.MessageArgs
 import kz.tinkoff.homework_2.presentation.streams.list.StreamsListArgs
 
@@ -26,6 +27,8 @@ sealed class StreamEvent {
         data class NavigateToMessage(val args: MessageArgs) : StreamEvent()
 
         data class LoadTopic(val streamId: Int) : Ui()
+
+        data class NavigateToCreateTopic(val dvo: StreamDvo, val position: Int) : Ui()
     }
 
     sealed class Internal : StreamEvent() {
@@ -35,14 +38,22 @@ sealed class StreamEvent {
         object ErrorLoading : Internal()
 
         data class UpdatePosition(val position: Int, val expanded: Boolean) : Internal()
+
+        data class CreateTopic(val dvo: StreamDvo, val position: Int) : Internal()
     }
 }
 
-class StreamEffect
+sealed interface StreamEffect {
+
+    data class CreateTopic(val dvo: StreamDvo, val position: Int) : StreamEffect
+}
 
 sealed class StreamCommand {
     data class LoadStream(val args: StreamsListArgs) : StreamCommand()
     data class LoadTopic(val streamId: Int) : StreamCommand()
     data class SearchStreamCommand(val text: String) : StreamCommand()
+
+    data class NavigateToCreateTopic(val dvo: StreamDvo, val position: Int) : StreamCommand()
+    data class NavigateToMessage(val args: MessageArgs) : StreamCommand()
 
 }

@@ -12,4 +12,7 @@
     <string name="description">Description</string>
     <string name="you_can_provide_an_additional_description_for_your_channel">You can provide an additional description for your channel</string>
     <string name="done">Done</string>
+    <string name="topic_name">Topic name</string>
+    <string name="first_message">First message</string>
+    <string name="create_topic">Create topic</string>
 </resources>

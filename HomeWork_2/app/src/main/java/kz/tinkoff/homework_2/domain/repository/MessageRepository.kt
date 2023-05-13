@@ -16,7 +16,7 @@ interface MessageRepository {
 
     suspend fun getAllMessageLocally(stream: String, topic: String): List<MessageModel>
 
-    suspend fun sendMessage(params: MessageStreamParams)
+    suspend fun sendMessage(params: MessageStreamParams): Boolean
 
     suspend fun addReaction(messageId: Int, params: ReactionParams)
 

@@ -17,13 +17,14 @@ import kz.tinkoff.homework_2.di_dagger.stream.DaggerStreamComponent
 import kz.tinkoff.homework_2.di_dagger.stream.modules.StreamDataModule
 import kz.tinkoff.homework_2.di_dagger.stream.modules.StreamNetworkModule
 import kz.tinkoff.homework_2.getAppComponent
+import kz.tinkoff.homework_2.presentation.delegates.channels.StreamDelegate
+import kz.tinkoff.homework_2.presentation.dvo.StreamDvo
+import kz.tinkoff.homework_2.presentation.message.MessageArgs
 import kz.tinkoff.homework_2.presentation.streams.SearchEditTextController
 import kz.tinkoff.homework_2.presentation.streams.elm.StreamEffect
 import kz.tinkoff.homework_2.presentation.streams.elm.StreamEvent
 import kz.tinkoff.homework_2.presentation.streams.elm.StreamState
 import kz.tinkoff.homework_2.presentation.streams.elm.StreamStoreFactory
-import kz.tinkoff.homework_2.presentation.delegates.channels.StreamDelegate
-import kz.tinkoff.homework_2.presentation.message.MessageArgs
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
@@ -104,7 +105,14 @@ class StreamsListFragment(private val args: StreamsListArgs) :
                 }
             }
         }
+    }
 
+    override fun handleEffect(effect: StreamEffect) {
+        return when (effect) {
+            is StreamEffect.CreateTopic -> {
+                createDialog(effect.dvo, effect.position)
+            }
+        }
     }
 
     private fun hideAll() {
@@ -121,6 +129,15 @@ class StreamsListFragment(private val args: StreamsListArgs) :
 
     private fun navigateToMessage(args: MessageArgs) {
         store.accept(StreamEvent.Ui.NavigateToMessage(args))
+    }
+
+    private fun createDialog(dvo: StreamDvo, position: Int) {
+        store.accept(
+            StreamEvent.Ui.NavigateToCreateTopic(
+                dvo = dvo,
+                position = position
+            )
+        )
     }
 
     fun getAll() {

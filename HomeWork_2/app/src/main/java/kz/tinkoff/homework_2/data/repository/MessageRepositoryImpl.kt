@@ -39,8 +39,8 @@ class MessageRepositoryImpl @Inject constructor(
         return localDataSource.getAllMessage(stream, topic)
     }
 
-    override suspend fun sendMessage(params: MessageStreamParams) {
-        remoteDataSource.setMessageSend(dtoMessageMapper.map(from = params))
+    override suspend fun sendMessage(params: MessageStreamParams): Boolean {
+        return remoteDataSource.setMessageSend(dtoMessageMapper.map(from = params)).isSuccess()
     }
 
     override suspend fun addReaction(messageId: Int, params: ReactionParams) {

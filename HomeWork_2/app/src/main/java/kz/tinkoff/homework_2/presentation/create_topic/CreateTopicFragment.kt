@@ -1,4 +1,4 @@
-package kz.tinkoff.homework_2.presentation.create_stream
+package kz.tinkoff.homework_2.presentation.create_topic
 
 import android.content.Context
 import android.os.Bundle
@@ -12,30 +12,29 @@ import com.google.android.material.appbar.MaterialToolbar
 import javax.inject.Inject
 import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.R
-import kz.tinkoff.homework_2.databinding.FragmentCreateStreamBinding
-import kz.tinkoff.homework_2.di_dagger.stream.DaggerStreamComponent
-import kz.tinkoff.homework_2.di_dagger.stream.modules.StreamDataModule
-import kz.tinkoff.homework_2.di_dagger.stream.modules.StreamNetworkModule
+import kz.tinkoff.homework_2.databinding.FragmentCreateTopicBinding
+import kz.tinkoff.homework_2.di_dagger.message.DaggerMessageComponent
+import kz.tinkoff.homework_2.di_dagger.message.modules.MessageDataModule
+import kz.tinkoff.homework_2.di_dagger.message.modules.MessageNetworkModule
 import kz.tinkoff.homework_2.getAppComponent
-import kz.tinkoff.homework_2.presentation.create_stream.elm.CreateStreamEffect
-import kz.tinkoff.homework_2.presentation.create_stream.elm.CreateStreamEvent
-import kz.tinkoff.homework_2.presentation.create_stream.elm.CreateStreamState
-import kz.tinkoff.homework_2.presentation.create_stream.elm.CreateStreamStoreFactory
+import kz.tinkoff.homework_2.presentation.create_stream.CreateStreamMenuProvider
+import kz.tinkoff.homework_2.presentation.create_topic.elm.CreateTopicEffects
+import kz.tinkoff.homework_2.presentation.create_topic.elm.CreateTopicEvent
+import kz.tinkoff.homework_2.presentation.create_topic.elm.CreateTopicState
+import kz.tinkoff.homework_2.presentation.create_topic.elm.CreateTopicStoreFactory
+import kz.tinkoff.homework_2.presentation.dvo.StreamDvo
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
-
-class CreateStreamFragment :
-    ElmFragment<CreateStreamEvent, CreateStreamEffect, CreateStreamState>() {
-    private var _binding: FragmentCreateStreamBinding? = null
+class CreateTopicFragment(private val args: StreamDvo) :
+    ElmFragment<CreateTopicEvent, CreateTopicEffects, CreateTopicState>() {
+    private var _binding: FragmentCreateTopicBinding? = null
     private val binding get() = _binding!!
 
-    private val menuProvider = CreateStreamMenuProvider()
-
-    override val initEvent: CreateStreamEvent = CreateStreamEvent.Ui.NotInit
-
     @Inject
-    lateinit var storeFactory: CreateStreamStoreFactory
+    lateinit var storeFactory: CreateTopicStoreFactory
+
+    override val initEvent: CreateTopicEvent = CreateTopicEvent.Ui.Init(args)
 
     override val storeHolder by lazyUnsafe {
         LifecycleAwareStoreHolder(lifecycle) {
@@ -43,12 +42,14 @@ class CreateStreamFragment :
         }
     }
 
+    private val menuProvider = CreateStreamMenuProvider()
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        DaggerStreamComponent.builder()
+        DaggerMessageComponent.builder()
             .appComponent(requireContext().getAppComponent())
-            .streamNetworkModule(StreamNetworkModule())
-            .streamDataModule(StreamDataModule())
+            .messageDataModule(MessageDataModule())
+            .messageNetworkModule(MessageNetworkModule())
             .build().inject(this)
     }
 
@@ -57,48 +58,40 @@ class CreateStreamFragment :
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        _binding = FragmentCreateStreamBinding.inflate(
-            LayoutInflater.from(requireContext()),
-            container,
-            false
-        )
+        _binding = FragmentCreateTopicBinding.inflate(inflater, container, false)
         configureToolbar()
-
         return binding.root
     }
 
-    override fun render(state: CreateStreamState) {
+    override fun render(state: CreateTopicState) {
         hideAll()
         when (state) {
-            CreateStreamState.Loading -> {
+            CreateTopicState.CreateTopicLoading -> {
                 binding.loadingState.isVisible = true
             }
-            CreateStreamState.NotInit -> {
+            CreateTopicState.CreateTopicSuccess -> {
                 binding.dataState.isVisible = true
             }
-            CreateStreamState.Success -> {
-                store.accept(CreateStreamEvent.Ui.BackToStreams)
-            }
-            else -> {
-
+            CreateTopicState.NotInit -> {
+                binding.dataState.isVisible = true
             }
         }
     }
 
-    override fun handleEffect(effect: CreateStreamEffect) {
-        return when(effect) {
-            CreateStreamEffect.CreateStreamError -> {
+    override fun handleEffect(effect: CreateTopicEffects) {
+        return when (effect) {
+            CreateTopicEffects.CreateTopicError -> {
                 Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_SHORT).show()
-                binding.dataState.isVisible = true
             }
         }
     }
 
     private fun hideAll() {
-        binding.dataState.isVisible = false
-        binding.loadingState.isVisible = false
+        binding.apply {
+            loadingState.isVisible = false
+            dataState.isVisible = false
+        }
     }
-
 
     private fun configureToolbar() {
         val activity = activity as? AppCompatActivity
@@ -116,16 +109,16 @@ class CreateStreamFragment :
     private fun menuClickListeners(toolbar: MaterialToolbar) {
         toolbar.apply {
             setNavigationOnClickListener {
-                store.accept(CreateStreamEvent.Ui.BackToStreams)
+                store.accept(CreateTopicEvent.Ui.BackToStreams)
             }
 
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.done -> {
                         store.accept(
-                            CreateStreamEvent.Ui.CreateStreamRequest(
-                                name = binding.streamNameInputEdit.text.toString(),
-                                desc = binding.streamDescriptionInputEdit.text.toString()
+                            CreateTopicEvent.Ui.CreateTopicRequest(
+                                topicName = binding.topicNameInputEdit.text.toString(),
+                                firstMessage = binding.topicFirstMessageInputEdit.text.toString()
                             )
                         )
                         true
@@ -135,4 +128,5 @@ class CreateStreamFragment :
             }
         }
     }
+
 }
