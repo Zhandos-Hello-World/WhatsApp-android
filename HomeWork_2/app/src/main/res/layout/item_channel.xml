@@ -33,10 +33,10 @@
             android:layout_marginEnd="16dp"
             android:backgroundTint="@color/gray"
             android:src="@drawable/baseline_keyboard_arrow_down_24"
-            android:tint="@color/gray"
             app:layout_constraintBottom_toBottomOf="@+id/channel_name_text"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/channel_name_text" />
+            app:layout_constraintTop_toTopOf="@+id/channel_name_text"
+            app:tint="@color/gray" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -46,6 +46,5 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="gone" />
-
 
 </LinearLayout>

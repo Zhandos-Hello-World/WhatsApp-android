@@ -82,7 +82,7 @@ class MessageActor @Inject constructor(
             is MessageCommand.DeleteReaction -> {
                 flow {
                     changeMessage(command.position, command.emoji)
-                    emit(MessageEvent.Internal.MessageLoaded(messageList))
+                    //emit(MessageEvent.Internal.MessageLoaded(messageList))
                     emit(MessageEvent.Internal.UpdatePosition(command.position))
 
                     val message = messageList[command.position] as MessageDelegateItem
@@ -95,7 +95,7 @@ class MessageActor @Inject constructor(
             is MessageCommand.AddReaction -> {
                 flow {
                     changeMessage(command.position, command.emoji)
-                    emit(MessageEvent.Internal.MessageLoaded(messageList))
+                    //emit(MessageEvent.Internal.MessageLoaded(messageList))
                     emit(MessageEvent.Internal.UpdatePosition(command.position))
 
                     val message = messageList[command.position] as MessageDelegateItem
@@ -107,7 +107,7 @@ class MessageActor @Inject constructor(
             }
             is MessageCommand.BackToChannels -> {
                 flow {
-                    router.backTo(Screens.ChannelsScreen())
+                    router.backTo(Screens.StreamsScreen())
                 }
             }
             is MessageCommand.ItemShowed -> {

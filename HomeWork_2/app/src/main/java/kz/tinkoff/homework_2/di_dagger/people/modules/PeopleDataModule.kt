@@ -6,7 +6,7 @@ import dagger.Provides
 import kz.tinkoff.homework_2.data.mappers.PersonMapper
 import kz.tinkoff.homework_2.data.mappers.PresenceMapper
 import kz.tinkoff.homework_2.data.mappers.ProfileMapper
-import kz.tinkoff.homework_2.data.repository.RepoPeopleImpl
+import kz.tinkoff.homework_2.data.repository.PeopleRepositoryImpl
 import kz.tinkoff.homework_2.domain.repository.PeopleRepository
 import kz.tinkoff.homework_2.presentation.mapper.PersonDelegateItemMapper
 import kz.tinkoff.homework_2.presentation.mapper.PersonDvoMapper
@@ -47,6 +47,6 @@ class PeopleDataModule {
     @Module
     interface BindsPeopleDataModule {
         @Binds
-        fun provideProfileRepository(impl: RepoPeopleImpl): PeopleRepository
+        fun provideProfileRepository(impl: PeopleRepositoryImpl): PeopleRepository
     }
 }

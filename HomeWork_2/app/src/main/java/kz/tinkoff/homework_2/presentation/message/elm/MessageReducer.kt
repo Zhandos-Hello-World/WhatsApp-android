@@ -21,7 +21,7 @@ class MessageReducer : DslReducer<MessageEvent, MessageState, MessageEffect, Mes
         is MessageEvent.Ui.ItemShowed -> {
             commands { +MessageCommand.ItemShowed(event.position) }
         }
-        is MessageEvent.Ui.BackToChannels -> {
+        is MessageEvent.Ui.BackToStreams -> {
             commands { +MessageCommand.BackToChannels }
         }
         is MessageEvent.Internal.MessageLoaded -> {

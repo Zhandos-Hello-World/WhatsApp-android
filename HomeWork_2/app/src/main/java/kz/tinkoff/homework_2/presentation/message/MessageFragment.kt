@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import javax.inject.Inject
 import kz.tinkoff.core.adapter.AdapterDelegate
@@ -75,8 +76,8 @@ class MessageFragment(private val args: MessageArgs) :
         configureHeader(args)
 
         binding.apply {
-            binding.messageRecycler.adapter = adapter
-            binding.messageRecycler.addOnScrollListener(
+            messageRecycler.adapter = adapter
+            messageRecycler.addOnScrollListener(
                 MessageScrollControllerListener {
                     //store.accept(MessageEvent.Ui.ItemShowed(it))
                 }
@@ -114,13 +115,11 @@ class MessageFragment(private val args: MessageArgs) :
         when (state) {
             is MessageState.Data -> {
                 binding.apply {
-                    adapter.submitList(emptyList())
-                    messageRecycler.adapter = null
                     messageRecycler.isVisible = state.messageDvo.isNotEmpty()
-
                     adapter.submitList(state.messageDvo)
-                    messageRecycler.adapter = adapter
-                    messageRecycler.scrollToPosition(state.messageDvo.size - 1)
+                    if (state.messageDvo.isNotEmpty()) {
+                        messageRecycler.smoothScrollToPosition(state.messageDvo.size - 1)
+                    }
                 }
             }
             is MessageState.UpdatedPosition -> {
@@ -179,7 +178,7 @@ class MessageFragment(private val args: MessageArgs) :
             subToolbar.setText(args.topic)
             toolbar.apply {
                 setOnBackClickListener {
-                    store.accept(MessageEvent.Ui.BackToChannels)
+                    store.accept(MessageEvent.Ui.BackToStreams)
                 }
                 setToolbarText(args.stream)
             }

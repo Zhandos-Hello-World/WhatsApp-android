@@ -9,7 +9,7 @@ import kz.tinkoff.homework_2.data.mappers.MessageEntityMapper
 import kz.tinkoff.homework_2.data.mappers.MessageMapper
 import kz.tinkoff.homework_2.data.mappers.MessageModelEntityMapper
 import kz.tinkoff.homework_2.data.mappers.ReactionDtoMapper
-import kz.tinkoff.homework_2.data.repository.RepoMessageImpl
+import kz.tinkoff.homework_2.data.repository.MessageRepositoryImpl
 import kz.tinkoff.homework_2.domain.datasource.MessageLocalDataSource
 import kz.tinkoff.homework_2.domain.repository.MessageRepository
 import kz.tinkoff.homework_2.presentation.mapper.MessageDelegateItemMapper
@@ -70,6 +70,6 @@ class MessageDataModule {
         fun provideMessageLocalDataSource(impl: DefaultMessageLocalDataSource): MessageLocalDataSource
 
         @Binds
-        fun provideMessageRepository(impl: RepoMessageImpl): MessageRepository
+        fun provideMessageRepository(impl: MessageRepositoryImpl): MessageRepository
     }
 }

@@ -10,7 +10,7 @@ class StreamMapper : Mapper<StreamListResponse.StreamResponse, StreamModel> {
         return StreamModel(id = from.id, name = from.name, topics = emptyList())
     }
 
-    fun toListChannel(from: StreamListResponse?): List<StreamModel> {
+    fun toListOfStream(from: StreamListResponse?): List<StreamModel> {
         return from?.streams?.map { map(it) }.orEmpty()
     }
 

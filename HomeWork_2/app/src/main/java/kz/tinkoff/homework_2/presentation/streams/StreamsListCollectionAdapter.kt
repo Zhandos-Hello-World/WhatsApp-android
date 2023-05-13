@@ -1,11 +1,11 @@
-package kz.tinkoff.homework_2.presentation.channels
+package kz.tinkoff.homework_2.presentation.streams
 
 import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import kz.tinkoff.homework_2.presentation.channels.list.ChannelsListFragment
+import kz.tinkoff.homework_2.presentation.streams.list.StreamsListFragment
 
-class ChannelsCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+class StreamsListCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
     private val fragments: MutableList<Fragment> = mutableListOf()
 
     override fun getItemCount(): Int {
@@ -25,7 +25,7 @@ class ChannelsCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragm
 
 
     fun getAll(position: Int) {
-        (fragments[position] as? ChannelsListFragment)?.getAll()
+        (fragments[position] as? StreamsListFragment)?.getAll()
     }
 
     companion object {

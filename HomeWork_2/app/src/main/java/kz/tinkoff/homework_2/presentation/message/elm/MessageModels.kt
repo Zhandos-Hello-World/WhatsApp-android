@@ -33,7 +33,7 @@ sealed class MessageEvent {
 
         data class AddMessage(val message: String) : Ui()
 
-        object BackToChannels : Ui()
+        object BackToStreams : Ui()
 
     }
 

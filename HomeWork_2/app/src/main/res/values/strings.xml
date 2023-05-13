@@ -7,4 +7,9 @@
     <string name="bruh">Bruh</string>
     <string name="error">Error</string>
     <string name="reload">Reload</string>
+    <string name="create_stream">Create Stream</string>
+    <string name="channel_name">Channel Name</string>
+    <string name="description">Description</string>
+    <string name="you_can_provide_an_additional_description_for_your_channel">You can provide an additional description for your channel</string>
+    <string name="done">Done</string>
 </resources>

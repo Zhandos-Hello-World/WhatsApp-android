@@ -1,4 +1,4 @@
-package kz.tinkoff.homework_2.presentation.channels
+package kz.tinkoff.homework_2.presentation.streams
 
 interface SearchEditTextController {
 

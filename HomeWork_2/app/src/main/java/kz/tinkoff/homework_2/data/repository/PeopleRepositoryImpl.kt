@@ -10,7 +10,7 @@ import kz.tinkoff.homework_2.domain.model.PresenceModel
 import kz.tinkoff.homework_2.domain.model.ProfileModel
 import kz.tinkoff.homework_2.domain.repository.PeopleRepository
 
-class RepoPeopleImpl @Inject constructor(
+class PeopleRepositoryImpl @Inject constructor(
     private val dataSource: PeopleRemoteDataSource,
     private val peopleMapper: PersonMapper,
     private val profileMapper: ProfileMapper,

@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
         binding.bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.channels_item -> router.replaceScreen(Screens.ChannelsScreen())
+                R.id.channels_item -> router.replaceScreen(Screens.StreamsScreen())
                 R.id.people_item -> router.replaceScreen(Screens.PeopleScreen())
                 R.id.profile_item -> router.replaceScreen(Screens.ProfileScreen())
             }
