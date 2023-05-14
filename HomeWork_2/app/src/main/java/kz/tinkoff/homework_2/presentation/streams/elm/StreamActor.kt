@@ -102,6 +102,15 @@ class StreamActor @Inject constructor(
                 router.navigateTo(Screens.MessageScreen(command.args))
             }
         }
+        is StreamCommand.AddTopicToStream -> {
+            flow {
+                router.navigateTo(
+                    Screens.CreateTopicScreen(
+                        command.dvo
+                    )
+                )
+            }
+        }
     }
 
     private suspend fun getAllStreams(): List<StreamDvo> {

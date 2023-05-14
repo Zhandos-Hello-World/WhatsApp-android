@@ -47,7 +47,8 @@ class StreamsListFragment(private val args: StreamsListArgs) :
     private val delegate: StreamDelegate by lazyUnsafe {
         StreamDelegate(
             topicOnClickListener = ::navigateToMessage,
-            streamOnClickListener = ::getTopicsById
+            streamOnClickListener = ::getTopicsById,
+            addTopicClickListener = ::addTopicToStream
         )
     }
 
@@ -73,6 +74,10 @@ class StreamsListFragment(private val args: StreamsListArgs) :
     ): View {
         _binding = FragmentStreamListBinding.inflate(inflater, container, false)
         binding.streamRecycler.adapter = adapter
+
+        binding.reloadRequestBtn.setOnClickListener {
+            store.accept(StreamEvent.Ui.LoadStream(args))
+        }
 
         (parentFragment as SearchEditTextController).searchEditText { searchText ->
             if (searchText.isNotEmpty()) {
@@ -129,6 +134,10 @@ class StreamsListFragment(private val args: StreamsListArgs) :
 
     private fun navigateToMessage(args: MessageArgs) {
         store.accept(StreamEvent.Ui.NavigateToMessage(args))
+    }
+
+    private fun addTopicToStream(dvo: StreamDvo) {
+        store.accept(StreamEvent.Ui.AddTopicToStream(dvo))
     }
 
     private fun createDialog(dvo: StreamDvo, position: Int) {

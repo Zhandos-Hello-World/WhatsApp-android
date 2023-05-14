@@ -26,7 +26,7 @@ import kz.tinkoff.homework_2.presentation.dvo.StreamDvo
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
-class CreateTopicFragment(private val args: StreamDvo) :
+class CreateTopicFragment(args: StreamDvo) :
     ElmFragment<CreateTopicEvent, CreateTopicEffects, CreateTopicState>() {
     private var _binding: FragmentCreateTopicBinding? = null
     private val binding get() = _binding!!

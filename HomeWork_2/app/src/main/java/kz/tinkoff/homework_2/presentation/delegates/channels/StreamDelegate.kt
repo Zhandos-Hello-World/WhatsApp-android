@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kz.tinkoff.core.adapter.AdapterDelegate
 import kz.tinkoff.core.adapter.DelegateItem
+import kz.tinkoff.homework_2.databinding.ItemAppendTopicBinding
 import kz.tinkoff.homework_2.databinding.ItemChannelBinding
 import kz.tinkoff.homework_2.databinding.ItemTopicBinding
 import kz.tinkoff.homework_2.presentation.dvo.StreamDvo
@@ -15,6 +16,7 @@ import kz.tinkoff.homework_2.presentation.message.MessageArgs
 class StreamDelegate(
     private val streamOnClickListener: (Int) -> Unit,
     private val topicOnClickListener: (MessageArgs) -> Unit,
+    private val addTopicClickListener: (StreamDvo) -> Unit
 ) :
     AdapterDelegate<StreamDelegate.ViewHolder, StreamDelegateItem> {
 
@@ -66,6 +68,12 @@ class StreamDelegate(
                     }
                 )
             }
+            addAppendTopicViewOn(
+                binding.expandableItems,
+                onClickListener = {
+                    addTopicClickListener.invoke(model)
+                }
+            )
         }
 
         private fun addTopicOn(
@@ -80,6 +88,20 @@ class StreamDelegate(
             topicBinding.apply {
                 topicName.text = topicDvo.name
                 topic.setBackgroundColor(ContextCompat.getColor(context, topicDvo.color))
+                root.setOnClickListener { onClickListener.invoke() }
+            }
+            viewGroup.addView(topicBinding.root)
+        }
+
+        private fun addAppendTopicViewOn(
+            viewGroup: ViewGroup,
+            onClickListener: () -> Unit,
+        ) {
+            val context = viewGroup.context
+            val topicBinding =
+                ItemAppendTopicBinding.inflate(LayoutInflater.from(context), null, false)
+
+            topicBinding.apply {
                 root.setOnClickListener { onClickListener.invoke() }
             }
             viewGroup.addView(topicBinding.root)

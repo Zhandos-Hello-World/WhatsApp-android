@@ -15,4 +15,5 @@
     <string name="topic_name">Topic name</string>
     <string name="first_message">First message</string>
     <string name="create_topic">Create topic</string>
+    <string name="add_topic">Add topic</string>
 </resources>

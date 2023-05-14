@@ -5,7 +5,7 @@ import vivid.money.elmslie.core.store.dsl_reducer.DslReducer
 class StreamReducer :
     DslReducer<StreamEvent, StreamState, StreamEffect, StreamCommand>() {
 
-    override fun Result.reduce(event: StreamEvent): Any? {
+    override fun Result.reduce(event: StreamEvent): Any {
         return when (event) {
             is StreamEvent.Internal.StreamLoaded -> {
                 state { StreamState.Data(event.data) }
@@ -38,6 +38,11 @@ class StreamReducer :
                         dvo = event.dvo,
                         position = event.position
                     )
+                }
+            }
+            is StreamEvent.Ui.AddTopicToStream -> {
+                commands {
+                    +StreamCommand.AddTopicToStream(event.dvo)
                 }
             }
         }
