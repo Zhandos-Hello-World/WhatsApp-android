@@ -23,8 +23,6 @@ import kz.tinkoff.coreui.item.ReactionViewItem
 import kz.tinkoff.homework_2.R
 import kz.tinkoff.homework_2.databinding.FragmentMessageBinding
 import kz.tinkoff.homework_2.di_dagger.message.DaggerMessageComponent
-import kz.tinkoff.homework_2.di_dagger.message.modules.MessageDataModule
-import kz.tinkoff.homework_2.di_dagger.message.modules.MessageNetworkModule
 import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.presentation.delegates.date.DateDelegate
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageAdapterListener
@@ -68,8 +66,6 @@ class MessageFragment(private val args: MessageArgs) :
         super.onAttach(context)
 
         DaggerMessageComponent.builder()
-            .messageDataModule(MessageDataModule())
-            .messageNetworkModule(MessageNetworkModule())
             .appComponent(requireContext().getAppComponent())
             .build().inject(this)
     }

@@ -21,13 +21,6 @@ interface PeopleComponent {
 
     @Component.Builder
     interface Builder {
-
-        @BindsInstance
-        fun peopleNetworkModule(module: PeopleNetworkModule): Builder
-
-        @BindsInstance
-        fun peopleDataModule(module: PeopleDataModule): Builder
-
         fun appComponent(component: ApplicationComponent): Builder
 
         fun build(): PeopleComponent

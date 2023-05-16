@@ -14,8 +14,6 @@ import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.R
 import kz.tinkoff.homework_2.databinding.FragmentCreateTopicBinding
 import kz.tinkoff.homework_2.di_dagger.message.DaggerMessageComponent
-import kz.tinkoff.homework_2.di_dagger.message.modules.MessageDataModule
-import kz.tinkoff.homework_2.di_dagger.message.modules.MessageNetworkModule
 import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.presentation.create_stream.CreateStreamMenuProvider
 import kz.tinkoff.homework_2.presentation.create_topic.elm.CreateTopicEffects
@@ -48,8 +46,6 @@ class CreateTopicFragment(args: StreamDvo) :
         super.onAttach(context)
         DaggerMessageComponent.builder()
             .appComponent(requireContext().getAppComponent())
-            .messageDataModule(MessageDataModule())
-            .messageNetworkModule(MessageNetworkModule())
             .build().inject(this)
     }
 

@@ -7,7 +7,7 @@ import kz.tinkoff.homework_2.data.enitiy.ReactionListEntity
 import kz.tinkoff.homework_2.data.enitiy.UserEntity
 import kz.tinkoff.homework_2.domain.model.MessageModel
 
-class MessageModelEntityMapper : Mapper<MessageModel, MessageEntity> {
+class MessageDomainToDbMapper : Mapper<MessageModel, MessageEntity> {
 
     override fun map(from: MessageModel): MessageEntity {
         return MessageEntity(

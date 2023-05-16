@@ -4,7 +4,7 @@ import kz.tinkoff.core.Mapper
 import kz.tinkoff.homework_2.data.model.SubscribedStreamListResponse
 import kz.tinkoff.homework_2.domain.model.SubscribedStreamModel
 
-class SubscribedStreamMapper :
+class SubscribedStreamDataToDomainMapper :
     Mapper<SubscribedStreamListResponse.SubscribedStreamResponse, SubscribedStreamModel> {
 
     override fun map(from: SubscribedStreamListResponse.SubscribedStreamResponse): SubscribedStreamModel {

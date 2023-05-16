@@ -3,7 +3,7 @@ package kz.tinkoff.homework_2.data.mappers
 import kz.tinkoff.core.Mapper
 import kz.tinkoff.homework_2.domain.model.MessageStreamParams
 
-class MessageDtoMapper: Mapper<MessageStreamParams, HashMap<String, Any?>> {
+class MessageParamsDomainToDataMapper: Mapper<MessageStreamParams, HashMap<String, Any?>> {
 
     override fun map(from: MessageStreamParams): HashMap<String, Any?> {
         val filters = hashMapOf<String, Any?>()

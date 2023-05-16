@@ -23,17 +23,9 @@ interface StreamComponent {
 
     @Component.Builder
     interface Builder {
-
-        @BindsInstance
-        fun streamNetworkModule(module: StreamNetworkModule): Builder
-
-        @BindsInstance
-        fun streamDataModule(module: StreamDataModule): Builder
-
         fun appComponent(component: ApplicationComponent): Builder
 
         fun build(): StreamComponent
-
     }
 
     companion object {

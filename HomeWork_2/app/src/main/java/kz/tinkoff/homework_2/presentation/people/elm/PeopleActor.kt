@@ -1,22 +1,9 @@
 package kz.tinkoff.homework_2.presentation.people.elm
 
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kz.tinkoff.core.ktx.runCatchingNonCancellation
 import kz.tinkoff.homework_2.domain.repository.PeopleRepository
 import kz.tinkoff.homework_2.presentation.delegates.person.PersonDelegateItem
@@ -31,20 +18,15 @@ class PeopleActor @Inject constructor(
     override fun execute(command: PeopleCommand): Flow<PeopleEvent> = when (command) {
         is PeopleCommand.LoadPeople -> {
             flow<PeopleEvent> {
-                val response = runCatchingNonCancellation {
-                    repository.getAllPeople()
-                }.getOrNull()
-
-                if (response != null) {
-                    dvoMapper.toPersonDelegatesFromModel(response)
-                    emit(
-                        PeopleEvent.Internal.PeopleLoaded(
-                            dvoMapper.toPersonDelegatesFromModel(response)
-                        )
+                val response = repository.getAllPeople()
+                dvoMapper.toPersonDelegatesFromModel(response)
+                emit(
+                    PeopleEvent.Internal.PeopleLoaded(
+                        dvoMapper.toPersonDelegatesFromModel(response)
                     )
-                } else {
-                    emit(PeopleEvent.Internal.ErrorLoading)
-                }
+                )
+            }.catch {
+                emit(PeopleEvent.Internal.ErrorLoading)
             }
         }
         is PeopleCommand.SearchPeople -> {

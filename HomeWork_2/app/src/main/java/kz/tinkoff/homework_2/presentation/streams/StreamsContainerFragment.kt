@@ -13,8 +13,6 @@ import javax.inject.Inject
 import kz.tinkoff.homework_2.R
 import kz.tinkoff.homework_2.databinding.FragmentChannelsBinding
 import kz.tinkoff.homework_2.di_dagger.stream.DaggerStreamComponent
-import kz.tinkoff.homework_2.di_dagger.stream.modules.StreamDataModule
-import kz.tinkoff.homework_2.di_dagger.stream.modules.StreamNetworkModule
 import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.navigation.Screens
 import kz.tinkoff.homework_2.presentation.streams.StreamsListCollectionAdapter.Companion.ALL_STREAMS
@@ -37,8 +35,6 @@ class StreamsContainerFragment : Fragment(), SearchEditTextController {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         DaggerStreamComponent.builder()
-            .streamDataModule(StreamDataModule())
-            .streamNetworkModule(StreamNetworkModule())
             .appComponent(requireContext().getAppComponent())
             .build().inject(this)
     }

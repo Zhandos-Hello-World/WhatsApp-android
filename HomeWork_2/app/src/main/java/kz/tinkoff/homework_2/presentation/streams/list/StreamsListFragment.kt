@@ -64,8 +64,6 @@ class StreamsListFragment(private val streamArgs: StreamsListArgs) :
     override fun onAttach(context: Context) {
         super.onAttach(context)
         DaggerStreamComponent.builder()
-            .streamDataModule(StreamDataModule())
-            .streamNetworkModule(StreamNetworkModule())
             .appComponent(requireContext().getAppComponent())
             .build().inject(this)
     }

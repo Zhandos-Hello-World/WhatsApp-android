@@ -14,8 +14,6 @@ import kz.tinkoff.core.utils.lazyUnsafe
 import kz.tinkoff.homework_2.R
 import kz.tinkoff.homework_2.databinding.FragmentCreateStreamBinding
 import kz.tinkoff.homework_2.di_dagger.stream.DaggerStreamComponent
-import kz.tinkoff.homework_2.di_dagger.stream.modules.StreamDataModule
-import kz.tinkoff.homework_2.di_dagger.stream.modules.StreamNetworkModule
 import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.presentation.create_stream.elm.CreateStreamEffect
 import kz.tinkoff.homework_2.presentation.create_stream.elm.CreateStreamEvent
@@ -47,8 +45,6 @@ class CreateStreamFragment :
         super.onAttach(context)
         DaggerStreamComponent.builder()
             .appComponent(requireContext().getAppComponent())
-            .streamNetworkModule(StreamNetworkModule())
-            .streamDataModule(StreamDataModule())
             .build().inject(this)
     }
 
@@ -86,7 +82,7 @@ class CreateStreamFragment :
     }
 
     override fun handleEffect(effect: CreateStreamEffect) {
-        return when(effect) {
+        return when (effect) {
             CreateStreamEffect.CreateStreamError -> {
                 Toast.makeText(requireContext(), R.string.error, Toast.LENGTH_SHORT).show()
                 binding.dataState.isVisible = true

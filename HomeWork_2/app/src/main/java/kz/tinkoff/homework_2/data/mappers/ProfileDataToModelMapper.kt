@@ -4,7 +4,7 @@ import kz.tinkoff.core.Mapper
 import kz.tinkoff.homework_2.data.model.ProfileResponse
 import kz.tinkoff.homework_2.domain.model.ProfileModel
 
-class ProfileMapper: Mapper<ProfileResponse, ProfileModel> {
+class ProfileDataToModelMapper: Mapper<ProfileResponse, ProfileModel> {
 
     override fun map(from: ProfileResponse): ProfileModel {
         return ProfileModel(

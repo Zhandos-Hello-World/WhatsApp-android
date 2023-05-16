@@ -4,15 +4,15 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kz.tinkoff.homework_2.data.dao.MessageDao
-import kz.tinkoff.homework_2.data.mappers.MessageEntityMapper
-import kz.tinkoff.homework_2.data.mappers.MessageModelEntityMapper
+import kz.tinkoff.homework_2.data.mappers.MessageDbToDomainMapper
+import kz.tinkoff.homework_2.data.mappers.MessageDomainToDbMapper
 import kz.tinkoff.homework_2.domain.datasource.MessageLocalDataSource
 import kz.tinkoff.homework_2.domain.model.MessageModel
 
 class DefaultMessageLocalDataSource @Inject constructor(
     private val dao: MessageDao,
-    private val mapperEntityMapper: MessageEntityMapper,
-    private val mapperEntityModelMapper: MessageModelEntityMapper,
+    private val mapperEntityMapper: MessageDbToDomainMapper,
+    private val mapperEntityModelMapper: MessageDomainToDbMapper,
 ) : MessageLocalDataSource {
 
     override suspend fun getAllMessage(stream: String, topic: String): List<MessageModel> {

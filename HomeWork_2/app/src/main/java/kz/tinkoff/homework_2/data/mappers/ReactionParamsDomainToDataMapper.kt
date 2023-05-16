@@ -3,7 +3,7 @@ package kz.tinkoff.homework_2.data.mappers
 import kz.tinkoff.core.Mapper
 import kz.tinkoff.homework_2.domain.model.ReactionParams
 
-class ReactionDtoMapper: Mapper<ReactionParams, HashMap<String, String>> {
+class ReactionParamsDomainToDataMapper: Mapper<ReactionParams, HashMap<String, String>> {
 
     override fun map(from: ReactionParams): HashMap<String, String> {
         val filters = hashMapOf<String, String>()

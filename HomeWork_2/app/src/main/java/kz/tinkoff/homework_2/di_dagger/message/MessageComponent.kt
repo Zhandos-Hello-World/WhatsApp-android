@@ -18,15 +18,8 @@ interface MessageComponent {
     fun inject(fragment: MessageFragment)
     fun inject(fragment: CreateTopicFragment)
 
-
     @Component.Builder
     interface Builder {
-
-        @BindsInstance
-        fun messageNetworkModule(module: MessageNetworkModule): Builder
-
-        @BindsInstance
-        fun messageDataModule(module: MessageDataModule): Builder
 
         fun appComponent(component: ApplicationComponent): Builder
 

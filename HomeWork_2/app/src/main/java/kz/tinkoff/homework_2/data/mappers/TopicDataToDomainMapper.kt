@@ -5,7 +5,7 @@ import kz.tinkoff.homework_2.data.model.TopicListResponse
 import kz.tinkoff.homework_2.domain.model.StreamModel
 import kz.tinkoff.homework_2.domain.model.TopicsModel
 
-class TopicMapper : Mapper<TopicListResponse, TopicsModel> {
+class TopicDataToDomainMapper : Mapper<TopicListResponse, TopicsModel> {
 
     override fun map(from: TopicListResponse): TopicsModel {
         return TopicsModel(topics = from.topics.map { toTopicModel(it) })

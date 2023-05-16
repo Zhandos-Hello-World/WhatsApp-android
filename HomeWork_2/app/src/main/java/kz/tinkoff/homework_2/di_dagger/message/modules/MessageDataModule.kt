@@ -4,12 +4,12 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import kz.tinkoff.homework_2.data.datasource.DefaultMessageLocalDataSource
-import kz.tinkoff.homework_2.data.mappers.EditDtoMessageMapper
-import kz.tinkoff.homework_2.data.mappers.MessageDtoMapper
-import kz.tinkoff.homework_2.data.mappers.MessageEntityMapper
-import kz.tinkoff.homework_2.data.mappers.MessageMapper
-import kz.tinkoff.homework_2.data.mappers.MessageModelEntityMapper
-import kz.tinkoff.homework_2.data.mappers.ReactionDtoMapper
+import kz.tinkoff.homework_2.data.mappers.EditMessageDomainToDataMapper
+import kz.tinkoff.homework_2.data.mappers.MessageParamsDomainToDataMapper
+import kz.tinkoff.homework_2.data.mappers.MessageDbToDomainMapper
+import kz.tinkoff.homework_2.data.mappers.MessageDataToDomainMapper
+import kz.tinkoff.homework_2.data.mappers.MessageDomainToDbMapper
+import kz.tinkoff.homework_2.data.mappers.ReactionParamsDomainToDataMapper
 import kz.tinkoff.homework_2.data.repository.MessageRepositoryImpl
 import kz.tinkoff.homework_2.domain.datasource.MessageLocalDataSource
 import kz.tinkoff.homework_2.domain.repository.MessageRepository
@@ -30,8 +30,8 @@ class MessageDataModule {
     }
 
     @Provides
-    fun provideMessageMapper(): MessageMapper {
-        return MessageMapper()
+    fun provideMessageMapper(): MessageDataToDomainMapper {
+        return MessageDataToDomainMapper()
     }
 
     @Provides
@@ -40,8 +40,8 @@ class MessageDataModule {
     }
 
     @Provides
-    fun provideMessageDtoMapper(): MessageDtoMapper {
-        return MessageDtoMapper()
+    fun provideMessageDtoMapper(): MessageParamsDomainToDataMapper {
+        return MessageParamsDomainToDataMapper()
     }
 
     @Provides
@@ -50,23 +50,23 @@ class MessageDataModule {
     }
 
     @Provides
-    fun provideReactionDtoMapper(): ReactionDtoMapper {
-        return ReactionDtoMapper()
+    fun provideReactionDtoMapper(): ReactionParamsDomainToDataMapper {
+        return ReactionParamsDomainToDataMapper()
     }
 
     @Provides
-    fun provideMessageEntityMapper(): MessageEntityMapper {
-        return MessageEntityMapper()
+    fun provideMessageEntityMapper(): MessageDbToDomainMapper {
+        return MessageDbToDomainMapper()
     }
 
     @Provides
-    fun provideMessageModelEntityMapper(): MessageModelEntityMapper {
-        return MessageModelEntityMapper()
+    fun provideMessageModelEntityMapper(): MessageDomainToDbMapper {
+        return MessageDomainToDbMapper()
     }
 
     @Provides
-    fun provideEditDtoMessageMapper(): EditDtoMessageMapper {
-        return EditDtoMessageMapper()
+    fun provideEditDtoMessageMapper(): EditMessageDomainToDataMapper {
+        return EditMessageDomainToDataMapper()
     }
 
     @Module

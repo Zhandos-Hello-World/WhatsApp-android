@@ -5,31 +5,27 @@ import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kz.tinkoff.homework_2.data.mappers.CreateStreamDtoMapper
-import kz.tinkoff.homework_2.data.mappers.StreamMapper
-import kz.tinkoff.homework_2.data.mappers.SubscribedStreamMapper
-import kz.tinkoff.homework_2.data.mappers.TopicMapper
+import kz.tinkoff.homework_2.data.mappers.CreateStreamDomainToDataMapper
+import kz.tinkoff.homework_2.data.mappers.StreamDataToDomainMapper
+import kz.tinkoff.homework_2.data.mappers.SubscribedStreamDataToDomainMapper
+import kz.tinkoff.homework_2.data.mappers.TopicDataToDomainMapper
 import kz.tinkoff.homework_2.data.repository.StreamRepositoryImpl
 import kz.tinkoff.homework_2.domain.repository.StreamRepository
-import kz.tinkoff.homework_2.presentation.create_stream.elm.CreateStreamActor
-import kz.tinkoff.homework_2.presentation.create_stream.elm.CreateStreamStoreFactory
 import kz.tinkoff.homework_2.presentation.mapper.StreamDvoMapper
 import kz.tinkoff.homework_2.presentation.mapper.SubscribedStreamDvoMapper
-import kz.tinkoff.homework_2.presentation.streams.elm.StreamActor
-import kz.tinkoff.homework_2.presentation.streams.elm.StreamStoreFactory
 
 @Module(includes = [StreamDataModule.BindsStreamDataModule::class])
 class StreamDataModule {
 
 
     @Provides
-    fun provideStreamMapper(): StreamMapper {
-        return StreamMapper()
+    fun provideStreamMapper(): StreamDataToDomainMapper {
+        return StreamDataToDomainMapper()
     }
 
     @Provides
-    fun provideTopicMapper(): TopicMapper {
-        return TopicMapper()
+    fun provideTopicMapper(): TopicDataToDomainMapper {
+        return TopicDataToDomainMapper()
     }
 
     @Provides
@@ -42,8 +38,8 @@ class StreamDataModule {
     }
 
     @Provides
-    fun provideSubscribedStreamMapper(): SubscribedStreamMapper {
-        return SubscribedStreamMapper()
+    fun provideSubscribedStreamMapper(): SubscribedStreamDataToDomainMapper {
+        return SubscribedStreamDataToDomainMapper()
     }
 
     @Provides
@@ -52,8 +48,8 @@ class StreamDataModule {
     }
 
     @Provides
-    fun provideCreateStreamDtoMapper(): CreateStreamDtoMapper {
-        return CreateStreamDtoMapper()
+    fun provideCreateStreamDtoMapper(): CreateStreamDomainToDataMapper {
+        return CreateStreamDomainToDataMapper()
     }
 
     @Module

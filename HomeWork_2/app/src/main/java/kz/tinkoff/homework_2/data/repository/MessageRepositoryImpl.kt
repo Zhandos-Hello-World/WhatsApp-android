@@ -1,10 +1,10 @@
 package kz.tinkoff.homework_2.data.repository
 
 import javax.inject.Inject
-import kz.tinkoff.homework_2.data.mappers.EditDtoMessageMapper
-import kz.tinkoff.homework_2.data.mappers.MessageDtoMapper
-import kz.tinkoff.homework_2.data.mappers.MessageMapper
-import kz.tinkoff.homework_2.data.mappers.ReactionDtoMapper
+import kz.tinkoff.homework_2.data.mappers.EditMessageDomainToDataMapper
+import kz.tinkoff.homework_2.data.mappers.MessageParamsDomainToDataMapper
+import kz.tinkoff.homework_2.data.mappers.MessageDataToDomainMapper
+import kz.tinkoff.homework_2.data.mappers.ReactionParamsDomainToDataMapper
 import kz.tinkoff.homework_2.domain.datasource.MessageLocalDataSource
 import kz.tinkoff.homework_2.domain.datasource.MessageRemoteDataSource
 import kz.tinkoff.homework_2.domain.model.EditMessageParams
@@ -16,10 +16,10 @@ import kz.tinkoff.homework_2.domain.repository.MessageRepository
 class MessageRepositoryImpl @Inject constructor(
     private val remoteDataSource: MessageRemoteDataSource,
     private val localDataSource: MessageLocalDataSource,
-    private val mapper: MessageMapper,
-    private val dtoMessageMapper: MessageDtoMapper,
-    private val dtoReactionMapper: ReactionDtoMapper,
-    private val editDtoMessageMapper: EditDtoMessageMapper,
+    private val mapper: MessageDataToDomainMapper,
+    private val dtoMessageMapper: MessageParamsDomainToDataMapper,
+    private val dtoReactionMapper: ReactionParamsDomainToDataMapper,
+    private val editMessageDomainToDataMapper: EditMessageDomainToDataMapper,
 ) : MessageRepository {
 
     override suspend fun getAllMessage(
@@ -43,13 +43,13 @@ class MessageRepositoryImpl @Inject constructor(
     }
 
     override suspend fun changeMessage(messageId: Int, params: EditMessageParams): Boolean {
-        return remoteDataSource.changeMessage(messageId, editDtoMessageMapper.map(params, true))
+        return remoteDataSource.changeMessage(messageId, editMessageDomainToDataMapper.map(params, true))
             .isSuccess()
     }
 
     override suspend fun forwardMessage(messageId: Int, params: EditMessageParams): Boolean {
         return remoteDataSource.changeMessage(
-            messageId, editDtoMessageMapper.map(
+            messageId, editMessageDomainToDataMapper.map(
                 from = params,
                 changeContent = false
             )

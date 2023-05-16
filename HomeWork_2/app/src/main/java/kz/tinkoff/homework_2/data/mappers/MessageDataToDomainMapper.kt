@@ -7,7 +7,7 @@ import kz.tinkoff.core.Mapper
 import kz.tinkoff.homework_2.data.model.MessageListResponse
 import kz.tinkoff.homework_2.domain.model.MessageModel
 
-class MessageMapper : Mapper<MessageListResponse, List<MessageModel>> {
+class MessageDataToDomainMapper : Mapper<MessageListResponse, List<MessageModel>> {
 
     override fun map(from: MessageListResponse): List<MessageModel> {
         try {

@@ -3,9 +3,9 @@ package kz.tinkoff.homework_2.di_dagger.people.modules
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import kz.tinkoff.homework_2.data.mappers.PersonMapper
-import kz.tinkoff.homework_2.data.mappers.PresenceMapper
-import kz.tinkoff.homework_2.data.mappers.ProfileMapper
+import kz.tinkoff.homework_2.data.mappers.PersonDataToDomainMapper
+import kz.tinkoff.homework_2.data.mappers.PresenceDataToDomainMapper
+import kz.tinkoff.homework_2.data.mappers.ProfileDataToModelMapper
 import kz.tinkoff.homework_2.data.repository.PeopleRepositoryImpl
 import kz.tinkoff.homework_2.domain.repository.PeopleRepository
 import kz.tinkoff.homework_2.presentation.mapper.PersonDelegateItemMapper
@@ -15,18 +15,18 @@ import kz.tinkoff.homework_2.presentation.mapper.ProfileDvoMapper
 @Module(includes = [PeopleDataModule.BindsPeopleDataModule::class])
 class PeopleDataModule {
     @Provides
-    fun providePersonMapper(): PersonMapper {
-        return PersonMapper()
+    fun providePersonMapper(): PersonDataToDomainMapper {
+        return PersonDataToDomainMapper()
     }
 
     @Provides
-    fun provideProfileMapper(): ProfileMapper {
-        return ProfileMapper()
+    fun provideProfileMapper(): ProfileDataToModelMapper {
+        return ProfileDataToModelMapper()
     }
 
     @Provides
-    fun providePresenceMapper(): PresenceMapper {
-        return PresenceMapper()
+    fun providePresenceMapper(): PresenceDataToDomainMapper {
+        return PresenceDataToDomainMapper()
     }
 
     @Provides

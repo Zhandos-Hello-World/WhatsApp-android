@@ -3,7 +3,7 @@ package kz.tinkoff.homework_2.data.mappers
 import kz.tinkoff.core.Mapper
 import kz.tinkoff.homework_2.domain.model.EditMessageParams
 
-class EditDtoMessageMapper : Mapper<EditMessageParams, HashMap<String, String>> {
+class EditMessageDomainToDataMapper : Mapper<EditMessageParams, HashMap<String, String>> {
 
     override fun map(from: EditMessageParams): HashMap<String, String> {
         val filters = hashMapOf<String, String>()
