@@ -45,6 +45,11 @@ class StreamReducer :
                     +StreamCommand.AddTopicToStream(event.dvo)
                 }
             }
+            StreamEvent.Ui.BackToMessage -> {
+                commands {
+                    +StreamCommand.BackToMessageCommand
+                }
+            }
         }
     }
 }

@@ -43,7 +43,7 @@ class CreateTopicActor @Inject constructor(
                                 topic = command.topicName
                             )
                         )
-                        if (response) {
+                        if (response != -1) {
                             emit(
                                 CreateTopicEvent.Internal.ReplaceByMessage(
                                     args = MessageArgs(

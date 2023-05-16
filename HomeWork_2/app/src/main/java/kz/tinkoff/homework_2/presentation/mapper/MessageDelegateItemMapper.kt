@@ -56,7 +56,7 @@ class MessageDelegateItemMapper(private val dvoMapper: MessageDvoMapper): Mapper
     }
 
 
-    private fun getDateFromTimestamp(timestamp: Long): String {
+    fun getDateFromTimestamp(timestamp: Long): String {
         val dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("UTC"))
         val formatter = DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)
         return dateTime.format(formatter)

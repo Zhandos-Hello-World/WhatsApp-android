@@ -4,7 +4,7 @@ import kz.tinkoff.coreui.item.ReactionViewItem
 
 interface MessageAdapterListener {
 
-    fun addReactionClickListener(position: Int)
+    fun changeMessageClickListener(position: Int)
 
     fun setEmojiClickListener(position: Int, viewItem: ReactionViewItem)
 }

@@ -9,4 +9,6 @@ interface MessageLocalDataSource {
     fun getMessageByStreamId(streamId: Int): Flow<List<MessageModel>>
 
     suspend fun addMessage(messageModel: MessageModel)
+
+    suspend fun deleteMessage(id: Int)
 }

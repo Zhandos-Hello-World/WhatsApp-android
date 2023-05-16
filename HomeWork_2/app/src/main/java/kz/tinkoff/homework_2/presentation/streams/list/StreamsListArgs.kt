@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class StreamsListArgs(
     val requestType: StreamRequest = StreamRequest.ALL_STREAMS,
+    val selectTopicWithResultListener: Boolean = false
 ) : Parcelable {
 
     @Parcelize

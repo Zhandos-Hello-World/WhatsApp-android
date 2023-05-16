@@ -4,6 +4,57 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/delete_btn"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginEnd="@dimen/indent_base"
+        app:backgroundTint="@color/red"
+        app:cornerRadius="@dimen/indent_base"
+        app:icon="@drawable/baseline_delete_24"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconTint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/copy_btn"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginEnd="@dimen/indent_base"
+        app:cornerRadius="@dimen/indent_base"
+        app:icon="@drawable/baseline_content_copy_24"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:layout_constraintEnd_toStartOf="@id/delete_btn"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/change_btn"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="@dimen/indent_base"
+        app:cornerRadius="@dimen/indent_base"
+        app:icon="@drawable/ic_baseline_create_24"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:layout_constraintStart_toEndOf="@+id/forward_btn"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/forward_btn"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="@dimen/indent_base"
+        android:layout_marginEnd="@dimen/indent_base"
+        app:cornerRadius="@dimen/indent_base"
+        app:icon="@drawable/baseline_arrow_forward_24"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <GridView
         android:id="@+id/reaction_grid_view"
         android:layout_width="0dp"
@@ -13,6 +64,6 @@
         android:numColumns="7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/delete_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

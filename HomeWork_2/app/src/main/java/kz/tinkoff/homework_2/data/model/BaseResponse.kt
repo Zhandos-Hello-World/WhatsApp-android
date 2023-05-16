@@ -9,6 +9,8 @@ data class BaseResponse(
     val msg: String? = null,
     @SerialName("result")
     val result: String? = null,
+    @SerialName("id")
+    val id: Int? = null
 ) {
 
     fun isSuccess(): Boolean {

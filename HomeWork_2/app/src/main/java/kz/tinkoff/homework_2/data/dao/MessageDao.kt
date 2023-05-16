@@ -4,10 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 import kz.tinkoff.homework_2.data.enitiy.MessageEntity
-import kz.tinkoff.homework_2.domain.model.MessageModel
 
 @Dao
 interface MessageDao {
@@ -23,5 +21,8 @@ interface MessageDao {
 
     @Insert(entity = MessageEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun addMessage(message: MessageEntity)
+
+    @Query("DELETE FROM MessageEntity WHERE id = :id")
+    suspend fun deleteMessage(id: Int)
 
 }

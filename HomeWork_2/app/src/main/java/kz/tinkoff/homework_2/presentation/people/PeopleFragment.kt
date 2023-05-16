@@ -40,7 +40,7 @@ class PeopleFragment : ElmFragment<PeopleEvent, PeopleEffect, PeopleState>() {
 
     override val initEvent: PeopleEvent = PeopleEvent.Ui.LoadPeople
 
-    val delegate = PersonDelegate { }
+    private val delegate = PersonDelegate { }
     private val adapter: MainAdapter by lazyUnsafe {
         MainAdapter().apply {
             addDelegate(delegate as AdapterDelegate<RecyclerView.ViewHolder, DelegateItem>)

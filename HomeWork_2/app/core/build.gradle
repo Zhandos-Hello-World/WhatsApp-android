@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace 'kz.tinkoff.core'
     compileSdk androidCompileSdkVersion
 }
 

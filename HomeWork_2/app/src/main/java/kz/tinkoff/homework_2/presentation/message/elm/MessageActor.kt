@@ -1,6 +1,6 @@
 package kz.tinkoff.homework_2.presentation.message.elm
 
-import android.util.Log
+import android.text.Html
 import com.github.terrakok.cicerone.Router
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +10,9 @@ import kz.tinkoff.core.adapter.DelegateItem
 import kz.tinkoff.core.emoji.emojiSetNCS
 import kz.tinkoff.coreui.custom.dvo.MessageDvo
 import kz.tinkoff.coreui.item.ReactionViewItem
+import kz.tinkoff.homework_2.BuildConfig
+import kz.tinkoff.homework_2.R
+import kz.tinkoff.homework_2.domain.model.EditMessageParams
 import kz.tinkoff.homework_2.domain.model.MessageStreamParams
 import kz.tinkoff.homework_2.domain.model.ReactionParams
 import kz.tinkoff.homework_2.domain.repository.MessageRepository
@@ -17,6 +20,7 @@ import kz.tinkoff.homework_2.navigation.Screens
 import kz.tinkoff.homework_2.presentation.delegates.message.MessageDelegateItem
 import kz.tinkoff.homework_2.presentation.mapper.MessageDelegateItemMapper
 import kz.tinkoff.homework_2.presentation.message.MessageArgs
+import kz.tinkoff.homework_2.presentation.streams.list.StreamsListArgs
 import vivid.money.elmslie.coroutines.Actor
 
 class MessageActor @Inject constructor(
@@ -24,9 +28,7 @@ class MessageActor @Inject constructor(
     private val delegateItemMapper: MessageDelegateItemMapper,
     private val router: Router,
 ) : Actor<MessageCommand, MessageEvent> {
-    private var messageList: List<DelegateItem> = mutableListOf<DelegateItem>()
-    private val numBefore get() = if (messageList.size < LOAD_ITEMS) LOAD_ITEMS else messageList.size
-    private val numAfter get() = numBefore - 20
+    private var messageList: List<DelegateItem> = mutableListOf()
     private var args: MessageArgs? = null
 
     override fun execute(command: MessageCommand): Flow<MessageEvent> {
@@ -48,11 +50,11 @@ class MessageActor @Inject constructor(
                         numAfter = MIN_LOAD
                     )
 
+                    responseLocally.forEach {
+                        repository.deleteMessageLocally(it.id())
+                    }
+
                     repository.saveDataLocally(response)
-                    Log.d(
-                        "equalsResponse",
-                        (responseLocally == getMessagesLocally(command.args)).toString()
-                    )
                     responseLocally = getMessagesLocally(command.args)
                     if (responseLocally.isNotEmpty()) {
                         messageList = responseLocally
@@ -66,7 +68,7 @@ class MessageActor @Inject constructor(
                 flow {
                     args?.let { args ->
                         val message = command.message
-                        repository.sendMessage(
+                        val id = repository.sendMessage(
                             params = MessageStreamParams(
                                 type = MessageStreamParams.STREAM,
                                 to = args.streamId,
@@ -74,7 +76,7 @@ class MessageActor @Inject constructor(
                                 topic = args.topic.replace("#", "")
                             )
                         )
-                        addMessageAfterSuccess(message)
+                        addMessageAfterSuccess(id, message)
                         emit(MessageEvent.Internal.MessageLoaded(messageList))
                     }
                 }
@@ -82,7 +84,7 @@ class MessageActor @Inject constructor(
             is MessageCommand.DeleteReaction -> {
                 flow {
                     changeMessage(command.position, command.emoji)
-                    //emit(MessageEvent.Internal.MessageLoaded(messageList))
+                    emit(MessageEvent.Internal.MessageLoaded(messageList))
                     emit(MessageEvent.Internal.UpdatePosition(command.position))
 
                     val message = messageList[command.position] as MessageDelegateItem
@@ -95,10 +97,10 @@ class MessageActor @Inject constructor(
             is MessageCommand.AddReaction -> {
                 flow {
                     changeMessage(command.position, command.emoji)
-                    //emit(MessageEvent.Internal.MessageLoaded(messageList))
+                    emit(MessageEvent.Internal.MessageLoaded(messageList))
                     emit(MessageEvent.Internal.UpdatePosition(command.position))
 
-                    val message = messageList[command.position] as MessageDelegateItem
+                    val message = getMessage(command.position)
                     val emoji =
                         if (isEmojiUnicode(command.emoji)) getEmojiNameFromUnicode(command.emoji)
                             ?: "" else command.emoji
@@ -113,7 +115,105 @@ class MessageActor @Inject constructor(
             is MessageCommand.ItemShowed -> {
                 flow { }
             }
+            is MessageCommand.DeleteMessage -> {
+                flow {
+                    val message = getMessage(command.position)
+                    val success = repository.deleteMessage(message.id)
+
+                    if (success) {
+                        repository.deleteMessageLocally(message.id)
+                        messageList = messageList - message
+                        emit(MessageEvent.Internal.MessageLoaded(messageList))
+                    }
+                }
+            }
+            is MessageCommand.CopyToClipBoardCommand -> {
+                flow {
+                    val message = getMessage(command.position)
+                    val content = parseHtmlValue(message.content().content)
+                    emit(MessageEvent.Internal.CopyToClipBoard(content))
+                }
+            }
+            is MessageCommand.ChangeMessageContentCommand -> {
+                flow {
+                    if (command.content.isEmpty()) {
+                        emit(MessageEvent.Internal.ShowToast(R.string.error))
+                        return@flow
+                    }
+
+                    val message = getMessage(command.position)
+                    args?.let { args ->
+                        val response = repository.changeMessage(
+                            messageId = message.id,
+                            params = EditMessageParams(
+                                topic = args.topic.replace("#", ""),
+                                content = command.content,
+                                streamId = args.streamId
+                            )
+                        )
+                        if (response) {
+                            emit(MessageEvent.Internal.ShowToast(R.string.changed_successfully))
+                            val list = messageList.toMutableList()
+                            list[command.position] = MessageDelegateItem(
+                                id = message.id,
+                                value = message.content().copy(content = command.content)
+                            )
+                            messageList = list
+                            emit(MessageEvent.Internal.MessageLoaded(messageList))
+                            emit(MessageEvent.Internal.UpdatePosition(command.position))
+                        } else {
+                            emit(MessageEvent.Internal.ShowToast(R.string.error))
+                        }
+                    }
+                }.catch {
+                    emit(MessageEvent.Internal.ShowToast(R.string.error))
+                }
+            }
+            is MessageCommand.ForwardMessageToTopicCommand -> {
+                flow {
+                    val message = getMessage(command.position)
+                    val response = repository.forwardMessage(
+                        messageId = message.id,
+                        params = EditMessageParams(
+                            topic = command.topicName,
+                            content = parseHtmlValue(message.content().content),
+                            streamId = command.streamId
+                        )
+                    )
+                    if (response) {
+                        messageList = messageList - message
+                        emit(MessageEvent.Internal.MessageLoaded(messageList))
+                        emit(MessageEvent.Internal.ForwardMessageSuccess)
+                    }
+                }
+            }
+            MessageCommand.NavigateToSelectTopicCommand -> {
+                flow {
+                    val screen = Screens.SubscribedStreamScreen(
+                        args = StreamsListArgs(
+                            requestType = StreamsListArgs.StreamRequest.SUBSCRIBED,
+                            selectTopicWithResultListener = true
+                        )
+                    )
+                    router.navigateTo(screen)
+                }
+            }
+            is MessageCommand.RequestToChangeMessageContentCommand -> {
+                flow {
+                    val content = parseHtmlValue(getMessage(command.position).content().content)
+                    emit(MessageEvent.Internal.GetContent(command.position, content))
+                }
+            }
         }
+    }
+
+    private fun getMessage(position: Int): MessageDelegateItem {
+        return messageList[position] as MessageDelegateItem
+    }
+
+    private fun parseHtmlValue(html: String): String {
+        return Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
+            .toString().trim()
     }
 
     private fun changeMessage(position: Int, emoji: String) {
@@ -172,18 +272,18 @@ class MessageActor @Inject constructor(
     }
 
 
-    private fun addMessageAfterSuccess(message: String) {
+    private fun addMessageAfterSuccess(id: Int, message: String) {
         val currentTime = System.currentTimeMillis()
         messageList = messageList + delegateItemMapper.toMessageDelegate(
             MessageDvo(
-                id = currentTime.toInt(),
-                senderId = 0,
+                id = id,
+                senderId = BuildConfig.USER_ID.toLong(),
                 timestamp = currentTime,
                 isMeMessage = true,
                 reactions = mutableListOf(),
-                senderFullName = "Baimurat Zhandos",
+                senderFullName = BuildConfig.FULL_NAME,
                 content = message,
-                avatarUrl = ""
+                avatarUrl = BuildConfig.AVATAR
             )
         )
     }
@@ -197,11 +297,6 @@ class MessageActor @Inject constructor(
     }
 
     companion object {
-        const val NOT_FOUND_INDEX = -1
-
-        const val LAST_LEFT_ITEMS = 5
-        const val LOAD_ITEMS = 20
-
         const val MAX_LOAD = 1000
         const val MIN_LOAD = 0
     }

@@ -111,6 +111,11 @@ class StreamActor @Inject constructor(
                 )
             }
         }
+        StreamCommand.BackToMessageCommand -> {
+            flow {
+                router.exit()
+            }
+        }
     }
 
     private suspend fun getAllStreams(): List<StreamDvo> {

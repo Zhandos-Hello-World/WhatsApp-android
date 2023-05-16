@@ -9,9 +9,14 @@ import kz.tinkoff.homework_2.presentation.message.MessageFragment
 import kz.tinkoff.homework_2.presentation.people.PeopleFragment
 import kz.tinkoff.homework_2.presentation.profile.ProfileFragment
 import kz.tinkoff.homework_2.presentation.streams.StreamsContainerFragment
+import kz.tinkoff.homework_2.presentation.streams.list.StreamsListArgs
+import kz.tinkoff.homework_2.presentation.streams.list.StreamsListFragment
 
 object Screens {
     fun StreamsScreen() = FragmentScreen { StreamsContainerFragment() }
+    fun SubscribedStreamScreen(args: StreamsListArgs = StreamsListArgs()) =
+        FragmentScreen("Stream_${args}") { StreamsListFragment(args) }
+
     fun ProfileScreen() = FragmentScreen { ProfileFragment() }
     fun PeopleScreen() = FragmentScreen { PeopleFragment() }
 

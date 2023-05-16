@@ -32,4 +32,15 @@ class DefaultMessageNetworkDataSource @Inject constructor(private val apiService
         return apiService.deleteReaction(messageId, request)
     }
 
+    override suspend fun deleteMessage(messageId: Int): BaseResponse {
+        return apiService.deleteMessage(messageId)
+    }
+
+    override suspend fun changeMessage(
+        messageId: Int,
+        request: HashMap<String, String>,
+    ): BaseResponse {
+        return apiService.changeMessage(messageId, request)
+    }
+
 }

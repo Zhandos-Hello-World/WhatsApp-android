@@ -1,11 +1,13 @@
 package kz.tinkoff.homework_2.data.repository
 
 import javax.inject.Inject
+import kz.tinkoff.homework_2.data.mappers.EditDtoMessageMapper
 import kz.tinkoff.homework_2.data.mappers.MessageDtoMapper
 import kz.tinkoff.homework_2.data.mappers.MessageMapper
 import kz.tinkoff.homework_2.data.mappers.ReactionDtoMapper
 import kz.tinkoff.homework_2.domain.datasource.MessageLocalDataSource
 import kz.tinkoff.homework_2.domain.datasource.MessageRemoteDataSource
+import kz.tinkoff.homework_2.domain.model.EditMessageParams
 import kz.tinkoff.homework_2.domain.model.MessageModel
 import kz.tinkoff.homework_2.domain.model.MessageStreamParams
 import kz.tinkoff.homework_2.domain.model.ReactionParams
@@ -17,6 +19,7 @@ class MessageRepositoryImpl @Inject constructor(
     private val mapper: MessageMapper,
     private val dtoMessageMapper: MessageDtoMapper,
     private val dtoReactionMapper: ReactionDtoMapper,
+    private val editDtoMessageMapper: EditDtoMessageMapper,
 ) : MessageRepository {
 
     override suspend fun getAllMessage(
@@ -35,12 +38,35 @@ class MessageRepositoryImpl @Inject constructor(
         data.forEach { localDataSource.addMessage(it) }
     }
 
+    override suspend fun deleteMessage(messageId: Int): Boolean {
+        return remoteDataSource.deleteMessage(messageId).isSuccess()
+    }
+
+    override suspend fun changeMessage(messageId: Int, params: EditMessageParams): Boolean {
+        return remoteDataSource.changeMessage(messageId, editDtoMessageMapper.map(params, true))
+            .isSuccess()
+    }
+
+    override suspend fun forwardMessage(messageId: Int, params: EditMessageParams): Boolean {
+        return remoteDataSource.changeMessage(
+            messageId, editDtoMessageMapper.map(
+                from = params,
+                changeContent = false
+            )
+        )
+            .isSuccess()
+    }
+
+    override suspend fun deleteMessageLocally(id: Int) {
+        return localDataSource.deleteMessage(id)
+    }
+
     override suspend fun getAllMessageLocally(stream: String, topic: String): List<MessageModel> {
         return localDataSource.getAllMessage(stream, topic)
     }
 
-    override suspend fun sendMessage(params: MessageStreamParams): Boolean {
-        return remoteDataSource.setMessageSend(dtoMessageMapper.map(from = params)).isSuccess()
+    override suspend fun sendMessage(params: MessageStreamParams): Int {
+        return remoteDataSource.setMessageSend(dtoMessageMapper.map(from = params)).id ?: -1
     }
 
     override suspend fun addReaction(messageId: Int, params: ReactionParams) {

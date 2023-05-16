@@ -36,18 +36,17 @@ class MessageDelegate(private val listener: MessageAdapterListener) :
 
         fun bind(model: MessageDvo, position: Int) {
             with(binding.message) {
-
                 setMessageDvo(model)
 
-                setEmojiClickListener { messageDvo, reactionViewItem ->
+                setOnReactionClickListener { reactionViewItem ->
                     listener.setEmojiClickListener(
                         position = position,
                         viewItem = reactionViewItem
                     )
                 }
 
-                addReactionClickListener {
-                    listener.addReactionClickListener(position)
+                setLongClickListener {
+                    listener.changeMessageClickListener(position)
                 }
             }
         }

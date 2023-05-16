@@ -31,6 +31,8 @@ sealed class StreamEvent {
         data class NavigateToCreateTopic(val dvo: StreamDvo, val position: Int) : Ui()
 
         data class AddTopicToStream(val dvo: StreamDvo): Ui()
+
+        object BackToMessage: Ui()
     }
 
     sealed class Internal : StreamEvent() {
@@ -58,5 +60,7 @@ sealed class StreamCommand {
     data class NavigateToCreateTopic(val dvo: StreamDvo, val position: Int) : StreamCommand()
     data class NavigateToMessage(val args: MessageArgs) : StreamCommand()
     data class AddTopicToStream(val dvo: StreamDvo): StreamCommand()
+
+    object BackToMessageCommand: StreamCommand()
 
 }

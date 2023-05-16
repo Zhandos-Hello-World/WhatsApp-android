@@ -99,7 +99,6 @@ class MessageViewGroup @JvmOverloads constructor(
             .into(avatarView)
     }
 
-    @SuppressWarnings("deprecation")
     private fun parseHtmlValue(html: String): String {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY)
@@ -108,25 +107,16 @@ class MessageViewGroup @JvmOverloads constructor(
         }.toString().trim()
     }
 
-    fun addReactionClickListener(listener: (MessageDvo) -> Unit) {
+    fun setLongClickListener(listener: (MessageDvo) -> Unit) {
         messageCardView.setOnLongClickListener {
-            data?.let {
-                listener(it)
-            }
+            data?.let(listener)
             true
-        }
-        reactionsViewGroup.addReactionClickListener {
-            data?.let {
-                listener(it)
-            }
         }
     }
 
-    fun setEmojiClickListener(listener: (MessageDvo, ReactionViewItem) -> Unit) {
+    fun setOnReactionClickListener(listener: (ReactionViewItem) -> Unit) {
         reactionsViewGroup.setEmojiClickListener { reactionViewItem ->
-            data?.let {
-                listener(it, reactionViewItem)
-            }
+            listener.invoke(reactionViewItem)
         }
     }
 

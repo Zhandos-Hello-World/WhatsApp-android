@@ -22,10 +22,10 @@ class StreamDvoMapper : Mapper<StreamModel, StreamDvo> {
     }
 
     fun toTopics(from: List<StreamModel.TopicModel>): List<StreamDvo.TopicDvo> {
-        return from.mapIndexed { index, from ->
+        return from.mapIndexed { index, value ->
             StreamDvo.TopicDvo(
-                id = from.id,
-                name = "#${from.name}",
+                id = value.id,
+                name = "#${value.name}",
                 color = if (index % 2 == 0) R.color.yellow else R.color.green
             )
         }

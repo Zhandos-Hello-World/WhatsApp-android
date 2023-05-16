@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import javax.inject.Inject
@@ -19,6 +20,7 @@ import kz.tinkoff.homework_2.di_dagger.stream.modules.StreamNetworkModule
 import kz.tinkoff.homework_2.getAppComponent
 import kz.tinkoff.homework_2.presentation.delegates.channels.StreamDelegate
 import kz.tinkoff.homework_2.presentation.dvo.StreamDvo
+import kz.tinkoff.homework_2.presentation.main.MainActivity
 import kz.tinkoff.homework_2.presentation.message.MessageArgs
 import kz.tinkoff.homework_2.presentation.streams.SearchEditTextController
 import kz.tinkoff.homework_2.presentation.streams.elm.StreamEffect
@@ -28,12 +30,12 @@ import kz.tinkoff.homework_2.presentation.streams.elm.StreamStoreFactory
 import vivid.money.elmslie.android.base.ElmFragment
 import vivid.money.elmslie.android.storeholder.LifecycleAwareStoreHolder
 
-class StreamsListFragment(private val args: StreamsListArgs) :
+class StreamsListFragment(private val streamArgs: StreamsListArgs) :
     ElmFragment<StreamEvent, StreamEffect, StreamState>() {
     private var _binding: FragmentStreamListBinding? = null
     private val binding get() = _binding!!
 
-    override val initEvent: StreamEvent = StreamEvent.Ui.LoadStream(args)
+    override val initEvent: StreamEvent = StreamEvent.Ui.LoadStream(streamArgs)
 
     @Inject
     lateinit var storeFactory: StreamStoreFactory
@@ -48,7 +50,8 @@ class StreamsListFragment(private val args: StreamsListArgs) :
         StreamDelegate(
             topicOnClickListener = ::navigateToMessage,
             streamOnClickListener = ::getTopicsById,
-            addTopicClickListener = ::addTopicToStream
+            addTopicClickListener = ::addTopicToStream,
+            hasAppendTopic = !streamArgs.selectTopicWithResultListener
         )
     }
 
@@ -76,16 +79,17 @@ class StreamsListFragment(private val args: StreamsListArgs) :
         binding.streamRecycler.adapter = adapter
 
         binding.reloadRequestBtn.setOnClickListener {
-            store.accept(StreamEvent.Ui.LoadStream(args))
+            store.accept(StreamEvent.Ui.LoadStream(streamArgs))
         }
 
-        (parentFragment as SearchEditTextController).searchEditText { searchText ->
+        (parentFragment as? SearchEditTextController)?.searchEditText { searchText ->
             if (searchText.isNotEmpty()) {
                 store.accept(StreamEvent.Ui.SearchStream(searchText))
             } else {
                 getAll()
             }
         }
+        (activity as? MainActivity)?.showBottomNavigationView(!streamArgs.selectTopicWithResultListener)
 
         return binding.root
     }
@@ -133,7 +137,16 @@ class StreamsListFragment(private val args: StreamsListArgs) :
     }
 
     private fun navigateToMessage(args: MessageArgs) {
-        store.accept(StreamEvent.Ui.NavigateToMessage(args))
+        if (streamArgs.selectTopicWithResultListener) {
+            val bundle = bundleOf().apply {
+                putString(SELECTED_TOPIC_NAME, args.topic.replace("#", ""))
+                putInt(SELECTED_STREAM_ID, args.streamId)
+            }
+            parentFragmentManager.setFragmentResult(STREAM_LIST_SELECT_TOPIC_RESULT, bundle)
+            store.accept(StreamEvent.Ui.BackToMessage)
+        } else {
+            store.accept(StreamEvent.Ui.NavigateToMessage(args))
+        }
     }
 
     private fun addTopicToStream(dvo: StreamDvo) {
@@ -150,7 +163,7 @@ class StreamsListFragment(private val args: StreamsListArgs) :
     }
 
     fun getAll() {
-        store.accept(StreamEvent.Ui.LoadStream(args))
+        store.accept(StreamEvent.Ui.LoadStream(streamArgs))
     }
 
 
@@ -158,5 +171,9 @@ class StreamsListFragment(private val args: StreamsListArgs) :
         fun getINSTANCE(args: StreamsListArgs): StreamsListFragment {
             return StreamsListFragment(args)
         }
+
+        const val STREAM_LIST_SELECT_TOPIC_RESULT = "STREAM_LIST_SELECT_TOPIC_RESULT"
+        const val SELECTED_TOPIC_NAME = "SELECTED_TOPIC"
+        const val SELECTED_STREAM_ID = "SELECTED_STREAM_ID"
     }
 }

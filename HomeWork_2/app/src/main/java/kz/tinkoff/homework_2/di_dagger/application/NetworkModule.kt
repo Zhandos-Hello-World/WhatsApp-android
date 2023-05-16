@@ -6,6 +6,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kz.tinkoff.homework_2.BuildConfig
 import okhttp3.Credentials
@@ -17,6 +18,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
 
+@OptIn(ExperimentalSerializationApi::class)
 @Module
 class NetworkModule {
 

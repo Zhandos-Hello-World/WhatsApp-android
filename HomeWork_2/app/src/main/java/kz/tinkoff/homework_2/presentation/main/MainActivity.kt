@@ -22,6 +22,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
 
+    private var isShowBottomNavigationByFragment: Boolean = true
+
     @Inject
     lateinit var router: Router
 
@@ -47,10 +49,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
                 R.id.people_item -> router.replaceScreen(Screens.PeopleScreen())
                 R.id.profile_item -> router.replaceScreen(Screens.ProfileScreen())
             }
+            savedInstanceState?.putInt(NAVIGATION_SELECTED_ARGS, item.itemId)
             true
         }
 
-        binding.bottomNav.selectedItemId = R.id.channels_item
+        binding.bottomNav.selectedItemId =
+            savedInstanceState?.getInt(NAVIGATION_SELECTED_ARGS) ?: R.id.channels_item
+
         keyboardBottomNavHandle()
     }
 
@@ -64,7 +69,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
                 val keyboardHeight: Int = screenHeight - r.bottom
                 val isKeyboardShown = keyboardHeight > screenHeight * 0.15
 
-                showBottomNavigationView(!isKeyboardShown)
+                showBottomNavigationViewWhenKeyboardAppeared(!isKeyboardShown)
             }
     }
 
@@ -81,6 +86,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main),
 
     override fun showBottomNavigationView(show: Boolean) {
         binding.bottomNav.isVisible = show
+        isShowBottomNavigationByFragment = show
+    }
+
+    override fun showBottomNavigationViewWhenKeyboardAppeared(show: Boolean) {
+        if (isShowBottomNavigationByFragment) {
+            binding.bottomNav.isVisible = show
+        }
+    }
+
+    companion object {
+        const val NAVIGATION_SELECTED_ARGS = "NAVIGATION_SELECTED_ARGS"
     }
 
 }

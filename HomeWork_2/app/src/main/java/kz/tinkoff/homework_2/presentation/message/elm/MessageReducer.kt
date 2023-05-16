@@ -24,6 +24,12 @@ class MessageReducer : DslReducer<MessageEvent, MessageState, MessageEffect, Mes
         is MessageEvent.Ui.BackToStreams -> {
             commands { +MessageCommand.BackToChannels }
         }
+        is MessageEvent.Ui.CopyToClipBoardEvent -> {
+            commands { +MessageCommand.CopyToClipBoardCommand(event.position) }
+        }
+        is MessageEvent.Ui.DeleteMessage -> {
+            commands { +MessageCommand.DeleteMessage(event.position) }
+        }
         is MessageEvent.Internal.MessageLoaded -> {
             state { MessageState.Data(event.data) }
         }
@@ -32,6 +38,36 @@ class MessageReducer : DslReducer<MessageEvent, MessageState, MessageEffect, Mes
         }
         is MessageEvent.Internal.UpdatePosition -> {
             state { MessageState.UpdatedPosition(event.position) }
+        }
+        is MessageEvent.Internal.CopyToClipBoard -> {
+            effects { +MessageEffect.CopyToClipBoardEffect(event.text) }
+        }
+        is MessageEvent.Ui.ChangeMessageContentEvent -> {
+            commands { +MessageCommand.ChangeMessageContentCommand(event.position, event.content) }
+        }
+        is MessageEvent.Internal.GetContent -> {
+            effects { +MessageEffect.MessageChangeEffect(event.position, event.content) }
+        }
+        is MessageEvent.Ui.RequestToChangeMessageContentEvent -> {
+            commands { +MessageCommand.RequestToChangeMessageContentCommand(event.position) }
+        }
+        is MessageEvent.Ui.ForwardMessageToTopicEvent -> {
+            commands {
+                +MessageCommand.ForwardMessageToTopicCommand(
+                    position = event.position,
+                    topicName = event.topicName,
+                    streamId = event.streamId
+                )
+            }
+        }
+        MessageEvent.Ui.SelectTopicEvent -> {
+            commands { +MessageCommand.NavigateToSelectTopicCommand }
+        }
+        MessageEvent.Internal.ForwardMessageSuccess -> {
+            effects { +MessageEffect.MessageForwardToTopicEffect }
+        }
+        is MessageEvent.Internal.ShowToast -> {
+            effects { +MessageEffect.ShowToastEffect(event.id) }
         }
     }
 }

@@ -16,7 +16,8 @@ import kz.tinkoff.homework_2.presentation.message.MessageArgs
 class StreamDelegate(
     private val streamOnClickListener: (Int) -> Unit,
     private val topicOnClickListener: (MessageArgs) -> Unit,
-    private val addTopicClickListener: (StreamDvo) -> Unit
+    private val addTopicClickListener: (StreamDvo) -> Unit,
+    private val hasAppendTopic: Boolean = true
 ) :
     AdapterDelegate<StreamDelegate.ViewHolder, StreamDelegateItem> {
 
@@ -68,12 +69,15 @@ class StreamDelegate(
                     }
                 )
             }
-            addAppendTopicViewOn(
-                binding.expandableItems,
-                onClickListener = {
-                    addTopicClickListener.invoke(model)
-                }
-            )
+
+            if (hasAppendTopic) {
+                addAppendTopicViewOn(
+                    binding.expandableItems,
+                    onClickListener = {
+                        addTopicClickListener.invoke(model)
+                    }
+                )
+            }
         }
 
         private fun addTopicOn(

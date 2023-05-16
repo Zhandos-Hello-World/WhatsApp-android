@@ -16,4 +16,7 @@
     <string name="first_message">First message</string>
     <string name="create_topic">Create topic</string>
     <string name="add_topic">Add topic</string>
+    <string name="copied">Copied to clipboard</string>
+    <string name="forwarded_successfully">Messages forwarded successfully</string>
+    <string name="changed_successfully">Message changed successfully</string>
 </resources>

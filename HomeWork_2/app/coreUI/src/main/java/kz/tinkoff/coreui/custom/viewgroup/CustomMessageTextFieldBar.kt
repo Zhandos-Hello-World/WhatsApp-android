@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -23,7 +24,7 @@ class CustomMessageTextFieldBar @JvmOverloads constructor(
     defStyleRes: Int = 0,
 ) : FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
 
-    private var state = SendMessageState.SEND_MESSAGE
+    private var state: SendMessageState = SendMessageState.SendMessage
     private var textChangedListener: ((CharSequence) -> Unit)? = null
 
     private val textInputLayout: TextInputLayout by lazy { findViewById(R.id.textInputLayout) }
@@ -33,11 +34,7 @@ class CustomMessageTextFieldBar @JvmOverloads constructor(
     private var text: String = ""
 
     init {
-        View.inflate(
-            context,
-            R.layout.custom_message_text_field_bar,
-            this
-        )
+        View.inflate(context, R.layout.custom_message_text_field_bar, this)
         setState(state)
         messageEditText.clearFocus()
         configureMessageEditText()
@@ -59,8 +56,7 @@ class CustomMessageTextFieldBar @JvmOverloads constructor(
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                state = if (s.toString().isEmpty()) SendMessageState.SEND_OTHER else SendMessageState.SEND_MESSAGE
-                setState(state)
+                //setState(state)
                 textChangedListener?.invoke(s.toString())
                 text = s.toString()
             }
@@ -70,32 +66,43 @@ class CustomMessageTextFieldBar @JvmOverloads constructor(
     }
 
 
-    private fun setState(state: SendMessageState) {
+    fun setState(state: SendMessageState) {
+        this.state = state
         when (state) {
-            SendMessageState.SEND_MESSAGE -> {
+            SendMessageState.SendMessage -> {
                 configureToSendMessage()
             }
-            SendMessageState.SEND_OTHER -> {
+            SendMessageState.SendOther -> {
                 configureToSendOthers()
+            }
+            is SendMessageState.ChangeMessage -> {
+                configureChangeMessage()
             }
         }
     }
 
     private fun configureToSendMessage() {
-        sendMessageBtn.setImageDrawable(
-            ContextCompat.getDrawable(
-                context,
-                R.drawable.baseline_send_24
-            )
-        )
+        setImageToSendMessageBtn(R.drawable.baseline_send_24)
         sendMessageBtn.setBackgroundColor(ContextCompat.getColor(context, R.color.green_2))
     }
 
     private fun configureToSendOthers() {
+        setImageToSendMessageBtn(R.drawable.baseline_add_24)
+        sendMessageBtn.setBackgroundColor(ContextCompat.getColor(context, R.color.black_gray_4))
+
+    }
+
+    private fun configureChangeMessage() {
+        setImageToSendMessageBtn(R.drawable.ic_baseline_done_24)
+        sendMessageBtn.setBackgroundColor(ContextCompat.getColor(context, R.color.black_gray_4))
+    }
+
+
+    private fun setImageToSendMessageBtn(@DrawableRes resId: Int) {
         sendMessageBtn.setImageDrawable(
             ContextCompat.getDrawable(
                 context,
-                R.drawable.baseline_add_24
+                resId
             )
         )
         sendMessageBtn.setBackgroundColor(ContextCompat.getColor(context, R.color.black_gray_4))
@@ -123,7 +130,11 @@ class CustomMessageTextFieldBar @JvmOverloads constructor(
         messageEditText.setText("")
     }
 
-    enum class SendMessageState {
-        SEND_MESSAGE, SEND_OTHER
+    sealed interface SendMessageState {
+        object SendMessage : SendMessageState
+
+        object SendOther : SendMessageState
+
+        data class ChangeMessage(val position: Int, val content: String) : SendMessageState
     }
 }

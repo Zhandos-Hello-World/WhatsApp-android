@@ -46,12 +46,12 @@ class MessageMapper : Mapper<MessageListResponse, List<MessageModel>> {
 
 
     private fun toReactionModel(from: List<MessageListResponse.ReactionResponse>): List<MessageModel.ReactionModel> {
-        return from.map { from ->
+        return from.map {
             MessageModel.ReactionModel(
-                emojiCode = from.emojiCode,
-                emojiName = from.emojiName,
-                reactionType = from.reactionType,
-                user = toUserModel(from.user)
+                emojiCode = it.emojiCode,
+                emojiName = it.emojiName,
+                reactionType = it.reactionType,
+                user = toUserModel(it.user)
             )
         }
     }

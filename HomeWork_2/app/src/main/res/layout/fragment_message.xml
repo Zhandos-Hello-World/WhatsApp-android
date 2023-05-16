@@ -31,7 +31,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/message_send_edit_text_bar"
+        app:layout_constraintBottom_toTopOf="@+id/change_text_banner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sub_toolbar" />
@@ -41,13 +41,30 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/message_send_edit_text_bar"
+        app:layout_constraintBottom_toTopOf="@+id/change_text_banner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sub_toolbar">
 
         <include layout="@layout/item_message_shimmers" />
     </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <TextView
+        android:id="@+id/change_text_banner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/green"
+        android:ellipsize="end"
+        android:lines="1"
+        android:paddingHorizontal="@dimen/indent_base"
+        android:paddingVertical="@dimen/indent_small"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        app:drawableEndCompat="@drawable/baseline_close_24"
+        app:layout_constraintBottom_toTopOf="@id/message_send_edit_text_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Hello World Hi ger gwehgwreou hgoerhgruewgh hrweoghreghrew" />
 
     <kz.tinkoff.coreui.custom.viewgroup.CustomMessageTextFieldBar
         android:id="@+id/message_send_edit_text_bar"
@@ -82,6 +99,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/reload"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/error_message" />

@@ -4,6 +4,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import kz.tinkoff.homework_2.data.datasource.DefaultMessageLocalDataSource
+import kz.tinkoff.homework_2.data.mappers.EditDtoMessageMapper
 import kz.tinkoff.homework_2.data.mappers.MessageDtoMapper
 import kz.tinkoff.homework_2.data.mappers.MessageEntityMapper
 import kz.tinkoff.homework_2.data.mappers.MessageMapper
@@ -61,6 +62,11 @@ class MessageDataModule {
     @Provides
     fun provideMessageModelEntityMapper(): MessageModelEntityMapper {
         return MessageModelEntityMapper()
+    }
+
+    @Provides
+    fun provideEditDtoMessageMapper(): EditDtoMessageMapper {
+        return EditDtoMessageMapper()
     }
 
     @Module
