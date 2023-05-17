@@ -19,4 +19,6 @@
     <string name="copied">Copied to clipboard</string>
     <string name="forwarded_successfully">Messages forwarded successfully</string>
     <string name="changed_successfully">Message changed successfully</string>
+    <string name="connected">Internet connected</string>
+    <string name="disconnected">Internet disconnected</string>
 </resources>
